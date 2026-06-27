@@ -1,0 +1,26 @@
+# Secrets
+*.env
+!*.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Databases
+*.db
+*.sqlite3
+
+# RAG artifacts (regenerated khi ingest) — khớp ở mọi thư mục
+faiss.index
+metadata.pkl
+.ingested_manifest.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

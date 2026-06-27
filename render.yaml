@@ -1,0 +1,48 @@
+# ════════════════════════════════════════════════════════════════
+#  Render Blueprint — BuddyMath (1 web service: BE phục vụ luôn FE)
+#  Dùng: Render Dashboard → New → Blueprint → trỏ vào repo này.
+# ════════════════════════════════════════════════════════════════
+
+databases:
+  - name: buddymath-db          # PostgreSQL (SQLite KHÔNG bền trên Render)
+    plan: free                  # ⚠ free Postgres hết hạn sau 30 ngày
+
+services:
+  - type: web
+    name: buddymath
+    runtime: python
+    plan: free                  # ⚠ free web service ngủ sau ~15' không truy cập
+    rootDir: buddymath/BE        # build & chạy trong thư mục BE
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      # DB lấy tự động từ Postgres ở trên (scheme postgres:// được config tự đổi)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: buddymath-db
+          property: connectionString
+      # Secret — điền trong Dashboard (sync:false = không commit vào repo)
+      - key: GROQ_API_KEY
+        sync: false
+      - key: JINA_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true     # Render tự sinh chuỗi ngẫu nhiên
+      # Cấu hình mặc định (có thể đổi trong Dashboard)
+      - key: GROQ_MODEL
+        value: meta-llama/llama-4-scout-17b-16e-instruct
+      - key: JINA_MODEL
+        value: jina-embeddings-v3
+      # URL công khai dùng trong link email báo cáo (điền sau khi biết domain Render)
+      - key: PUBLIC_BASE_URL
+        sync: false
+      # Email báo cáo phụ huynh — tuỳ chọn, điền nếu muốn bật
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: FROM_EMAIL
+        sync: false

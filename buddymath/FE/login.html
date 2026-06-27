@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartBuddy — Đăng nhập</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#2EC4A0; --teal-d:#1A7A60;
+  --blue:#3742FA; --purple:#A55EEA;
+  --yellow:#FFD700; --orange:#FF6B35;
+  --red:#FF4757; --green:#2ED573;
+  --bg:#EEF8F5; --white:#fff;
+  --text1:#1A2340; --text2:#5A6890; --text3:#A0AABF;
+}
+body{
+  font-family:'Nunito',Arial; background:var(--bg);
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  overflow-x:hidden;
+}
+
+/* ── Animated background ── */
+.bg-shapes{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg-shape{position:absolute;border-radius:50%;opacity:.08;animation:bgFloat linear infinite;}
+@keyframes bgFloat{0%{transform:translateY(0) rotate(0);}50%{transform:translateY(-30px) rotate(180deg);}100%{transform:translateY(0) rotate(360deg);}}
+
+/* ── Card ── */
+.card{
+  position:relative;z-index:1;
+  background:white;border-radius:28px;
+  box-shadow:0 20px 60px rgba(46,196,160,.18),0 4px 16px rgba(0,0,0,.08);
+  width:100%;max-width:440px;overflow:hidden;
+  margin:20px;
+}
+
+/* ── Mascot header ── */
+.card-header{
+  background:linear-gradient(135deg,#2EC4A0 0%,#1E90FF 60%,#A55EEA 100%);
+  padding:32px 24px 20px;text-align:center;position:relative;overflow:hidden;
+}
+.card-header::before{content:'';position:absolute;top:-40px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.08);border-radius:50%;}
+.card-header::after{content:'';position:absolute;bottom:-50px;left:-20px;width:100px;height:100px;background:rgba(255,255,255,.06);border-radius:50%;}
+
+/* Smart Buddy mascot (CSS art) */
+.mascot{width:90px;height:90px;margin:0 auto 12px;position:relative;animation:mascotBounce 2.5s ease-in-out infinite;}
+@keyframes mascotBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.mascot-body{
+  width:90px;height:80px;background:linear-gradient(160deg,#3DD9B3,#2EC4A0);
+  border-radius:40px;position:relative;
+  box-shadow:0 6px 0 rgba(0,0,0,.15);
+}
+.mascot-face{
+  width:58px;height:52px;background:linear-gradient(160deg,#fff 60%,#f0f8ff);
+  border-radius:30px;position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.07);
+}
+.mascot-eye{
+  width:14px;height:16px;background:#1A2340;border-radius:50%;
+  position:relative;
+}
+.mascot-eye::after{content:'';width:4px;height:4px;background:white;border-radius:50%;position:absolute;top:3px;right:2px;}
+.mascot-eye.wink{height:5px;border-radius:4px;margin-top:5px;}
+.mascot-smile{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  width:20px;height:10px;border:3px solid #FF6B35;border-top:none;
+  border-radius:0 0 12px 12px;
+}
+.mascot-cheek{
+  position:absolute;bottom:12px;width:10px;height:6px;
+  background:#FF9FAF;border-radius:50%;opacity:.7;
+}
+.mascot-cheek.l{left:6px;} .mascot-cheek.r{right:6px;}
+.mascot-lightbulb{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:18px;height:18px;background:var(--teal);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:white;font-weight:900;
+}
+.mascot-antenna{
+  position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  width:3px;height:16px;background:#2EC4A0;border-radius:2px;
+}
+.mascot-antenna::after{
+  content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  width:10px;height:10px;background:#2EC4A0;border-radius:50%;
+}
+.mascot-ear{
+  position:absolute;top:20px;width:18px;height:24px;
+  background:linear-gradient(160deg,#3DD9B3,#2EC4A0);border-radius:50%;
+  box-shadow:0 3px 0 rgba(0,0,0,.12);
+}
+.mascot-ear.l{left:-5px;} .mascot-ear.r{right:-5px;}
+/* Graduation cap */
+.cap{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:80px;}
+.cap-board{
+  width:70px;height:8px;background:#1A2340;border-radius:2px;
+  margin:0 auto;position:relative;
+}
+.cap-board::after{
+  content:'';position:absolute;left:50%;top:-16px;transform:translateX(-50%);
+  width:42px;height:16px;background:#1A2340;border-radius:4px 4px 0 0;
+}
+.cap-tassel{
+  position:absolute;right:4px;top:6px;
+  width:3px;height:22px;background:var(--yellow);border-radius:2px;
+}
+.cap-tassel::after{
+  content:'';position:absolute;bottom:0;left:-3px;
+  width:9px;height:9px;background:var(--yellow);border-radius:50%;
+}
+
+.logo-text{font-family:'Baloo 2',cursive;font-size:26px;color:white;font-weight:800;letter-spacing:.5px;}
+.logo-sub{font-size:13px;color:rgba(255,255,255,.8);font-weight:600;margin-top:4px;}
+
+/* ── Tabs ── */
+.tabs{display:flex;border-bottom:3px solid #F0F0FF;background:#FAFAFF;}
+.tab{
+  flex:1;padding:14px;font-family:'Nunito',Arial;font-size:14px;font-weight:800;
+  color:var(--text3);border:none;background:none;cursor:pointer;
+  transition:all .2s;border-bottom:3px solid transparent;margin-bottom:-3px;
+}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+
+/* ── Forms ── */
+.form-wrap{padding:24px;}
+.form-panel{display:none;}
+.form-panel.active{display:block;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:12px;font-weight:900;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.07em;}
+.form-input{
+  width:100%;padding:12px 16px;border:2.5px solid #E0E8F0;border-radius:14px;
+  font-family:'Nunito',Arial;font-size:14px;font-weight:700;color:var(--text1);
+  outline:none;transition:all .2s;background:#FAFEFF;
+}
+.form-input:focus{border-color:var(--teal);background:white;box-shadow:0 0 0 4px rgba(46,196,160,.12);}
+.form-input::placeholder{color:var(--text3);font-weight:600;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.role-select{display:flex;gap:8px;margin-bottom:4px;}
+.role-btn{
+  flex:1;padding:10px;border:2.5px solid #E0E8F0;border-radius:12px;
+  background:white;cursor:pointer;font-family:'Nunito',Arial;font-size:13px;font-weight:800;
+  color:var(--text2);text-align:center;transition:all .15s;
+}
+.role-btn.active{border-color:var(--teal);background:rgba(46,196,160,.08);color:var(--teal-d);}
+
+.submit-btn{
+  width:100%;padding:14px;border:none;border-radius:16px;cursor:pointer;
+  font-family:'Nunito',Arial;font-size:15px;font-weight:900;color:white;
+  background:linear-gradient(135deg,#2EC4A0,#1E90FF);
+  box-shadow:0 6px 0 rgba(46,196,160,.35);transition:all .15s;margin-top:4px;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 0 rgba(46,196,160,.35);}
+.submit-btn:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(46,196,160,.35);}
+.submit-btn:disabled{background:#CCC;box-shadow:0 4px 0 #AAA;cursor:not-allowed;transform:none;}
+
+.error-msg{
+  background:#FFF0F0;color:var(--red);border-radius:10px;
+  padding:10px 14px;font-size:13px;font-weight:700;margin-bottom:14px;
+  display:none;border-left:4px solid var(--red);
+}
+.error-msg.show{display:block;}
+.success-msg{
+  background:#F0FFF8;color:#27AE60;border-radius:10px;
+  padding:10px 14px;font-size:13px;font-weight:700;margin-bottom:14px;
+  display:none;border-left:4px solid #2ED573;
+}
+.success-msg.show{display:block;}
+
+.divider{text-align:center;color:var(--text3);font-size:12px;font-weight:700;margin:16px 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:#E8EEF5;}
+.divider::before{left:0;} .divider::after{right:0;}
+
+.helper-link{text-align:center;font-size:13px;color:var(--text2);font-weight:600;margin-top:12px;}
+.helper-link a{color:var(--teal);font-weight:800;text-decoration:none;}
+.helper-link a:hover{text-decoration:underline;}
+
+/* Grade select pills */
+.grade-pills{display:flex;flex-wrap:wrap;gap:6px;}
+.grade-pill{
+  padding:5px 12px;border:2px solid #E0E8F0;border-radius:20px;
+  background:white;cursor:pointer;font-family:'Nunito',Arial;font-size:12px;font-weight:800;
+  color:var(--text2);transition:all .15s;
+}
+.grade-pill.active{background:var(--teal);color:white;border-color:var(--teal);}
+
+/* Loading spinner */
+.spinner{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Demo accounts badge */
+.demo-box{
+  background:linear-gradient(135deg,#FFF8E0,#FFFBF0);border:2px solid #FFE066;
+  border-radius:14px;padding:12px 14px;margin-bottom:16px;
+}
+.demo-title{font-size:11px;font-weight:900;color:#856404;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.demo-row{font-size:12px;color:#666;font-weight:600;cursor:pointer;padding:3px 0;transition:color .15s;}
+.demo-row:hover{color:var(--teal);}
+.demo-row strong{color:var(--text1);}
+</style>
+</head>
+<body>
+
+<!-- Background shapes -->
+<div class="bg-shapes">
+  <div class="bg-shape" style="width:200px;height:200px;background:#2EC4A0;top:5%;left:3%;animation-duration:8s;"></div>
+  <div class="bg-shape" style="width:150px;height:150px;background:#3742FA;top:60%;right:5%;animation-duration:10s;"></div>
+  <div class="bg-shape" style="width:100px;height:100px;background:#A55EEA;top:30%;right:15%;animation-duration:12s;"></div>
+  <div class="bg-shape" style="width:80px;height:80px;background:#FFD700;bottom:10%;left:10%;animation-duration:7s;"></div>
+</div>
+
+<div class="card">
+  <!-- Mascot Header -->
+  <div class="card-header">
+    <div class="mascot">
+      <div class="cap">
+        <div class="cap-board"><div class="cap-tassel"></div></div>
+      </div>
+      <div class="mascot-body">
+        <div class="mascot-antenna"></div>
+        <div class="mascot-ear l"></div>
+        <div class="mascot-ear r"></div>
+        <div class="mascot-face">
+          <div class="mascot-eye"></div>
+          <div class="mascot-eye wink"></div>
+          <div class="mascot-cheek l"></div>
+          <div class="mascot-cheek r"></div>
+          <div class="mascot-smile"></div>
+        </div>
+        <div class="mascot-lightbulb">💡</div>
+      </div>
+    </div>
+    <div class="logo-text">SmartBuddy</div>
+    <div class="logo-sub">✦ Học thông minh — Tiến vững vàng ✦</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('login')">🔑 Đăng nhập</button>
+    <button class="tab" onclick="switchTab('register')">✨ Đăng ký</button>
+  </div>
+
+  <div class="form-wrap">
+
+    <!-- ── LOGIN ── -->
+    <div id="tab-login" class="form-panel active">
+      <div class="error-msg" id="login-err"></div>
+      <div class="success-msg" id="login-ok"></div>
+
+      <!-- Demo accounts -->
+      <div class="demo-box">
+        <div class="demo-title">⚡ Tài khoản thử nhanh</div>
+        <div class="demo-row" onclick="fillDemo('student@demo.vn','demo123')">
+          🎒 Học sinh: <strong>student@demo.vn</strong> / demo123
+        </div>
+        <div class="demo-row" onclick="fillDemo('parent@demo.vn','demo123')">
+          👨‍👩‍👧 Phụ huynh: <strong>parent@demo.vn</strong> / demo123
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">📧 Email</label>
+        <input class="form-input" id="login-email" type="email" placeholder="email@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🔒 Mật khẩu</label>
+        <input class="form-input" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="submit-btn" id="login-btn" onclick="doLogin()">🚀 Đăng nhập</button>
+      <div class="helper-link" style="margin-top:14px;">
+        Chưa có tài khoản? <a href="#" onclick="switchTab('register')">Đăng ký ngay</a>
+      </div>
+    </div>
+
+    <!-- ── REGISTER ── -->
+    <div id="tab-register" class="form-panel">
+      <div class="error-msg" id="reg-err"></div>
+      <div class="success-msg" id="reg-ok"></div>
+
+      <div class="form-group">
+        <label class="form-label">👤 Tôi là</label>
+        <div class="role-select">
+          <button class="role-btn active" id="role-student" onclick="setRole('student')">🎒 Học sinh</button>
+          <button class="role-btn" id="role-parent" onclick="setRole('parent')">👨‍👩‍👧 Phụ huynh</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">✏️ Tên hiển thị</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="Tên của bạn...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">📧 Email</label>
+        <input class="form-input" id="reg-email" type="email" placeholder="email@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🔒 Mật khẩu (ít nhất 6 ký tự)</label>
+        <input class="form-input" id="reg-pass" type="password" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="form-group" id="grade-group">
+        <label class="form-label">🏫 Lớp đang học</label>
+        <div class="grade-pills" id="grade-pills">
+          <div class="grade-pill" onclick="setGrade(3)">Lớp 3</div>
+          <div class="grade-pill" onclick="setGrade(4)">Lớp 4</div>
+          <div class="grade-pill active" onclick="setGrade(5)">Lớp 5</div>
+          <div class="grade-pill" onclick="setGrade(6)">Lớp 6</div>
+          <div class="grade-pill" onclick="setGrade(7)">Lớp 7</div>
+          <div class="grade-pill" onclick="setGrade(8)">Lớp 8</div>
+          <div class="grade-pill" onclick="setGrade(9)">Lớp 9</div>
+        </div>
+      </div>
+      <button class="submit-btn" id="reg-btn" onclick="doRegister()">✨ Tạo tài khoản</button>
+      <div class="helper-link" style="margin-top:14px;">
+        Đã có tài khoản? <a href="#" onclick="switchTab('login')">Đăng nhập</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Same-origin: BE phục vụ luôn FE nên API trỏ về chính domain đang chạy
+// (localhost khi dev, *.onrender.com khi deploy). Fallback localhost khi mở file://.
+const API = (location.protocol !== 'file:' && location.hostname)
+  ? location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
+  : 'http://localhost:8000';
+let selectedRole  = 'student';
+let selectedGrade = 5;
+
+// ── Tab switching ──────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', (name==='login'?i===0:i===1));
+  });
+  document.getElementById('tab-login').classList.toggle('active', name==='login');
+  document.getElementById('tab-register').classList.toggle('active', name==='register');
+}
+
+// ── Role selection ─────────────────────────────────────────────────────────────
+function setRole(role) {
+  selectedRole = role;
+  document.getElementById('role-student').classList.toggle('active', role==='student');
+  document.getElementById('role-parent').classList.toggle('active', role==='parent');
+  document.getElementById('grade-group').style.display = role==='student' ? 'block' : 'none';
+}
+
+// ── Grade selection ─────────────────────────────────────────────────────────────
+function setGrade(g) {
+  selectedGrade = g;
+  document.querySelectorAll('.grade-pill').forEach(p => {
+    p.classList.toggle('active', p.textContent.trim() === `Lớp ${g}`);
+  });
+}
+
+// ── Demo account fill ──────────────────────────────────────────────────────────
+function fillDemo(email, pass) {
+  document.getElementById('login-email').value = email;
+  document.getElementById('login-pass').value  = pass;
+}
+
+// ── Login ──────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value.trim();
+  if (!email || !pass) { showErr('login-err', 'Vui lòng nhập đầy đủ thông tin!'); return; }
+
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Đang đăng nhập...';
+  hideMsg('login-err'); hideMsg('login-ok');
+
+  try {
+    const res  = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) { showErr('login-err', data.detail || 'Đăng nhập thất bại'); return; }
+
+    localStorage.setItem('sb_token', data.token);
+    localStorage.setItem('sb_user',  JSON.stringify(data.user));
+
+    showOk('login-ok', `Chào mừng ${data.user.username}! Đang chuyển hướng...`);
+    setTimeout(() => {
+      if (data.user.role === 'parent') {
+        window.location.href = '/parent-portal';
+      } else {
+        window.location.href = '/app';
+      }
+    }, 800);
+  } catch (e) {
+    showErr('login-err', 'Không kết nối được server. Hãy kiểm tra server đang chạy!');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🚀 Đăng nhập';
+  }
+}
+
+// ── Register ──────────────────────────────────────────────────────────────────
+async function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value.trim();
+
+  if (!name || !email || !pass) { showErr('reg-err', 'Vui lòng điền đầy đủ thông tin!'); return; }
+  if (pass.length < 6)          { showErr('reg-err', 'Mật khẩu phải có ít nhất 6 ký tự!'); return; }
+
+  const btn = document.getElementById('reg-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Đang tạo tài khoản...';
+  hideMsg('reg-err'); hideMsg('reg-ok');
+
+  try {
+    const res  = await fetch(`${API}/auth/register`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        email, username: name, password: pass,
+        role: selectedRole, grade: selectedGrade
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) { showErr('reg-err', data.detail || 'Đăng ký thất bại'); return; }
+
+    // Auto-create demo accounts if they don't exist
+    localStorage.setItem('sb_token', data.token);
+    localStorage.setItem('sb_user',  JSON.stringify(data.user));
+
+    showOk('reg-ok', '🎉 Đăng ký thành công! Đang vào app...');
+    setTimeout(() => {
+      window.location.href = data.user.role === 'parent' ? '/parent-portal' : '/app';
+    }, 1000);
+  } catch (e) {
+    showErr('reg-err', 'Không kết nối được server. Hãy kiểm tra server đang chạy!');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ Tạo tài khoản';
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = '⚠️ ' + msg; el.classList.add('show');
+}
+function showOk(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.add('show');
+}
+function hideMsg(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('tab-login').classList.contains('active')) doLogin();
+    else doRegister();
+  }
+});
+
+// Auto-create demo accounts on first load
+(async function seedDemo() {
+  const demos = [
+    { email:'student@demo.vn', username:'Học Sinh Demo', password:'demo123', role:'student', grade:5 },
+    { email:'parent@demo.vn',  username:'Phụ Huynh Demo',  password:'demo123', role:'parent',  grade:0 },
+  ];
+  for (const d of demos) {
+    try {
+      await fetch(`${API}/auth/register`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(d)
+      });
+    } catch(_) {}
+  }
+})();
+
+// If already logged in, redirect
+const existing = localStorage.getItem('sb_token');
+if (existing) {
+  fetch(`${API}/auth/me`, {headers:{'Authorization':'Bearer '+existing}})
+    .then(r => r.ok ? r.json() : null)
+    .then(u => {
+      if (u) window.location.href = u.role === 'parent' ? '/parent-portal' : '/app';
+    }).catch(() => {});
+}
+</script>
+</body>
+</html>

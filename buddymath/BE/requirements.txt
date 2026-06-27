@@ -1,0 +1,30 @@
+# ── Web framework ──────────────────────────────────────────────
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+
+# ── Auth & DB ──────────────────────────────────────────────────
+sqlalchemy
+passlib[bcrypt]
+bcrypt==4.0.1
+python-jose[cryptography]
+psycopg2-binary   # driver PostgreSQL (dùng khi deploy với DATABASE_URL=postgresql://...)
+
+# ── HTTP / config ──────────────────────────────────────────────
+httpx
+requests
+python-dotenv
+
+# ── RAG / embedding ────────────────────────────────────────────
+numpy
+faiss-cpu
+
+# ── Đọc tài liệu (chọn cài tùy nhu cầu) ────────────────────────
+PyMuPDF          # fitz – đọc PDF
+python-docx      # đọc .docx
+# pdfplumber     # fallback PDF
+# pdfminer.six   # fallback PDF
+# pymupdf4llm    # PDF → markdown
+# pytesseract    # OCR PDF scan (cần Tesseract engine)
+# pdf2image      # OCR PDF scan (cần poppler)
