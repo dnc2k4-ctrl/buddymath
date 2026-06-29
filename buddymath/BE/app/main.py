@@ -66,6 +66,31 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # ── HTTP security headers (áp cho mọi response) ──────────────────────────
+    _CSP = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
+        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
+        "img-src 'self' data: blob:; "
+        "connect-src 'self'; "
+        "frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+    )
+
+    @app.middleware("http")
+    async def security_headers(request, call_next):
+        resp = await call_next(request)
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        resp.headers["X-Frame-Options"] = "SAMEORIGIN"
+        resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        resp.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(self)"
+        resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        # CSP chỉ áp cho trang HTML (tránh ảnh hưởng tài liệu/ảnh tĩnh)
+        ctype = resp.headers.get("content-type", "")
+        if ctype.startswith("text/html"):
+            resp.headers["Content-Security-Policy"] = _CSP
+        return resp
+
     # Static images (mascot sprites, logo…)
     IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")

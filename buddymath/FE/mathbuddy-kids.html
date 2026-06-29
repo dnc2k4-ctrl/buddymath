@@ -2,9 +2,24 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartBuddy ⭐ Học thông minh — Tiến vững vàng!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#1FCBA6">
+<title>SmartBuddy — Gia sư AI Toán & Tiếng Anh cho học sinh lớp 3–9</title>
+<meta name="description" content="SmartBuddy: gia sư AI thân thiện dạy Toán, Tiếng Anh và kỹ năng sống cho học sinh lớp 3–9 theo chương trình Bộ GD&ĐT Việt Nam. Hướng dẫn tư duy từng bước, không làm bài thay.">
+<meta name="robots" content="index, follow">
+<meta name="format-detection" content="telephone=no">
+<!-- Open Graph / mạng xã hội -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="SmartBuddy — Gia sư AI cho học sinh lớp 3–9">
+<meta property="og:description" content="Học Toán, Tiếng Anh & kỹ năng sống cùng gia sư AI thân thiện. Hướng dẫn tư duy từng bước, không làm bài thay.">
+<meta property="og:locale" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SmartBuddy — Gia sư AI cho học sinh lớp 3–9">
+<meta name="twitter:description" content="Học Toán, Tiếng Anh & kỹ năng sống cùng gia sư AI thân thiện.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <!-- KaTeX – render LaTeX công thức toán học -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
@@ -1585,6 +1600,56 @@ body.role-parent #send-report-btn { padding:16px !important; font-size:16px !imp
 body.role-parent .pstat-card { padding:18px 16px; }
 body.role-parent .pstat-num { font-size:34px; }
 body.role-parent .pstat-lbl { font-size:12.5px; }
+
+/* ════════════════════════════════════════════════════════════
+   🛡️ PRODUCTION HARDENING — đa nền tảng / đa trình duyệt / a11y
+════════════════════════════════════════════════════════════ */
+/* Không cho chữ tự phóng to trên iOS khi xoay ngang */
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+/* Chặn cuộn ngang toàn trang ở mọi nơi */
+html, body { overflow-x:hidden; max-width:100%; }
+/* Chiều cao động chuẩn mobile (tránh nhảy khi thanh URL ẩn/hiện). Trình duyệt cũ tự bỏ qua dvh → giữ 100vh */
+body { height:100dvh; }
+/* Cho các vùng flex co lại đúng cách (fix tràn do flex item không thu nhỏ) */
+.layout, .main-area, .topic-content-panel, .messages, .chat-panel-wrap, .input-area { min-width:0; }
+/* Ảnh không méo, không tràn */
+img, video, canvas, svg { max-width:100%; height:auto; }
+/* Bỏ ánh xanh khi chạm trên mobile */
+button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
+
+/* Safe-area cho tai thỏ / Dynamic Island / home-indicator (viewport-fit=cover).
+   Ưu tiên đáy (home indicator) — không đụng padding ngang header để tránh ảnh hưởng desktop. */
+.input-area { padding-bottom:max(14px, env(safe-area-inset-bottom)); }
+.frustration-bar { padding-bottom:max(12px, env(safe-area-inset-bottom)); }
+.sidebar { padding-bottom:max(14px, env(safe-area-inset-bottom)); }
+@media (max-width:760px) {
+  .header { padding-left:max(10px, env(safe-area-inset-left)); padding-right:max(10px, env(safe-area-inset-right)); }
+}
+
+/* Vùng chạm tối thiểu 44px trên thiết bị cảm ứng (chuẩn WCAG / Apple HIG) */
+@media (pointer:coarse) {
+  .qp, .practice-type-btn, .advisor-age-btn, .period-btn,
+  .auth-grade-pill, .frust-btn, .mh-grade-tab { min-height:44px; }
+  .topic-btn { min-height:46px; }
+}
+
+/* Hiển thị vòng focus rõ ràng cho điều hướng bàn phím (a11y) */
+:focus-visible {
+  outline:3px solid #1763C7; outline-offset:2px; border-radius:6px;
+}
+/* Không hiện outline khi bấm chuột (chỉ khi dùng bàn phím) */
+:focus:not(:focus-visible) { outline:none; }
+
+/* Tôn trọng "giảm chuyển động" của hệ điều hành (a11y + tiết kiệm pin/CPU) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .bubbles, .buddy-sprite { animation:none !important; }
+}
 </style>
 
 </head>
@@ -1643,7 +1708,7 @@ body.role-parent .pstat-lbl { font-size:12.5px; }
       </button>
     </div>
     <div id="user-info-wrap" style="display:none;">
-      <div class="user-avatar-pill" onclick="toggleUserMenu()">
+      <div class="user-avatar-pill" onclick="toggleUserMenu()" role="button" tabindex="0" aria-label="Mở menu tài khoản" aria-haspopup="menu" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUserMenu();}">
         <span id="user-avatar-letter" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;">?</span>
         <span id="user-display-name">Bạn ơi</span>
         <span style="font-size:10px;opacity:0.8;">▼</span>
@@ -1664,7 +1729,7 @@ body.role-parent .pstat-lbl { font-size:12.5px; }
      AUTH MODAL v2 — Email / Password + Demo mode
 ═══════════════════════════════════════════════════ -->
 <div id="auth-modal-overlay" style="display:none;" onclick="closeAuthOnOverlay(event)">
-  <div class="auth-modal" id="auth-modal" style="padding:0;overflow:hidden;max-width:400px;">
+  <div class="auth-modal" id="auth-modal" role="dialog" aria-modal="true" aria-label="Đăng nhập / Đăng ký SmartBuddy" style="padding:0;overflow:hidden;max-width:400px;">
     <!-- Mascot header -->
     <div style="background:linear-gradient(135deg,#1FCBA6,#13B392);padding:22px 24px 16px;text-align:center;position:relative;">
       <button class="auth-close-btn" onclick="closeAuthModal()" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);color:white;">✕</button>
@@ -2325,16 +2390,16 @@ body.role-parent .pstat-lbl { font-size:12.5px; }
           <div class="input-row">
             <!-- Image menu -->
             <div style="position:relative;flex-shrink:0;">
-              <button class="attach-btn" id="attach-btn" title="Gửi ảnh bài toán 📷" onclick="toggleImgMenu()" style="position:relative;">📷</button>
+              <button class="attach-btn" id="attach-btn" title="Gửi ảnh bài toán 📷" aria-label="Gửi ảnh bài toán" onclick="toggleImgMenu()" style="position:relative;">📷</button>
               <div id="img-menu" style="display:none;position:absolute;bottom:56px;left:0;background:white;border-radius:14px;border:2.5px solid #E0D8FF;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:8px;min-width:170px;z-index:100;">
                 <button onclick="document.getElementById('img-file-input').click();toggleImgMenu()" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;background:none;cursor:pointer;border-radius:10px;font-family:'Nunito',Arial;font-size:13px;font-weight:800;color:var(--text1);text-align:left;transition:background .15s;" onmouseenter="this.style.background='#F5F0FF'" onmouseleave="this.style.background='none'">🖼️ Chọn ảnh từ máy</button>
                 <button onclick="openCameraCapture();toggleImgMenu()" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;background:none;cursor:pointer;border-radius:10px;font-family:'Nunito',Arial;font-size:13px;font-weight:800;color:var(--text1);text-align:left;transition:background .15s;" onmouseenter="this.style.background='#F0FFF4'" onmouseleave="this.style.background='none'">📸 Chụp ảnh từ camera</button>
               </div>
             </div>
-            <textarea class="input-box" id="user-input"
+            <textarea class="input-box" id="user-input" aria-label="Nhập câu hỏi cho SmartBuddy"
               placeholder="✏️ Nhập bài toán, câu hỏi, hoặc gửi ảnh bài em cần giải..."
               rows="1" onkeydown="handleKey(event)" oninput="autoH(this)"></textarea>
-            <button class="send-btn" id="send-btn" onclick="send()" title="Gửi">➤</button>
+            <button class="send-btn" id="send-btn" onclick="send()" title="Gửi" aria-label="Gửi câu hỏi">➤</button>
           </div>
           <!-- Camera capture modal -->
           <div id="camera-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:none;align-items:center;justify-content:center;">

@@ -36,6 +36,12 @@ async def serve_parent():
     return _serve("parent.html")
 
 
+@router.get("/robots.txt", include_in_schema=False)
+async def robots():
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse("User-agent: *\nAllow: /\n")
+
+
 @router.get("/health")
 async def health():
     docs = len(runtime.rag_engine._documents) if runtime.rag_engine else 0
