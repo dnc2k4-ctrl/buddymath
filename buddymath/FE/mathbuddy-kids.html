@@ -1530,6 +1530,10 @@ body:not(.role-parent) #sb-mascot-banner { margin:8px; border-radius:18px; box-s
 @media (max-width:430px) {
   #user-display-name { display:none; }
   .user-avatar-pill { padding:4px 8px 4px 4px; gap:5px; }
+  /* Cụm phải gọn lại để nút "Đăng nhập" + điểm không tràn ở iPhone XR/Plus, Pixel (401–428px) */
+  .header-right { gap:6px; }
+  .score-unit { display:none; }                       /* chỉ còn "⭐ 0" */
+  .auth-header-btn { font-size:12px; padding:5px 9px; gap:4px; }
 }
 
 /* ≤ 400px: màn rất nhỏ */
@@ -1547,6 +1551,14 @@ body:not(.role-parent) #sb-mascot-banner { margin:8px; border-radius:18px; box-s
   .logo > div:last-child > div:first-child { font-size:14px; }
   .score-pill { padding:3px 7px; font-size:10.5px; }
   .score-unit { display:none; }   /* chỉ còn "⭐ 0" để tiết kiệm chỗ */
+  .auth-header-btn { font-size:11.5px; padding:5px 9px; }
+  .auth-header-btn span:first-child { display:none; }  /* ẩn icon 👤, chỉ còn chữ "Đăng nhập" */
+}
+
+/* ≤ 344px: máy siêu nhỏ — ẩn pill điểm ở header để cụm phải lọt khung
+   (điểm vẫn xem được ở "TIẾN TRÌNH HÔM NAY" trong menu) */
+@media (max-width:344px) {
+  .score-pill { display:none !important; }
 }
 
 /* Mobile: chữ nút điều hướng/chọn lớp nhỏ lại để KHÔNG bị xuống dòng */
@@ -4773,10 +4785,10 @@ function newChat() {
     <div style="max-width: 600px; width: 100%; text-align: center;">
       <!-- Logo & Title -->
       <div id="buddy-sprite-welcome" class="buddy-sprite pose-4" style="width:110px;height:120px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#1FCBA6,#13B392);box-shadow:0 12px 0 rgba(27,184,147,.3);animation:mascotBob 2.5s ease-in-out infinite;"></div>
-      <div style="font-family:'Baloo 2',cursive;font-size:34px;color:var(--text1);margin-bottom:8px;">
+      <div style="font-family:'Baloo 2',cursive;font-size:clamp(22px,6vw,34px);color:var(--text1);margin-bottom:8px;word-break:break-word;">
         Xin chào! Mình là <span style="color:var(--teal);">SmartBuddy</span>! ⭐
       </div>
-      <div style="font-size:15px;color:var(--text2);font-weight:600;line-height:1.75;margin-bottom:28px;">
+      <div style="font-size:clamp(13px,3.6vw,15px);color:var(--text2);font-weight:600;line-height:1.75;margin-bottom:28px;">
         Mình là <strong style="color:var(--purple);">gia sư AI thân thiện</strong> dành cho các em từ lớp 3 đến lớp 9.<br>
         Mình sẽ <strong style="color:var(--orange);">không làm bài thay</strong> — mình dạy em cách <strong style="color:var(--teal);">TỰ TƯ DUY</strong> và giải được bài! 🚀
       </div>
@@ -4787,7 +4799,7 @@ function newChat() {
         Hỏi ngay với SmartBuddy!
       </button>
 
-      <div style="font-size:11px;color:var(--text3);margin-top:16px;font-weight:600;line-height:1.6;">
+      <div style="font-size:clamp(10px,2.9vw,11px);color:var(--text3);margin-top:16px;font-weight:600;line-height:1.6;">
         📌 SmartBuddy dành cho học sinh từ lớp 3 đến lớp 9 &nbsp;•&nbsp; Chương trình Bộ GD&ĐT Việt Nam<br>
         💪 Cam kết: Buddy sẽ hướng dẫn em TỰ GIẢI — không làm bài thay!
       </div>
