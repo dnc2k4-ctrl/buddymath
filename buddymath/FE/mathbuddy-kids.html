@@ -1534,6 +1534,18 @@ body:not(.role-parent) #sb-mascot-banner { margin:8px; border-radius:18px; box-s
   .score-unit { display:none; }   /* chỉ còn "⭐ 0" để tiết kiệm chỗ */
 }
 
+/* Mobile: chữ nút điều hướng/chọn lớp nhỏ lại để KHÔNG bị xuống dòng */
+@media (max-width:760px) {
+  body:not(.role-parent) .sidebar .topic-btn { font-size:13.5px; }
+  body:not(.role-parent) .sidebar .topic-btn span:first-child { font-size:17px; }
+  #intro-welcome-screen .mh-grade-tab,
+  #intro-welcome-screen button[onclick^="quickStartGrade"] { font-size:12px !important; min-width:74px !important; padding:10px 6px !important; }
+}
+@media (max-width:400px) {
+  .sidebar .topic-btn { font-size:13px; }
+  #intro-welcome-screen button[onclick^="quickStartGrade"] { font-size:11px !important; min-width:62px !important; }
+}
+
 /* ════════════════════════════════════════════════════════════
    🛠️ BỎ THANH CUỘN NGANG + NÚT PHỤ HUYNH TO HƠN
 ════════════════════════════════════════════════════════════ */
@@ -1898,7 +1910,7 @@ body.role-parent .pstat-lbl { font-size:12.5px; }
       <button class="topic-btn" data-color="buddy" data-topic="parent-home" onclick="selectTopic(this);loadParentDashboard('month')">
         <span>📊</span> Báo cáo tháng
       </button>
-      <button class="topic-btn" data-color="buddy" data-topic="parent-advisor" onclick="selectTopic(this)">
+      <button class="topic-btn" data-color="buddy" data-topic="parent-advisor" onclick="selectTopic(this);initAdvisorGreeting()">
         <span>🧭</span> Tư vấn giáo dục
       </button>
     </div>
@@ -2263,22 +2275,8 @@ body.role-parent .pstat-lbl { font-size:12.5px; }
           <div class="welcome-wrap" id="welcome-screen">
             <div class="welcome-box">
               <div class="robot-face">🤖</div>
-              <div class="welcome-title">Xin chào! Mình là <span>MathBuddy</span>!</div>
-              <p class="welcome-sub">Mình là bạn gia sư toán AI siêu vui của em! Mình sẽ <strong>hướng dẫn em tư duy</strong> từng bước — không làm bài thay nhé! 🚀</p>
-              <div class="example-grid">
-                <button class="example-card" onclick="tryEx('Hai góc đối đỉnh và đường thẳng song song là gì?')">
-                  <span class="ec-icon">📐</span><span class="ec-text">Góc đối đỉnh -  đường thẳng song song</span><span class="ec-sub">Hình học lớp 7</span>
-                </button>
-                <button class="example-card" onclick="tryEx('Hãy giải thích giúp em về lũy thừa và ước bội.')">
-                  <span class="ec-icon">🍕</span><span class="ec-text">Lũy thừa và ước bội</span><span class="ec-sub">Đại số lớp 6</span>
-                </button>
-                <button class="example-card" onclick="tryEx('Tỉ số lượng giác của góc nhọn là gì?')">
-                  <span class="ec-icon">🔍</span><span class="ec-text">Tỉ số lượng giác của góc nhọn</span><span class="ec-sub"> Hình học lớp 9</span>
-                </button>
-                <button class="example-card" onclick="tryEx('Bài toán: Phân tích đa thức thành nhân tử là gì?')">
-                  <span class="ec-icon">🛍️</span><span class="ec-text">Phân tích đa thức thành nhân tử</span><span class="ec-sub">Đại số lớp 8</span>
-                </button>
-              </div>
+              <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span> 👋</div>
+              <p class="welcome-sub">Hôm nay em muốn Buddy giúp gì nào? 😊<br>Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <strong>nhập câu hỏi của em</strong> bên dưới — Buddy sẽ hướng dẫn em <strong>tự nghĩ ra đáp án</strong> nhé! 🚀</p>
             </div>
           </div>
         </div>
@@ -4682,22 +4680,8 @@ function newChat() {
   wrap.innerHTML=`<div class="welcome-wrap" id="welcome-screen" style="padding-top:44px;">
     <div class="welcome-box">
       <div class="robot-face">🤖</div>
-      <div class="welcome-title">Xin chào! Mình là <span>MathBuddy</span>!</div>
-      <p class="welcome-sub">Mình là bạn gia sư toán AI siêu vui của em! Mình sẽ <strong>hướng dẫn em tư duy</strong> từng bước — không làm bài thay nhé! 🚀</p>
-      <div class="example-grid">
-        <button class="example-card" onclick="tryEx('Em không hiểu cách tính diện tích hình chữ nhật. Bài là: chiều dài 8cm, chiều rộng 5cm')">
-          <span class="ec-icon">📐</span><span class="ec-text">Hình chữ nhật</span><span class="ec-sub">Diện tích, chu vi</span>
-        </button>
-        <button class="example-card" onclick="tryEx('Bài toán phân số: 3/4 + 2/3 = ? Em không biết cộng phân số khác mẫu')">
-          <span class="ec-icon">🍕</span><span class="ec-text">Phân số</span><span class="ec-sub">Cộng trừ phân số</span>
-        </button>
-        <button class="example-card" onclick="tryEx('Bài tìm x: 2x + 5 = 17. Em không biết bắt đầu từ đâu')">
-          <span class="ec-icon">🔍</span><span class="ec-text">Tìm x</span><span class="ec-sub">Phương trình đơn giản</span>
-        </button>
-        <button class="example-card" onclick="tryEx('Bài toán: Cửa hàng giảm giá 20% áo giá 250.000đ. Hỏi trả bao nhiêu tiền?')">
-          <span class="ec-icon">🛍️</span><span class="ec-text">Bài thực tế</span><span class="ec-sub">Phần trăm, tỉ lệ</span>
-        </button>
-      </div>
+      <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span> 👋</div>
+      <p class="welcome-sub">Hôm nay em muốn Buddy giúp gì nào? 😊<br>Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <strong>nhập câu hỏi của em</strong> bên dưới — Buddy sẽ hướng dẫn em <strong>tự nghĩ ra đáp án</strong> nhé! 🚀</p>
     </div>
   </div>`;
   document.getElementById('user-input').value='';
@@ -4730,30 +4714,6 @@ function newChat() {
       <div style="font-size:15px;color:var(--text2);font-weight:600;line-height:1.75;margin-bottom:28px;">
         Mình là <strong style="color:var(--purple);">gia sư AI thân thiện</strong> dành cho các em từ lớp 3 đến lớp 9.<br>
         Mình sẽ <strong style="color:var(--orange);">không làm bài thay</strong> — mình dạy em cách <strong style="color:var(--teal);">TỰ TƯ DUY</strong> và giải được bài! 🚀
-      </div>
-
-      <!-- Feature cards -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;text-align:left;">
-        <div style="background:white;border-radius:18px;padding:16px;border:2.5px solid #FFE0B0;box-shadow:0 4px 0 rgba(0,0,0,0.07);">
-          <div style="font-size:28px;margin-bottom:8px;">💡</div>
-          <div style="font-size:13px;font-weight:900;color:var(--orange);margin-bottom:4px;">Gợi ý 3 cấp độ</div>
-          <div style="font-size:12px;color:var(--text2);font-weight:600;line-height:1.5;">Nhẹ → Trung bình → Mạnh. Em tự chọn mức trợ giúp phù hợp!</div>
-        </div>
-        <div style="background:white;border-radius:18px;padding:16px;border:2.5px solid #D0F0DA;box-shadow:0 4px 0 rgba(0,0,0,0.07);">
-          <div style="font-size:28px;margin-bottom:8px;">🪜</div>
-          <div style="font-size:13px;font-weight:900;color:var(--green);margin-bottom:4px;">Học từng bước nhỏ</div>
-          <div style="font-size:12px;color:var(--text2);font-weight:600;line-height:1.5;">Buddy chia bài thành các bước nhỏ, hướng dẫn lần lượt từng bước.</div>
-        </div>
-        <div style="background:white;border-radius:18px;padding:16px;border:2.5px solid #E0D8FF;box-shadow:0 4px 0 rgba(0,0,0,0.07);">
-          <div style="font-size:28px;margin-bottom:8px;">🎯</div>
-          <div style="font-size:13px;font-weight:900;color:var(--purple);margin-bottom:4px;">Đúng chương trình BGD</div>
-          <div style="font-size:12px;color:var(--text2);font-weight:600;line-height:1.5;">Nội dung map đúng SGK lớp 3,4,5,6,7 của Bộ Giáo dục Việt Nam.</div>
-        </div>
-        <div style="background:white;border-radius:18px;padding:16px;border:2.5px solid #FFE0F5;box-shadow:0 4px 0 rgba(0,0,0,0.07);">
-          <div style="font-size:28px;margin-bottom:8px;">🔍</div>
-          <div style="font-size:13px;font-weight:900;color:var(--pink);margin-bottom:4px;">Kích hoạt tư duy</div>
-          <div style="font-size:12px;color:var(--text2);font-weight:600;line-height:1.5;">Buddy đặt câu hỏi để em tự khám phá — không đưa đáp án thẳng!</div>
-        </div>
       </div>
 
       <!-- Grade selector -->
@@ -7298,6 +7258,20 @@ function pickAdvisorAge(age, btn) {
       <span class="at-ic">${t.ic}</span>
       <div><div class="at-tt">${t.tt}</div><div class="at-tx">${t.tx}</div></div>
     </div>`).join('');
+}
+
+// AI tư vấn CHỦ ĐỘNG chào hỏi phụ huynh khi mở tab (chỉ 1 lần mỗi phiên mở)
+let _advisorGreeted = false;
+function initAdvisorGreeting() {
+  const msgs = document.getElementById('advisor-messages');
+  if (!msgs || _advisorGreeted) return;
+  _advisorGreeted = true;
+  msgs.style.display = 'block';
+  addMsgToEl(msgs, 'ai', fmt(
+    'Chào anh/chị! 👋 Em là **trợ lý tư vấn giáo dục** của SmartBuddy.\n\n' +
+    'Anh/chị đang băn khoăn điều gì khi đồng hành cùng con — về **học tập**, **tâm lý lứa tuổi**, hay **thói quen sinh hoạt** của con ạ?\n\n' +
+    'Anh/chị hãy chọn **độ tuổi của con** ở trên, rồi đặt câu hỏi — em sẽ tư vấn cụ thể nhất có thể. 😊'
+  ));
 }
 
 function getAdvisorSystem(age) {
