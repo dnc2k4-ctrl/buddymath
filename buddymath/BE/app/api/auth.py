@@ -29,7 +29,7 @@ async def register(req: RegisterReq, db: Session = Depends(get_db)):
         username=req.username.strip(),
         password_hash=hash_password(req.password),
         role=role,
-        grade=req.grade if role == "student" else 0,
+        grade=(req.grade or 5) if role == "student" else 0,
     )
     db.add(user)
     db.commit()

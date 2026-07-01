@@ -405,6 +405,15 @@ body {
 .solution-steps .sol-step { font-size:13px; color:var(--text1); font-weight:700; padding:4px 0; border-bottom:1px dashed #c3efd0; line-height:1.6; }
 .solution-steps .sol-step:last-child { border-bottom:none; }
 
+/* Tô nền cả khối câu hỏi sau khi AI chấm: đúng = xanh, sai = đỏ */
+.test-ex-item { transition: background .3s ease, border-color .3s ease; }
+.test-ex-item.graded-correct { background:#EAFBF1 !important; border-color:#2ED573 !important; box-shadow:inset 0 0 0 2px rgba(46,213,115,.25); }
+.test-ex-item.graded-wrong   { background:#FFF0F0 !important; border-color:#FF4757 !important; box-shadow:inset 0 0 0 2px rgba(255,71,87,.25); }
+/* Với câu SAI, đổi hộp lời giải sang tông đỏ để phân biệt rõ */
+.test-ex-item.graded-wrong .solution-steps { background:linear-gradient(135deg,#FFF0F0,#FFE4E4); border-left-color:#FF4757; }
+.test-ex-item.graded-wrong .solution-steps .sol-title { color:#c0392b; }
+.test-ex-item.graded-wrong .solution-steps .sol-step { border-bottom-color:#F2C4C4; }
+
 /* Difficulty selector */
 .difficulty-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:2px; }
 .diff-btn {
@@ -2855,9 +2864,12 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
           💡 <strong style="color:var(--teal);">Mẹo:</strong> Bắt đầu bằng <em>"Em không hiểu tại sao..."</em> hoặc <em>"Em thắc mắc rằng..."</em><br>
           Bước này giúp em xác định rõ điều mình chưa hiểu trước khi hỏi!
         </div>
-        <button onclick="qcToStep2()" class="qc-action-btn" style="background:linear-gradient(135deg,#1FCBA6,#13B392);color:white;box-shadow:0 5px 0 rgba(27,184,147,.4);">
-          Tiếp theo: Viết câu hỏi →
-        </button>
+        <div style="display:flex;gap:8px;">
+          <button onclick="qcGoTo(0)" class="qc-action-btn" style="flex:0 0 auto;background:white;border:2px solid #DDD;color:var(--text2);box-shadow:0 5px 0 rgba(0,0,0,.06);">← Quay lại</button>
+          <button onclick="qcToStep2()" class="qc-action-btn" style="flex:1;background:linear-gradient(135deg,#1FCBA6,#13B392);color:white;box-shadow:0 5px 0 rgba(27,184,147,.4);">
+            Tiếp theo: Viết câu hỏi →
+          </button>
+        </div>
       </div>
 
       <!-- ══ SCREEN 2: VIẾT CÂU HỎI + ĐÁNH GIÁ ══ -->
@@ -2904,6 +2916,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         </div>
         <!-- Buttons -->
         <div style="display:flex;gap:8px;">
+          <button onclick="qcGoTo(1)" class="qc-action-btn" style="flex:0 0 auto;background:white;border:2px solid #DDD;color:var(--text2);box-shadow:0 5px 0 rgba(0,0,0,.06);">← Quay lại</button>
           <button id="qc-eval-btn" onclick="qcEvaluate()" class="qc-action-btn" style="flex:1;background:linear-gradient(135deg,#1E90FF,#A55EEA);color:white;box-shadow:0 5px 0 rgba(30,144,255,.35);">Buddy đánh giá câu hỏi 🔍</button>
           <button id="qc-next-btn" onclick="qcToStep3()" class="qc-action-btn" style="flex:1;display:none;background:linear-gradient(135deg,#1FCBA6,#13B392);color:white;box-shadow:0 5px 0 rgba(27,184,147,.4);">Xem kết quả ✨</button>
         </div>
@@ -4303,20 +4316,24 @@ Trả về JSON (không thêm text ngoài JSON):
     (grading.results||[]).forEach((r,i)=>{
       const inp = document.getElementById(`kt-ans-${grade}-${i}`);
       const solEl = document.getElementById(`kt-sol-${grade}-${i}`);
+      const itemEl = document.getElementById(`kt-item-${grade}-${i}`);
       if(!inp) return;
       inp.readOnly = true;
       if(r.dung) {
         correctCount++;
         inp.classList.add('correct');
+        if(itemEl) itemEl.classList.add('graded-correct');   // tô nền XANH cả câu
         const tag = document.createElement('div');
         tag.innerHTML = '<span class="answer-correct-tag">✅ Đúng rồi! Giỏi lắm!</span>';
         inp.parentNode.insertBefore(tag, inp.nextSibling);
+        if(solEl) solEl.classList.add('show');   // giải thích lại vì sao đúng
       } else {
         inp.classList.add('wrong');
+        if(itemEl) itemEl.classList.add('graded-wrong');     // tô nền ĐỎ cả câu
         const tag = document.createElement('div');
-        tag.innerHTML = `<span class="answer-wrong-tag">❌ Chưa đúng — Đáp án: ${answers[i].dap_an}</span>`;
+        tag.innerHTML = `<span class="answer-wrong-tag">❌ Chưa đúng — Đáp án đúng: ${answers[i].dap_an}</span>`;
         inp.parentNode.insertBefore(tag, inp.nextSibling);
-        if(solEl) solEl.classList.add('show');
+        if(solEl) solEl.classList.add('show');   // hiện lời giải để em sửa
       }
     });
 
@@ -6888,7 +6905,7 @@ async function doModalRegister() {
   try {
     const res = await fetch(`${CL_API}/auth/register`, {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ username: name, email, password: pass, role: _modalRole, grade: _modalRole==='student'?_modalGrade:null })
+      body: JSON.stringify({ username: name, email, password: pass, role: _modalRole, grade: _modalRole==='student'?_modalGrade:0 })
     });
     if (res.ok) {
       const data = await res.json();

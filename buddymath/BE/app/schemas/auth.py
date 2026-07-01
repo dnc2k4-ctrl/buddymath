@@ -1,6 +1,8 @@
 """Pydantic schemas cho auth & quản lý phụ huynh."""
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -9,7 +11,7 @@ class RegisterReq(BaseModel):
     username: str
     password: str
     role:     str = "student"
-    grade:    int = 5
+    grade:    Optional[int] = 5   # cho phép null (vd phụ huynh không có lớp)
 
 
 class LoginReq(BaseModel):
