@@ -2926,6 +2926,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <button onclick="qcRestart()" class="qc-action-btn" style="background:white;color:var(--teal);border:2.5px solid var(--teal);font-size:13px;">
           🔄 Thử với thắc mắc khác
         </button>
+        <div id="qc-answer" style="display:none;margin-top:6px;"></div>
       </div>
 
     </div><!-- /panel-prompt-playground -->
@@ -5516,7 +5517,7 @@ function _tutorBase(seed) {
     '\nNhắc lại: chỉ dẫn dắt bằng câu hỏi, mỗi lượt một ý nhỏ, KHÔNG giảng hết, KHÔNG đưa đáp án/lời giải hoàn chỉnh.';
 }
 
-function mountInlineTutor(containerId, seed, openingMsg) {
+function mountInlineTutor(containerId, seed, openingMsg, fullSystem) {
   const c = document.getElementById(containerId);
   if (!c) return;
   const mId = containerId + '-msgs', iId = containerId + '-input', fId = containerId + '-file';
@@ -5533,7 +5534,7 @@ function mountInlineTutor(containerId, seed, openingMsg) {
         <button onclick="sendInlineTutor('${containerId}')" style="width:42px;height:42px;border-radius:12px;border:none;background:linear-gradient(135deg,#1FCBA6,#3742FA);color:white;cursor:pointer;font-size:18px;flex-shrink:0;">➤</button>
       </div>
     </div>`;
-  _inlineTutors[containerId] = { history: [], system: _tutorBase(seed), img: null, mime: null };
+  _inlineTutors[containerId] = { history: [], system: fullSystem || _tutorBase(seed), img: null, mime: null };
   c.scrollIntoView({ behavior:'smooth', block:'nearest' });
   if (openingMsg) sendInlineTutor(containerId, openingMsg);
 }
@@ -6390,13 +6391,14 @@ function qcToStep3() {
 }
 
 function qcAskBuddy() {
+  // ĐÓNG VÒNG LẶP: gửi câu hỏi đã cải thiện → hiện câu trả lời chất lượng NGAY tại đây,
+  // để HS thấy tận mắt "câu hỏi tốt → câu trả lời tốt".
   const improved = (_qcLastResult && _qcLastResult.cau_hoi_tot_hon) ? _qcLastResult.cau_hoi_tot_hon : _qcQuestion;
-  const buddyBtn = document.querySelector('.topic-btn[data-topic="buddy"]');
-  if (buddyBtn) buddyBtn.click();
-  setTimeout(() => {
-    const inp = document.getElementById('cl-input');
-    if (inp) { inp.value = improved; inp.dispatchEvent(new Event('input')); inp.focus(); }
-  }, 500);
+  if (!improved) return;
+  const sys = 'Bạn là trợ lý AI thân thiện cho học sinh lớp 3-9 Việt Nam. Đây là phần DEMO trong bài học "Tư duy đặt câu hỏi": mục tiêu cho học sinh thấy một câu hỏi TỐT sẽ nhận được câu trả lời chất lượng. Hãy trả lời câu hỏi sau thật RÕ RÀNG, có cấu trúc (gạch đầu dòng/bước), dễ hiểu, đúng trọng tâm và đầy đủ. Đây KHÔNG phải bài toán cần giấu đáp án — cứ trả lời hữu ích và trọn vẹn nhất.';
+  const c = document.getElementById('qc-answer');
+  if (c) c.style.display = 'block';
+  mountInlineTutor('qc-answer', '', improved, sys);
 }
 
 function qcRestart() {
