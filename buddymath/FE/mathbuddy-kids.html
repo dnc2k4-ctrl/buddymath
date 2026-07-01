@@ -1919,10 +1919,10 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     </button>
     <div class="subtopic-list" id="navgrp-math">
       <button class="topic-btn sub-btn" data-color="blue" data-topic="math-home" onclick="selectTopic(this)" style="color:#1065B5;">
-        <span>📚</span> Tài liệu SGK Toán
+        <span>📚</span> Học theo chủ đề
       </button>
       <button class="topic-btn sub-btn" data-color="buddy" data-topic="classroom" onclick="selectTopic(this)">
-        <span>🏫</span> Lớp học ảo
+        <span>🧑‍🏫</span> Phòng gỡ bài
       </button>
     </div>
 
@@ -2037,8 +2037,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
         <div style="width:52px;height:52px;background:linear-gradient(135deg,#1FCBA6,#13B392);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 0 rgba(46,196,160,.35);">📚</div>
         <div>
-          <div style="font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;color:var(--text1);">Tài liệu SGK Toán</div>
-          <div style="font-size:12px;color:var(--text2);font-weight:600;">Chọn lớp và chủ đề để bắt đầu học</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;color:var(--text1);">Học Toán theo chủ đề</div>
+          <div style="font-size:12px;color:var(--text2);font-weight:600;">Chọn lớp và chủ đề — Buddy dẫn em khám phá, không giải hộ</div>
         </div>
       </div>
 
@@ -2624,67 +2624,25 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <div class="topic-content-panel" id="panel-classroom" style="padding:0;overflow:hidden;background:var(--bg);">
       <!-- CLASSROOM HOME: group list -->
       <div id="classroom-home" style="width:100%;height:100%;overflow-y:auto;padding:24px;">
-        <div style="text-align:center;margin-bottom:24px;">
-          <div style="font-size:48px;margin-bottom:8px;">🏫</div>
-          <div style="font-family:'Baloo 2',cursive;font-size:26px;color:var(--text1);margin-bottom:6px;">Lớp học ảo</div>
-          <div style="font-size:13px;color:var(--text2);font-weight:600;">Chọn nhóm học để vào lớp cùng gia sư AI!</div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:560px;margin:0 auto;">
-          <div class="cl-group-card" onclick="openClassroomGroup('toan3','dai_so','Số học lớp 3')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#FF6EB4,#A55EEA);">🔢</div>
-            <div class="cl-group-name">Số học lớp 3</div>
+        <div style="max-width:640px;margin:0 auto;">
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="font-size:48px;margin-bottom:8px;">🧑‍🏫</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:26px;color:var(--text1);margin-bottom:6px;">Phòng gỡ bài cùng Buddy</div>
+            <div style="font-size:13px;color:var(--text2);font-weight:600;line-height:1.6;">Đưa bài em đang mắc — Buddy dẫn em <b>tự</b> tìm ra lời giải từng bước,<br><b>không giải hộ, không đưa đáp án luôn.</b></div>
           </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan3','hinh_hoc','Hình học lớp 3')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#A55EEA,#FF6EB4);">📐</div>
-            <div class="cl-group-name">Hình học lớp 3</div>
+          <div style="background:white;border-radius:18px;padding:18px;border:2.5px solid #E8E0FF;box-shadow:0 4px 0 rgba(0,0,0,.06);">
+            <label style="font-size:12px;font-weight:900;color:var(--text2);display:block;margin-bottom:8px;">✏️ Gõ đề bài em đang mắc:</label>
+            <textarea id="pgb-input" rows="4" placeholder="Ví dụ: Một hình chữ nhật có chiều dài 8cm, chu vi 28cm. Tính chiều rộng." style="width:100%;padding:12px 14px;border:2.5px solid #E0D8FF;border-radius:14px;font-family:'Nunito',Arial;font-size:14px;font-weight:700;color:var(--text1);resize:none;outline:none;box-sizing:border-box;"></textarea>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+              <button onclick="submitProblemGuide()" style="flex:1;min-width:190px;padding:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#1FCBA6,#3742FA);color:white;font-family:'Nunito',Arial;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 rgba(55,66,250,.3);">🚀 Nhờ Buddy dẫn từng bước</button>
+              <button onclick="goToBuddyWithPhoto()" style="padding:12px 16px;border:2px solid #E0E8F0;border-radius:14px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">📷 Có ảnh bài? Gửi ảnh</button>
+            </div>
+            <div style="font-size:11.5px;color:var(--text3);font-weight:600;margin-top:12px;line-height:1.7;">
+              💡 Buddy sẽ hỏi lại: <i>đề cho gì? hỏi gì? dùng cách nào?</i> và <b>phản biện</b> khi em làm sai — để em tự nghĩ ra và nhớ lâu hơn.
+            </div>
           </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan4','dai_so','Số học lớp 4')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#A55EEA,#3742FA);">🔢</div>
-            <div class="cl-group-name">Số học lớp 4</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan4','hinh_hoc','Hình học lớp 4')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#3742FA,#A55EEA);">📐</div>
-            <div class="cl-group-name">Hình học lớp 4</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan5','dai_so','Số học lớp 5')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#1E90FF,#2ED573);">🔢</div>
-            <div class="cl-group-name">Số học lớp 5</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan5','hinh_hoc','Hình học lớp 5')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#2ED573,#1E90FF);">📐</div>
-            <div class="cl-group-name">Hình học lớp 5</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan6','dai_so','Đại số lớp 6')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#FF6B35,#FF6B6B);">🔣</div>
-            <div class="cl-group-name">Đại số lớp 6</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan6','hinh_hoc','Hình học lớp 6')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#FF6B6B,#c0392b);">📐</div>
-            <div class="cl-group-name">Hình học lớp 6</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan7','dai_so','Đại số lớp 7')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#FF9A3C,#FF6B35);">🔣</div>
-            <div class="cl-group-name">Đại số lớp 7</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan7','hinh_hoc','Hình học lớp 7')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#FFCB45,#FF9A3C);">📐</div>
-            <div class="cl-group-name">Hình học lớp 7</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan8','dai_so','Đại số lớp 8')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#11998E,#38EF7D);">🔣</div>
-            <div class="cl-group-name">Đại số lớp 8</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan8','hinh_hoc','Hình học lớp 8')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#38EF7D,#11998E);">📐</div>
-            <div class="cl-group-name">Hình học lớp 8</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan9','dai_so','Đại số lớp 9')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#4776E6,#8E54E9);">🔣</div>
-            <div class="cl-group-name">Đại số lớp 9</div>
-          </div>
-          <div class="cl-group-card" onclick="openClassroomGroup('toan9','hinh_hoc','Hình học lớp 9')">
-            <div class="cl-group-icon" style="background:linear-gradient(135deg,#8E54E9,#4776E6);">📐</div>
-            <div class="cl-group-name">Hình học lớp 9</div>
+          <div style="margin-top:16px;background:#F0FFF8;border-radius:14px;padding:14px 16px;border-left:4px solid var(--teal);font-size:12.5px;color:var(--text2);font-weight:600;line-height:1.7;">
+            🎯 <b>Mẹo dùng hiệu quả:</b> gõ càng rõ đề càng tốt. Sau đó cứ thử làm từng bước theo câu hỏi của Buddy — sai cũng không sao, Buddy sẽ gợi ý để em tự sửa!
           </div>
         </div>
       </div>
@@ -3359,9 +3317,10 @@ function buildGradePanel(grade, topicSlug, panelKey) {
   const overviewKey = grade + '_' + topicSlug;
   const defaultOverview = overviewMap[overviewKey] || `Các chủ đề ${topicLabel} ${gradeLabel} theo chương trình SGK Việt Nam.`;
 
-  // For hinh_hoc: load file list from backend; for dai_so: use static topics
-  const fallbackPillsHtml = topicsArr.map(t =>
-    `<span class="topic-pill" onclick="openTopicDetail('${grade}','${topicSlug}','${t.name}','${t.name}',this)">${t.icon} ${t.name}</span>`
+  // KHÔNG dùng SGK/RAG nữa — liệt kê chủ đề (từ TOPICS_BY_GRADE), mỗi chủ đề
+  // mở một phiên gia sư Socratic (Buddy dẫn khám phá, không giải hộ).
+  const topicBtns = topicsArr.map(t =>
+    `<button class="topic-pill" onclick="startTopicLesson('${grade}','${t.name.replace(/'/g,"\\'")}')">${t.icon} ${t.name}</button>`
   ).join('');
 
   panel.innerHTML = _MATH_BACK_BTN + `
@@ -3369,33 +3328,20 @@ function buildGradePanel(grade, topicSlug, panelKey) {
       <div class="grade-icon" style="background:${gradeBg};">${icon}</div>
       <div>
         <div class="grade-title">${topicLabel} – ${gradeLabel}</div>
-        <div class="grade-desc" id="gp-desc-${panelKey}">Đang tải từ SGK…</div>
+        <div class="grade-desc">Chọn một chủ đề — Buddy sẽ dẫn em khám phá từng bước, KHÔNG giải hộ nhé!</div>
       </div>
-    </div>
-    <div class="grade-action-row">
-      <button class="grade-action-btn btn-buddy" onclick="goToBuddy('Hãy hỏi em về ${topicLabel} ${gradeLabel} và giúp em ôn tập')">
-        🤖 Hỏi Buddy thêm về chủ đề
-      </button>
-      <button class="grade-action-btn" id="gp-reload-btn-${panelKey}"
-        style="background:#eef4ff;border:2px solid #c8d8ff;color:#3742FA;font-size:11px;font-weight:800;border-radius:10px;padding:6px 12px;cursor:pointer;"
-        onclick="reloadRagSynthesis('${grade}','${topicSlug}','${panelKey}')">
-        🔄 Tải lại từ SGK
-      </button>
     </div>
     <div class="overview-section">
-      <div class="overview-title">📖 Tổng quan – ${topicLabel} ${gradeLabel}</div>
-      <div class="overview-desc" id="gp-overview-${panelKey}">${defaultOverview}</div>
-      <div class="topics-list-title" id="gp-topics-title-${panelKey}">📋 Các chủ đề chính</div>
-      <div class="topics-pills" id="gp-pills-${panelKey}">
-        <span style="color:var(--text3);font-size:12px;font-weight:700;">⏳ Đang tải danh sách chủ đề...</span>
-      </div>
-      <div id="gp-sgk-topics-${panelKey}"></div>
+      <div class="overview-desc">${defaultOverview}</div>
+      <div class="topics-list-title">📋 Chọn chủ đề để học cùng Buddy</div>
+      <div class="topics-pills">${topicBtns}</div>
     </div>
-    <div id="tdv-${panelKey}" class="topic-detail-view"></div>
+    <div style="margin-top:14px;">
+      <button class="grade-action-btn btn-buddy" onclick="goToBuddy('Em muốn ôn lại ${topicLabel} ${gradeLabel}, Buddy dẫn em nhé')">
+        🤖 Hoặc hỏi Buddy điều em đang thắc mắc
+      </button>
+    </div>
   `;
-
-  // Async: load file list from backend to build dynamic topic pills
-  loadTopicFilesForPanel(grade, topicSlug, panelKey, gradeLabel, topicLabel, topicsArr);
 }
 
 // ── Load file list từ backend → tạo topic pills động ──────────
@@ -4797,6 +4743,7 @@ function goToBuddy(question) {
 
 function newChat() {
   chatHistory=[]; done=0; score=0;
+  _mathSeed='';   // reset ngữ cảnh phiên Toán
   // Reset frustration
   frustrationLevel=0; frustrationDismissed=false;
   dismissFrustration();
@@ -5536,8 +5483,65 @@ function getCurriculumBadgeHtml(grade) {
 // ════════════════════════════════════════════════════════════
 //  5. SOCRATIC TUTOR CHAT
 // ════════════════════════════════════════════════════════════
+// Ngữ cảnh phiên học Toán (chủ đề / bài đang gỡ). Được nối vào system prompt
+// để engine Socratic biết đang dẫn cái gì — nhưng luật "không giải hộ" giữ nguyên.
+let _mathSeed = '';
+
 function getSocraticSystem() {
-  return getSystem();
+  let s = getSystem();
+  if (_mathSeed) {
+    s += '\n\n════ NGỮ CẢNH PHIÊN HỌC HIỆN TẠI (BẮT BUỘC TUÂN THEO) ════\n' + _mathSeed +
+         '\nNhắc lại: chỉ dẫn dắt bằng câu hỏi, mỗi lượt một ý nhỏ, KHÔNG giảng hết, KHÔNG đưa đáp án/lời giải hoàn chỉnh.';
+  }
+  return s;
+}
+
+// ── Vào phiên "Học theo chủ đề": Buddy dẫn khám phá 1 chủ đề Toán ──
+function startTopicLesson(grade, topicName) {
+  const gLabel = (typeof GRADE_LABEL !== 'undefined' && GRADE_LABEL[grade]) ? GRADE_LABEL[grade] : grade;
+  const buddyBtn = document.querySelector('.topic-btn[data-topic="buddy"]');
+  if (buddyBtn) selectTopic(buddyBtn);
+  newChat();
+  _mathSeed = `Học sinh ${gLabel} muốn HỌC chủ đề: "${topicName}". Hãy đóng vai gia sư dẫn dắt em KHÁM PHÁ chủ đề này theo phương pháp Socratic: mở đầu bằng một lời chào ngắn + một câu hỏi gợi mở thật gần gũi để em tự suy nghĩ; mỗi lượt chỉ một ý nhỏ; luôn hỏi lại; tuyệt đối không giảng hết một lúc và không đưa đáp án.`;
+  setTimeout(() => {
+    const inp = document.getElementById('user-input');
+    if (inp) { inp.value = 'Em muốn học chủ đề: ' + topicName; }
+    if (typeof send === 'function') send();
+  }, 130);
+}
+
+// ── Vào phiên "Phòng gỡ bài": Buddy dẫn từng bước một bài cụ thể ──
+function startProblemGuide(text) {
+  const problem = (text || '').trim();
+  if (!problem) return;
+  const buddyBtn = document.querySelector('.topic-btn[data-topic="buddy"]');
+  if (buddyBtn) selectTopic(buddyBtn);
+  newChat();
+  _mathSeed = `Học sinh đang MẮC bài toán sau và cần được dẫn TỪNG BƯỚC (không giải hộ, không đưa đáp án): """${problem}""". Hãy bắt đầu bằng cách hỏi em: đề cho biết những gì và yêu cầu tìm gì? Chỉ đi tiếp khi em đã trả lời. Khi em làm sai một bước, đừng sửa hộ — hãy hỏi ngược để em tự phát hiện.`;
+  setTimeout(() => {
+    const inp = document.getElementById('user-input');
+    if (inp) { inp.value = problem; }
+    if (typeof send === 'function') send();
+  }, 130);
+}
+
+// Nút "Nhờ Buddy dẫn" trong Phòng gỡ bài
+function submitProblemGuide() {
+  const t = (document.getElementById('pgb-input') || {}).value || '';
+  if (!t.trim()) { if (typeof showAuthToast === 'function') showAuthToast('Em hãy gõ đề bài trước nhé!', '#FF6B8A'); return; }
+  startProblemGuide(t);
+}
+
+// Nút "Gửi ảnh bài" — vào khung chat Buddy (đã có đính kèm ảnh), khung Socratic
+function goToBuddyWithPhoto() {
+  const buddyBtn = document.querySelector('.topic-btn[data-topic="buddy"]');
+  if (buddyBtn) selectTopic(buddyBtn);
+  newChat();
+  _mathSeed = 'Học sinh sắp GỬI ẢNH một bài toán đang mắc. Khi nhận ảnh: KHÔNG giải hộ/không đáp án — đọc kỹ đề rồi dẫn em từng bước bằng câu hỏi, bắt đầu bằng hỏi đề cho gì và hỏi gì.';
+  setTimeout(() => {
+    if (typeof showAuthToast === 'function') showAuthToast('📷 Bấm nút đính kèm cạnh ô chat để gửi ảnh bài nhé!', 'var(--teal)');
+    document.getElementById('user-input')?.focus();
+  }, 300);
 }
 
 // ════════════════════════════════════════════════════════════
