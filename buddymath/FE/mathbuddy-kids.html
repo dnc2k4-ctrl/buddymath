@@ -1922,7 +1922,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <span>📚</span> Học theo chủ đề
       </button>
       <button class="topic-btn sub-btn" data-color="buddy" data-topic="classroom" onclick="selectTopic(this)">
-        <span>🧑‍🏫</span> Phòng gỡ bài
+        <span>📝</span> Phòng kiểm tra
       </button>
     </div>
 
@@ -2624,26 +2624,24 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <div class="topic-content-panel" id="panel-classroom" style="padding:0;overflow:hidden;background:var(--bg);">
       <!-- CLASSROOM HOME: group list -->
       <div id="classroom-home" style="width:100%;height:100%;overflow-y:auto;padding:24px;">
-        <div style="max-width:640px;margin:0 auto;">
-          <div style="text-align:center;margin-bottom:20px;">
-            <div style="font-size:48px;margin-bottom:8px;">🧑‍🏫</div>
-            <div style="font-family:'Baloo 2',cursive;font-size:26px;color:var(--text1);margin-bottom:6px;">Phòng gỡ bài cùng Buddy</div>
-            <div style="font-size:13px;color:var(--text2);font-weight:600;line-height:1.6;">Đưa bài em đang mắc — Buddy dẫn em <b>tự</b> tìm ra lời giải từng bước,<br><b>không giải hộ, không đưa đáp án luôn.</b></div>
+        <div style="max-width:860px;margin:0 auto;">
+          <div style="text-align:center;margin-bottom:18px;">
+            <div style="font-size:44px;">📝</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:26px;color:var(--text1);">Phòng kiểm tra</div>
+            <div style="font-size:13px;color:var(--text2);font-weight:600;line-height:1.6;">Chọn lớp → chủ đề (Đại số / Hình học) → độ khó → thời gian → làm bài.<br>AI tự chấm: <b style="color:#2ED573;">đúng báo Đúng</b>, <b style="color:#FF4757;">sai báo Sai</b> kèm chữa bài chi tiết.</div>
           </div>
-          <div style="background:white;border-radius:18px;padding:18px;border:2.5px solid #E8E0FF;box-shadow:0 4px 0 rgba(0,0,0,.06);">
-            <label style="font-size:12px;font-weight:900;color:var(--text2);display:block;margin-bottom:8px;">✏️ Gõ đề bài em đang mắc:</label>
-            <textarea id="pgb-input" rows="4" placeholder="Ví dụ: Một hình chữ nhật có chiều dài 8cm, chu vi 28cm. Tính chiều rộng." style="width:100%;padding:12px 14px;border:2.5px solid #E0D8FF;border-radius:14px;font-family:'Nunito',Arial;font-size:14px;font-weight:700;color:var(--text1);resize:none;outline:none;box-sizing:border-box;"></textarea>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-              <button onclick="submitProblemGuide()" style="flex:1;min-width:190px;padding:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#1FCBA6,#3742FA);color:white;font-family:'Nunito',Arial;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 rgba(55,66,250,.3);">🚀 Nhờ Buddy dẫn từng bước</button>
-              <button onclick="goToBuddyWithPhoto()" style="padding:12px 16px;border:2px solid #E0E8F0;border-radius:14px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">📷 Có ảnh bài? Gửi ảnh</button>
-            </div>
-            <div style="font-size:11.5px;color:var(--text3);font-weight:600;margin-top:12px;line-height:1.7;">
-              💡 Buddy sẽ hỏi lại: <i>đề cho gì? hỏi gì? dùng cách nào?</i> và <b>phản biện</b> khi em làm sai — để em tự nghĩ ra và nhớ lâu hơn.
-            </div>
+          <div style="font-size:12px;font-weight:900;color:var(--text2);margin-bottom:8px;">1️⃣ Chọn lớp để bắt đầu:</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;">
+            <button class="pkt-grade-btn" onclick="openTestGrade('toan3',this)" style="padding:9px 16px;border:2px solid #E0E8F0;border-radius:20px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">Lớp 3</button>
+            <button class="pkt-grade-btn" onclick="openTestGrade('toan4',this)" style="padding:9px 16px;border:2px solid #E0E8F0;border-radius:20px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">Lớp 4</button>
+            <button class="pkt-grade-btn" onclick="openTestGrade('toan5',this)" style="padding:9px 16px;border:2px solid #E0E8F0;border-radius:20px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">Lớp 5</button>
+            <button class="pkt-grade-btn" onclick="openTestGrade('toan6',this)" style="padding:9px 16px;border:2px solid #E0E8F0;border-radius:20px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">Lớp 6</button>
+            <button class="pkt-grade-btn" onclick="openTestGrade('toan7',this)" style="padding:9px 16px;border:2px solid #E0E8F0;border-radius:20px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">Lớp 7</button>
+            <button class="pkt-grade-btn" onclick="openTestGrade('toan8',this)" style="padding:9px 16px;border:2px solid #E0E8F0;border-radius:20px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">Lớp 8</button>
+            <button class="pkt-grade-btn" onclick="openTestGrade('toan9',this)" style="padding:9px 16px;border:2px solid #E0E8F0;border-radius:20px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">Lớp 9</button>
           </div>
-          <div id="pgb-chat" style="display:none;"></div>
-          <div style="margin-top:16px;background:#F0FFF8;border-radius:14px;padding:14px 16px;border-left:4px solid var(--teal);font-size:12.5px;color:var(--text2);font-weight:600;line-height:1.7;">
-            🎯 <b>Mẹo dùng hiệu quả:</b> gõ càng rõ đề càng tốt. Sau đó cứ thử làm từng bước theo câu hỏi của Buddy — sai cũng không sao, Buddy sẽ gợi ý để em tự sửa!
+          <div id="pkt-panel">
+            <div style="text-align:center;padding:34px;color:var(--text3);font-weight:700;background:white;border-radius:16px;border:2px dashed #E0E8F0;">👆 Chọn một lớp ở trên để tạo đề kiểm tra nhé!</div>
           </div>
         </div>
       </div>
@@ -3282,6 +3280,20 @@ function backToMathHome() {
 
 // Nút "← Quay lại" dùng chung cho các panel Toán
 const _MATH_BACK_BTN = '<button onclick="backToMathHome()" style="margin-bottom:14px;padding:8px 16px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:\'Nunito\',Arial;font-size:13px;font-weight:900;cursor:pointer;">← Quay lại chọn bài</button>';
+
+// Phòng kiểm tra: chọn lớp → dựng panel kiểm tra ngay tại chỗ (tái dùng buildKiemtraPanel)
+function openTestGrade(grade, btn) {
+  document.querySelectorAll('.pkt-grade-btn').forEach(b => {
+    b.style.background = 'white'; b.style.color = 'var(--text2)'; b.style.borderColor = '#E0E8F0';
+  });
+  if (btn) { btn.style.background = 'linear-gradient(135deg,#1FCBA6,#13B392)'; btn.style.color = 'white'; btn.style.borderColor = 'transparent'; }
+  const c = document.getElementById('pkt-panel');
+  if (!c) return;
+  buildKiemtraPanel(grade, c);
+  // Ẩn nút "← Quay lại chọn bài" nội bộ (đã có thanh chọn lớp phía trên)
+  const first = c.querySelector('button');
+  if (first && /Quay lại/.test(first.textContent)) first.style.display = 'none';
+}
 
 // ── BUILD GRADE PANEL (Đại Số / Hình Học) — RAG-FIRST ──
 // 1. Render ngay với topics cứng (fallback)
