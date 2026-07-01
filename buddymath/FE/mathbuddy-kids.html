@@ -1861,7 +1861,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <!-- ── Mascot banner ── -->
     <div id="sb-mascot-banner" style="background:linear-gradient(135deg,#1FCBA6,#13B392);padding:14px 12px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0;" onclick="goToBuddy()">
       <!-- 3D Sprite mascot -->
-      <div id="buddy-sprite-sidebar" class="buddy-sprite pose-4" style="width:52px;height:56px;flex-shrink:0;border-radius:12px;animation:mascotBob 2.5s ease-in-out infinite;background-color:white;"></div>
+      <img id="buddy-sprite-sidebar" src="/images/taodang3.png" alt="SmartBuddy" style="width:52px;height:56px;object-fit:contain;flex-shrink:0;border-radius:12px;background-color:white;animation:mascotBob 2.5s ease-in-out infinite;" onerror="this.style.display='none'">
       <div style="flex:1;overflow:hidden;">
         <div style="font-family:'Baloo 2',cursive;font-size:14px;color:white;font-weight:800;line-height:1.2;">SmartBuddy</div>
         <div id="sb-banner-msg" style="font-size:10px;color:rgba(255,255,255,.85);font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Xin chào! Hôm nay học gì? 🌟</div>
@@ -1994,6 +1994,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
 
     <!-- ══ MATH HOME — SGK Panel ══ -->
     <div class="topic-content-panel" id="panel-math-home" style="padding:20px 24px;overflow-y:auto;">
+      <button onclick="hubOpen('math_hub')" style="padding:7px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:14px;">← Toán học</button>
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
         <div style="width:52px;height:52px;background:linear-gradient(135deg,#1FCBA6,#13B392);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 0 rgba(46,196,160,.35);">📚</div>
@@ -2434,6 +2435,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <!-- ══ ENGLISH LEARNING PANELS ══ -->
     <div class="topic-content-panel" id="panel-english_vocab" style="overflow-y:auto;">
       <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
+        <button onclick="hubOpen('english_hub')" style="align-self:flex-start;padding:7px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">← Tiếng Anh</button>
         <div style="background:linear-gradient(135deg,#2ED573,#1E90FF);border-radius:20px;padding:20px 24px;color:white;box-shadow:0 6px 0 rgba(46,213,115,.3);">
           <div style="font-family:'Baloo 2',cursive;font-size:22px;margin-bottom:6px;">🌏 Từ vựng &amp; Ngữ pháp Tiếng Anh</div>
           <div style="font-size:13px;opacity:.9;font-weight:600;line-height:1.6;">SmartBuddy sẽ giúp em học từ vựng theo chủ đề và ngữ pháp cơ bản theo chương trình Tiếng Anh!</div>
@@ -2468,6 +2470,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
 
     <div class="topic-content-panel" id="panel-english_speak" style="overflow-y:auto;">
       <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
+        <button onclick="hubOpen('english_hub')" style="align-self:flex-start;padding:7px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">← Tiếng Anh</button>
         <div style="background:linear-gradient(135deg,#1E90FF,#A55EEA);border-radius:20px;padding:20px 24px;color:white;box-shadow:0 6px 0 rgba(30,144,255,.3);">
           <div style="font-family:'Baloo 2',cursive;font-size:22px;margin-bottom:6px;">🗣️ Hội thoại &amp; Đọc hiểu</div>
           <div style="font-size:13px;opacity:.9;font-weight:600;line-height:1.6;">Luyện hội thoại Tiếng Anh theo tình huống thực tế cùng SmartBuddy AI!</div>
@@ -2497,6 +2500,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
 
     <div class="topic-content-panel" id="panel-english_test" style="overflow-y:auto;">
       <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
+        <button onclick="hubOpen('english_hub')" style="align-self:flex-start;padding:7px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;">← Tiếng Anh</button>
         <div style="background:linear-gradient(135deg,#A55EEA,#FF6EB4);border-radius:20px;padding:20px 24px;color:white;box-shadow:0 6px 0 rgba(165,94,234,.3);">
           <div style="font-family:'Baloo 2',cursive;font-size:22px;margin-bottom:6px;">✍️ Bài tập Tiếng Anh</div>
           <div style="font-size:13px;opacity:.9;font-weight:600;line-height:1.6;">Làm bài tập Tiếng Anh và nhận nhận xét chi tiết từ AI!</div>
@@ -2634,6 +2638,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
       <!-- CLASSROOM HOME: group list -->
       <div id="classroom-home" style="width:100%;height:100%;overflow-y:auto;padding:24px;">
         <div style="max-width:860px;margin:0 auto;">
+          <button onclick="hubOpen('math_hub')" style="padding:7px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:12px;">← Toán học</button>
           <div style="text-align:center;margin-bottom:18px;">
             <div style="font-size:44px;">📝</div>
             <div style="font-family:'Baloo 2',cursive;font-size:26px;color:var(--text1);">Phòng kiểm tra</div>
