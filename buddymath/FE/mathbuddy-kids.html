@@ -2641,6 +2641,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
               💡 Buddy sẽ hỏi lại: <i>đề cho gì? hỏi gì? dùng cách nào?</i> và <b>phản biện</b> khi em làm sai — để em tự nghĩ ra và nhớ lâu hơn.
             </div>
           </div>
+          <div id="pgb-chat" style="display:none;"></div>
           <div style="margin-top:16px;background:#F0FFF8;border-radius:14px;padding:14px 16px;border-left:4px solid var(--teal);font-size:12.5px;color:var(--text2);font-weight:600;line-height:1.7;">
             🎯 <b>Mẹo dùng hiệu quả:</b> gõ càng rõ đề càng tốt. Sau đó cứ thử làm từng bước theo câu hỏi của Buddy — sai cũng không sao, Buddy sẽ gợi ý để em tự sửa!
           </div>
@@ -3320,7 +3321,7 @@ function buildGradePanel(grade, topicSlug, panelKey) {
   // KHÔNG dùng SGK/RAG nữa — liệt kê chủ đề (từ TOPICS_BY_GRADE), mỗi chủ đề
   // mở một phiên gia sư Socratic (Buddy dẫn khám phá, không giải hộ).
   const topicBtns = topicsArr.map(t =>
-    `<button class="topic-pill" onclick="startTopicLesson('${grade}','${t.name.replace(/'/g,"\\'")}')">${t.icon} ${t.name}</button>`
+    `<button class="topic-pill" onclick="startTopicLesson('${grade}','${t.name.replace(/'/g,"\\'")}','${panelKey}')">${t.icon} ${t.name}</button>`
   ).join('');
 
   panel.innerHTML = _MATH_BACK_BTN + `
@@ -3328,7 +3329,7 @@ function buildGradePanel(grade, topicSlug, panelKey) {
       <div class="grade-icon" style="background:${gradeBg};">${icon}</div>
       <div>
         <div class="grade-title">${topicLabel} – ${gradeLabel}</div>
-        <div class="grade-desc">Chọn một chủ đề — Buddy sẽ dẫn em khám phá từng bước, KHÔNG giải hộ nhé!</div>
+        <div class="grade-desc">Chọn một chủ đề — Buddy sẽ dẫn em khám phá NGAY TẠI ĐÂY, KHÔNG giải hộ nhé!</div>
       </div>
     </div>
     <div class="overview-section">
@@ -3336,11 +3337,7 @@ function buildGradePanel(grade, topicSlug, panelKey) {
       <div class="topics-list-title">📋 Chọn chủ đề để học cùng Buddy</div>
       <div class="topics-pills">${topicBtns}</div>
     </div>
-    <div style="margin-top:14px;">
-      <button class="grade-action-btn btn-buddy" onclick="goToBuddy('Em muốn ôn lại ${topicLabel} ${gradeLabel}, Buddy dẫn em nhé')">
-        🤖 Hoặc hỏi Buddy điều em đang thắc mắc
-      </button>
-    </div>
+    <div id="mathtutor-${panelKey}" style="display:none;"></div>
   `;
 }
 
@@ -5496,52 +5493,106 @@ function getSocraticSystem() {
   return s;
 }
 
-// ── Vào phiên "Học theo chủ đề": Buddy dẫn khám phá 1 chủ đề Toán ──
-function startTopicLesson(grade, topicName) {
+// ════════════════════════════════════════════════════════════
+//  CHAT GIA SƯ NHÚNG — chạy NGAY trong panel Toán, KHÔNG nhảy sang Buddy
+// ════════════════════════════════════════════════════════════
+const _inlineTutors = {};  // containerId -> { history, system, img, mime }
+
+function _tutorBase(seed) {
+  // Dùng chính bộ luật Socratic "không giải hộ" + nối ngữ cảnh phiên học
+  return getSystem() + '\n\n════ NGỮ CẢNH PHIÊN HỌC (BẮT BUỘC) ════\n' + seed +
+    '\nNhắc lại: chỉ dẫn dắt bằng câu hỏi, mỗi lượt một ý nhỏ, KHÔNG giảng hết, KHÔNG đưa đáp án/lời giải hoàn chỉnh.';
+}
+
+function mountInlineTutor(containerId, seed, openingMsg) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  const mId = containerId + '-msgs', iId = containerId + '-input', fId = containerId + '-file';
+  c.style.display = 'block';
+  c.innerHTML = `
+    <div style="background:white;border:2.5px solid #E8E0FF;border-radius:18px;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.06);margin-top:8px;">
+      <div style="padding:10px 14px;background:linear-gradient(135deg,#1FCBA6,#3742FA);color:white;font-weight:900;font-size:13px;display:flex;align-items:center;gap:8px;">🤖 Buddy đang hỗ trợ em ngay tại đây <span style="margin-left:auto;font-size:11px;font-weight:700;opacity:.9;">không giải hộ — dẫn từng bước</span></div>
+      <div id="${mId}" style="height:340px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;background:#FBFAFF;"></div>
+      <div id="${containerId}-imgbadge" style="display:none;padding:6px 14px;font-size:12px;color:var(--teal);font-weight:800;background:#F0FFF8;">📎 Đã đính kèm ảnh — bấm ➤ để gửi</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;padding:10px;border-top:2px solid #F0ECFF;background:white;">
+        <input type="file" id="${fId}" accept="image/*" style="display:none;" onchange="inlineTutorPickImage('${containerId}',this)">
+        <button title="Gửi ảnh bài" onclick="document.getElementById('${fId}').click()" style="width:42px;height:42px;border-radius:12px;border:2px solid #E0D8FF;background:#F5F0FF;cursor:pointer;font-size:18px;flex-shrink:0;">📷</button>
+        <textarea id="${iId}" rows="1" placeholder="Nhập câu trả lời của em..." style="flex:1;min-height:42px;max-height:120px;padding:10px 14px;border:2px solid #E0D8FF;border-radius:12px;font-family:'Nunito',Arial;font-size:14px;font-weight:700;color:var(--text1);resize:none;outline:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendInlineTutor('${containerId}');}"></textarea>
+        <button onclick="sendInlineTutor('${containerId}')" style="width:42px;height:42px;border-radius:12px;border:none;background:linear-gradient(135deg,#1FCBA6,#3742FA);color:white;cursor:pointer;font-size:18px;flex-shrink:0;">➤</button>
+      </div>
+    </div>`;
+  _inlineTutors[containerId] = { history: [], system: _tutorBase(seed), img: null, mime: null };
+  c.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  if (openingMsg) sendInlineTutor(containerId, openingMsg);
+}
+
+function inlineTutorPickImage(containerId, input) {
+  const st = _inlineTutors[containerId]; if (!st) return;
+  const file = input.files && input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    st.img = e.target.result.split(',')[1];
+    st.mime = file.type || 'image/jpeg';
+    const badge = document.getElementById(containerId+'-imgbadge');
+    if (badge) badge.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function sendInlineTutor(containerId, forcedMsg) {
+  const st = _inlineTutors[containerId]; if (!st) return;
+  const inputEl = document.getElementById(containerId+'-input');
+  const msgsEl  = document.getElementById(containerId+'-msgs');
+  let text = (forcedMsg != null ? forcedMsg : (inputEl ? inputEl.value : '')).trim();
+  const hasImg = !!st.img;
+  if (!text && !hasImg) return;
+  if (inputEl && forcedMsg == null) { inputEl.value=''; inputEl.style.height='auto'; }
+
+  const userHtml = (hasImg ? `<img src="data:${st.mime};base64,${st.img}" style="max-width:170px;border-radius:10px;display:block;margin-bottom:6px;">` : '') + (text ? `<span>${text}</span>` : '');
+  addMsgToEl(msgsEl, 'user', userHtml || '📷 (ảnh)');
+
+  const b64 = st.img, mime = st.mime;
+  st.img = null; st.mime = null;
+  const badge = document.getElementById(containerId+'-imgbadge'); if (badge) badge.style.display='none';
+  st.history.push({ role:'user', content: (hasImg ? '[Ảnh bài toán] ' : '') + (text || 'Em gửi ảnh bài này, giúp em nhé') });
+
+  const typingEl = addTypingToEl(msgsEl);
+  try {
+    const body = { max_tokens: 950, system: st.system, messages: st.history.slice(-16) };
+    if (b64) { body.image_base64 = b64; body.image_media_type = mime; }
+    const res = await fetch(`${CL_API}/v1/messages`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Buddy chưa nghĩ ra, em thử lại nhé!';
+    typingEl.remove();
+    addMsgToEl(msgsEl, 'ai', fmt(reply));
+    st.history.push({ role:'assistant', content: reply });
+  } catch(e) {
+    typingEl.remove();
+    addMsgToEl(msgsEl, 'ai', '😅 Không kết nối được, em thử lại nhé!');
+  }
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+// ── "Học theo chủ đề": mở chat gia sư NGAY trong panel chủ đề ──
+function startTopicLesson(grade, topicName, panelKey) {
   const gLabel = (typeof GRADE_LABEL !== 'undefined' && GRADE_LABEL[grade]) ? GRADE_LABEL[grade] : grade;
-  const buddyBtn = document.querySelector('.topic-btn[data-topic="buddy"]');
-  if (buddyBtn) selectTopic(buddyBtn);
-  newChat();
-  _mathSeed = `Học sinh ${gLabel} muốn HỌC chủ đề: "${topicName}". Hãy đóng vai gia sư dẫn dắt em KHÁM PHÁ chủ đề này theo phương pháp Socratic: mở đầu bằng một lời chào ngắn + một câu hỏi gợi mở thật gần gũi để em tự suy nghĩ; mỗi lượt chỉ một ý nhỏ; luôn hỏi lại; tuyệt đối không giảng hết một lúc và không đưa đáp án.`;
-  setTimeout(() => {
-    const inp = document.getElementById('user-input');
-    if (inp) { inp.value = 'Em muốn học chủ đề: ' + topicName; }
-    if (typeof send === 'function') send();
-  }, 130);
+  const seed = `Học sinh ${gLabel} muốn HỌC chủ đề "${topicName}". Hãy dẫn em KHÁM PHÁ theo Socratic: mở đầu bằng lời chào ngắn + một câu hỏi gợi mở gần gũi; mỗi lượt một ý nhỏ; luôn hỏi lại.`;
+  mountInlineTutor('mathtutor-'+panelKey, seed, 'Em muốn học chủ đề: ' + topicName);
 }
 
-// ── Vào phiên "Phòng gỡ bài": Buddy dẫn từng bước một bài cụ thể ──
-function startProblemGuide(text) {
-  const problem = (text || '').trim();
-  if (!problem) return;
-  const buddyBtn = document.querySelector('.topic-btn[data-topic="buddy"]');
-  if (buddyBtn) selectTopic(buddyBtn);
-  newChat();
-  _mathSeed = `Học sinh đang MẮC bài toán sau và cần được dẫn TỪNG BƯỚC (không giải hộ, không đưa đáp án): """${problem}""". Hãy bắt đầu bằng cách hỏi em: đề cho biết những gì và yêu cầu tìm gì? Chỉ đi tiếp khi em đã trả lời. Khi em làm sai một bước, đừng sửa hộ — hãy hỏi ngược để em tự phát hiện.`;
-  setTimeout(() => {
-    const inp = document.getElementById('user-input');
-    if (inp) { inp.value = problem; }
-    if (typeof send === 'function') send();
-  }, 130);
-}
-
-// Nút "Nhờ Buddy dẫn" trong Phòng gỡ bài
+// ── "Phòng gỡ bài": mở chat gia sư NGAY tại trang ──
 function submitProblemGuide() {
-  const t = (document.getElementById('pgb-input') || {}).value || '';
-  if (!t.trim()) { if (typeof showAuthToast === 'function') showAuthToast('Em hãy gõ đề bài trước nhé!', '#FF6B8A'); return; }
-  startProblemGuide(t);
+  const t = ((document.getElementById('pgb-input') || {}).value || '').trim();
+  if (!t) { if (typeof showAuthToast === 'function') showAuthToast('Em hãy gõ đề bài trước nhé!', '#FF6B8A'); return; }
+  const seed = `Học sinh đang MẮC bài: """${t}""". Dẫn TỪNG BƯỚC: bắt đầu bằng hỏi đề cho gì, yêu cầu tìm gì. Khi em sai, hỏi ngược để em tự phát hiện, đừng sửa hộ.`;
+  mountInlineTutor('pgb-chat', seed, t);
 }
 
-// Nút "Gửi ảnh bài" — vào khung chat Buddy (đã có đính kèm ảnh), khung Socratic
+// Gửi ảnh bài ngay trong Phòng gỡ bài (mở chat rồi bật chọn ảnh)
 function goToBuddyWithPhoto() {
-  const buddyBtn = document.querySelector('.topic-btn[data-topic="buddy"]');
-  if (buddyBtn) selectTopic(buddyBtn);
-  newChat();
-  _mathSeed = 'Học sinh sắp GỬI ẢNH một bài toán đang mắc. Khi nhận ảnh: KHÔNG giải hộ/không đáp án — đọc kỹ đề rồi dẫn em từng bước bằng câu hỏi, bắt đầu bằng hỏi đề cho gì và hỏi gì.';
-  setTimeout(() => {
-    if (typeof showAuthToast === 'function') showAuthToast('📷 Bấm nút đính kèm cạnh ô chat để gửi ảnh bài nhé!', 'var(--teal)');
-    document.getElementById('user-input')?.focus();
-  }, 300);
+  const seed = 'Học sinh gửi ẢNH một bài toán đang mắc. Đọc kỹ đề rồi dẫn em TỪNG BƯỚC (không giải hộ), bắt đầu bằng hỏi đề cho gì, hỏi gì.';
+  mountInlineTutor('pgb-chat', seed, '');
+  setTimeout(() => { const f = document.getElementById('pgb-chat-file'); if (f) f.click(); }, 250);
 }
 
 // ════════════════════════════════════════════════════════════
