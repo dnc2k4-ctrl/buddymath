@@ -3311,6 +3311,19 @@ function selectSpecial(btn, grade, mode) {
   }
 }
 
+// Quay lại màn chọn bài Toán (panel-math-home)
+function backToMathHome() {
+  document.querySelectorAll('.topic-content-panel, .grade-panel').forEach(p=>p.classList.remove('active'));
+  const home = document.getElementById('panel-math-home');
+  if (home) home.classList.add('active');
+  document.querySelectorAll('.topic-btn').forEach(b=>b.classList.remove('active'));
+  const homeBtn = document.querySelector('.topic-btn[data-topic="math-home"]');
+  if (homeBtn) homeBtn.classList.add('active');
+}
+
+// Nút "← Quay lại" dùng chung cho các panel Toán
+const _MATH_BACK_BTN = '<button onclick="backToMathHome()" style="margin-bottom:14px;padding:8px 16px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:\'Nunito\',Arial;font-size:13px;font-weight:900;cursor:pointer;">← Quay lại chọn bài</button>';
+
 // ── BUILD GRADE PANEL (Đại Số / Hình Học) — RAG-FIRST ──
 // 1. Render ngay với topics cứng (fallback)
 // 2. Async fetch RAG synthesis → update overview + topic list từ SGK
@@ -3351,7 +3364,7 @@ function buildGradePanel(grade, topicSlug, panelKey) {
     `<span class="topic-pill" onclick="openTopicDetail('${grade}','${topicSlug}','${t.name}','${t.name}',this)">${t.icon} ${t.name}</span>`
   ).join('');
 
-  panel.innerHTML = `
+  panel.innerHTML = _MATH_BACK_BTN + `
     <div class="grade-header">
       <div class="grade-icon" style="background:${gradeBg};">${icon}</div>
       <div>
@@ -3972,7 +3985,7 @@ function closeTopicDetail(tdvId) {
 // ── BUILD ÔN TẬP PANEL ──
 function buildOntapPanel(grade, panel) {
   const gradeLabel = GRADE_LABEL[grade];
-  panel.innerHTML = `
+  panel.innerHTML = _MATH_BACK_BTN + `
     <div class="practice-panel">
       <div class="practice-header">
         <div class="practice-title">📝 Câu hỏi ôn tập – ${gradeLabel}</div>
@@ -4102,7 +4115,7 @@ Trả về JSON (không thêm text ngoài JSON):
 // ── BUILD KIỂM TRA PANEL ──
 function buildKiemtraPanel(grade, panel) {
   const gradeLabel = GRADE_LABEL[grade];
-  panel.innerHTML = `
+  panel.innerHTML = _MATH_BACK_BTN + `
     <div class="test-panel">
       <div class="practice-header">
         <div class="practice-title">⏱️ Làm bài kiểm tra – ${gradeLabel}</div>
