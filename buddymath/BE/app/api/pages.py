@@ -28,7 +28,7 @@ async def root():
 
 @router.get("/app")
 async def serve_app():
-    return _serve("mathbuddy-kids_v1.html")
+    return _serve("mathbuddy-kids.html")
 
 
 @router.get("/parent-portal")

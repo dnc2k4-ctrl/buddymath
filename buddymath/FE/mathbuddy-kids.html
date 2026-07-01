@@ -1530,10 +1530,6 @@ body:not(.role-parent) #sb-mascot-banner { margin:8px; border-radius:18px; box-s
 @media (max-width:430px) {
   #user-display-name { display:none; }
   .user-avatar-pill { padding:4px 8px 4px 4px; gap:5px; }
-  /* Cụm phải gọn lại để nút "Đăng nhập" + điểm không tràn ở iPhone XR/Plus, Pixel (401–428px) */
-  .header-right { gap:6px; }
-  .score-unit { display:none; }                       /* chỉ còn "⭐ 0" */
-  .auth-header-btn { font-size:12px; padding:5px 9px; gap:4px; }
 }
 
 /* ≤ 400px: màn rất nhỏ */
@@ -1551,14 +1547,6 @@ body:not(.role-parent) #sb-mascot-banner { margin:8px; border-radius:18px; box-s
   .logo > div:last-child > div:first-child { font-size:14px; }
   .score-pill { padding:3px 7px; font-size:10.5px; }
   .score-unit { display:none; }   /* chỉ còn "⭐ 0" để tiết kiệm chỗ */
-  .auth-header-btn { font-size:11.5px; padding:5px 9px; }
-  .auth-header-btn span:first-child { display:none; }  /* ẩn icon 👤, chỉ còn chữ "Đăng nhập" */
-}
-
-/* ≤ 344px: máy siêu nhỏ — ẩn pill điểm ở header để cụm phải lọt khung
-   (điểm vẫn xem được ở "TIẾN TRÌNH HÔM NAY" trong menu) */
-@media (max-width:344px) {
-  .score-pill { display:none !important; }
 }
 
 /* Mobile: chữ nút điều hướng/chọn lớp nhỏ lại để KHÔNG bị xuống dòng */
@@ -1729,6 +1717,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <div class="user-dropdown-name" id="user-dropdown-name">--</div>
         <div class="user-dropdown-email" id="user-dropdown-email">--</div>
         <hr style="border:none;border-top:1px solid #F0EEFF;margin:8px 0;">
+        <button class="user-dropdown-item" onclick="openAdminPanel()" id="admin-portal-link" style="display:none;">🛡️ Quản lý người dùng</button>
         <button class="user-dropdown-item" onclick="openParentPortal()" id="parent-portal-link" style="display:none;">👨‍👩‍👧 Bảng kiểm soát phụ huynh</button>
         <button class="user-dropdown-item" onclick="showScoreHistory()">📊 Lịch sử điểm số</button>
         <button class="user-dropdown-item" onclick="logoutUser()">🚪 Đăng xuất</button>
@@ -1992,10 +1981,46 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
       </button>
     </div>
 
+    <!-- ── Quản trị (chỉ hiện khi đăng nhập là admin) ── -->
+    <div id="admin-sidebar-section" style="display:none;">
+      <div class="sidebar-label" style="margin-top:8px;">🛡️ Quản trị</div>
+      <button class="topic-btn" data-color="buddy" data-topic="admin-users" onclick="selectTopic(this);loadAdminUsers()">
+        <span>👥</span> Quản lý người dùng
+      </button>
+    </div>
+
   </aside>
 
   <!-- MAIN AREA -->
   <div class="main-area" id="main-area">
+
+    <!-- ══ ADMIN — QUẢN LÝ NGƯỜI DÙNG ══ -->
+    <div class="topic-content-panel" id="panel-admin-users" style="padding:20px 24px;overflow-y:auto;">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,#4776E6,#8E54E9);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 0 rgba(71,118,230,.35);">🛡️</div>
+        <div style="flex:1;min-width:160px;">
+          <div style="font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;color:var(--text1);">Quản lý người dùng</div>
+          <div style="font-size:12px;color:var(--text2);font-weight:600;">Xem, sửa, khóa và phân quyền toàn bộ tài khoản</div>
+        </div>
+        <button onclick="loadAdminUsers()" title="Tải lại" style="padding:9px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;cursor:pointer;font-family:'Nunito',Arial;font-size:13px;font-weight:800;color:var(--text2);">🔄 Tải lại</button>
+        <button onclick="openAdminCreate()" style="padding:9px 14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:white;cursor:pointer;font-family:'Nunito',Arial;font-size:13px;font-weight:900;box-shadow:0 3px 0 rgba(27,184,147,.35);">➕ Thêm tài khoản</button>
+      </div>
+
+      <!-- Stat cards -->
+      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;"></div>
+
+      <!-- Search -->
+      <div style="margin-bottom:12px;">
+        <input id="admin-user-search" type="text" placeholder="🔎 Tìm theo tên hoặc email..." oninput="renderAdminUsers()"
+               style="width:100%;padding:10px 14px;border:2px solid #E0E8F0;border-radius:12px;font-family:'Nunito',Arial;font-size:14px;box-sizing:border-box;">
+      </div>
+
+      <!-- User list -->
+      <div id="admin-users-list" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="text-align:center;padding:30px;color:var(--text3);font-size:13px;">⏳ Đang tải...</div>
+      </div>
+    </div>
 
     <!-- ══ MATH HOME — SGK Panel ══ -->
     <div class="topic-content-panel" id="panel-math-home" style="padding:20px 24px;overflow-y:auto;">
@@ -4785,10 +4810,10 @@ function newChat() {
     <div style="max-width: 600px; width: 100%; text-align: center;">
       <!-- Logo & Title -->
       <div id="buddy-sprite-welcome" class="buddy-sprite pose-4" style="width:110px;height:120px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#1FCBA6,#13B392);box-shadow:0 12px 0 rgba(27,184,147,.3);animation:mascotBob 2.5s ease-in-out infinite;"></div>
-      <div style="font-family:'Baloo 2',cursive;font-size:clamp(22px,6vw,34px);color:var(--text1);margin-bottom:8px;word-break:break-word;">
+      <div style="font-family:'Baloo 2',cursive;font-size:34px;color:var(--text1);margin-bottom:8px;">
         Xin chào! Mình là <span style="color:var(--teal);">SmartBuddy</span>! ⭐
       </div>
-      <div style="font-size:clamp(13px,3.6vw,15px);color:var(--text2);font-weight:600;line-height:1.75;margin-bottom:28px;">
+      <div style="font-size:15px;color:var(--text2);font-weight:600;line-height:1.75;margin-bottom:28px;">
         Mình là <strong style="color:var(--purple);">gia sư AI thân thiện</strong> dành cho các em từ lớp 3 đến lớp 9.<br>
         Mình sẽ <strong style="color:var(--orange);">không làm bài thay</strong> — mình dạy em cách <strong style="color:var(--teal);">TỰ TƯ DUY</strong> và giải được bài! 🚀
       </div>
@@ -4799,7 +4824,7 @@ function newChat() {
         Hỏi ngay với SmartBuddy!
       </button>
 
-      <div style="font-size:clamp(10px,2.9vw,11px);color:var(--text3);margin-top:16px;font-weight:600;line-height:1.6;">
+      <div style="font-size:11px;color:var(--text3);margin-top:16px;font-weight:600;line-height:1.6;">
         📌 SmartBuddy dành cho học sinh từ lớp 3 đến lớp 9 &nbsp;•&nbsp; Chương trình Bộ GD&ĐT Việt Nam<br>
         💪 Cam kết: Buddy sẽ hướng dẫn em TỰ GIẢI — không làm bài thay!
       </div>
@@ -6700,6 +6725,10 @@ let _sbToken = null;
               document.getElementById('parent-portal-link').style.display = '';
               // Phụ huynh: mở thẳng Bảng kiểm soát (không hiện panel học sinh)
               try { openParentPortal(); } catch(e) {}
+            } else if (u.role === 'admin') {
+              const al = document.getElementById('admin-portal-link');
+              if (al) al.style.display = '';
+              try { openAdminPanel(); } catch(e) {}
             }
           } else {
             // Token expired – redirect to login
@@ -6827,10 +6856,13 @@ async function doModalLogin() {
       _authShowOk('auth-login-ok', '✅ Đăng nhập thành công! Xin chào ' + uName + ' 👋');
       renderAuthState();
       showMascotMood && showMascotMood();
-      // Auto-open parent portal for parent accounts
+      // Auto-open portal theo vai trò
       if (authCurrentUser.role === 'parent') {
         setMascotPoseById('buddy-sprite-auth', 1);
         setTimeout(() => { closeAuthModal(); openParentPortal(); }, 800);
+      } else if (authCurrentUser.role === 'admin') {
+        setMascotPoseById('buddy-sprite-auth', 1);
+        setTimeout(() => { closeAuthModal(); openAdminPanel(); }, 800);
       } else {
         setTimeout(closeAuthModal, 800);
       }
@@ -6895,6 +6927,209 @@ function openParentPortal() {
     selectTopic(fakeBtn);
     loadParentDashboard();
   }
+}
+
+// ════════════════════════════════════════════════════════════
+//  ADMIN — QUẢN LÝ NGƯỜI DÙNG
+// ════════════════════════════════════════════════════════════
+let _adminUsers = [];
+const ROLE_META = {
+  student: { label: '🎒 Học sinh', color: '#1E90FF' },
+  parent:  { label: '👨‍👩‍👧 Phụ huynh', color: '#A55EEA' },
+  admin:   { label: '🛡️ Quản trị', color: '#E74C3C' },
+};
+
+function openAdminPanel() {
+  toggleUserMenu(true);
+  let btn = document.querySelector('.topic-btn[data-topic="admin-users"]');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.dataset.topic = 'admin-users';
+    btn.classList.add('topic-btn');
+  }
+  selectTopic(btn);
+  loadAdminUsers();
+}
+
+function _adminAuthHeaders() {
+  return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + _sbToken };
+}
+
+async function loadAdminUsers() {
+  if (authCurrentUser?.role !== 'admin') return;
+  const listEl = document.getElementById('admin-users-list');
+  if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3);font-size:13px;">⏳ Đang tải...</div>';
+  try {
+    const [usersRes, statsRes] = await Promise.all([
+      fetch(`${CL_API}/admin/users`, { headers: _adminAuthHeaders() }),
+      fetch(`${CL_API}/admin/stats`, { headers: _adminAuthHeaders() }),
+    ]);
+    if (!usersRes.ok) throw new Error(usersRes.status);
+    _adminUsers = await usersRes.json();
+    if (statsRes.ok) renderAdminStats(await statsRes.json());
+    renderAdminUsers();
+  } catch (e) {
+    if (listEl) listEl.innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px;text-align:center;">⚠️ Không tải được danh sách. Hãy chắc chắn server đang chạy và bạn đăng nhập bằng tài khoản quản trị.</div>';
+  }
+}
+
+function renderAdminStats(s) {
+  const el = document.getElementById('admin-stats');
+  if (!el) return;
+  const cards = [
+    { label: 'Tổng tài khoản', value: s.total,    color: '#4776E6', icon: '👥' },
+    { label: 'Học sinh',       value: s.students, color: '#1E90FF', icon: '🎒' },
+    { label: 'Phụ huynh',      value: s.parents,  color: '#A55EEA', icon: '👨‍👩‍👧' },
+    { label: 'Quản trị',       value: s.admins,   color: '#E74C3C', icon: '🛡️' },
+    { label: 'Đang khóa',      value: s.locked,   color: '#F39C12', icon: '🔒' },
+  ];
+  el.innerHTML = cards.map(c => `
+    <div style="background:white;border:2px solid #EEF1F6;border-radius:14px;padding:12px 14px;">
+      <div style="font-size:11px;color:var(--text3);font-weight:700;">${c.icon} ${c.label}</div>
+      <div style="font-size:24px;font-weight:900;color:${c.color};line-height:1.2;">${c.value ?? 0}</div>
+    </div>`).join('');
+}
+
+function _esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderAdminUsers() {
+  const listEl = document.getElementById('admin-users-list');
+  if (!listEl) return;
+  const q = (document.getElementById('admin-user-search')?.value || '').trim().toLowerCase();
+  const rows = _adminUsers.filter(u =>
+    !q || (u.username || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q));
+  if (rows.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3);font-size:13px;">Không có tài khoản nào khớp.</div>';
+    return;
+  }
+  const meId = authCurrentUser?.id;
+  listEl.innerHTML = rows.map(u => {
+    const meta = ROLE_META[u.role] || { label: u.role, color: '#888' };
+    const locked = !u.is_active;
+    const isMe = u.id === meId;
+    // Liên kết phụ huynh–học sinh (field 'linked' do API /admin/users trả về)
+    const _linked = Array.isArray(u.linked) ? u.linked : [];
+    let linkHtml = '';
+    if (u.role === 'student') {
+      linkHtml = _linked.length
+        ? '🔗 Phụ huynh: ' + _linked.map(p => _esc(p.username)).join(', ')
+        : '<span style="color:#E67E22;">⚠️ Chưa liên kết phụ huynh</span>';
+    } else if (u.role === 'parent') {
+      linkHtml = _linked.length
+        ? '🔗 Con: ' + _linked.map(c => _esc(c.username)).join(', ')
+        : '<span style="color:#E67E22;">⚠️ Chưa liên kết học sinh</span>';
+    }
+    return `
+    <div style="background:white;border:2px solid ${locked ? '#FFE0C0' : '#EEF1F6'};border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;${locked ? 'opacity:.75;' : ''}">
+      <div style="width:42px;height:42px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,${meta.color},${meta.color}99);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:18px;">${_esc((u.username || '?')[0].toUpperCase())}</div>
+      <div style="flex:1;min-width:150px;">
+        <div style="font-weight:800;color:var(--text1);font-size:14px;">${_esc(u.username)} ${isMe ? '<span style="font-size:10px;color:var(--teal);">(bạn)</span>' : ''} ${locked ? '<span style="font-size:10px;color:#E67E22;">🔒 đã khóa</span>' : ''}</div>
+        <div style="font-size:12px;color:var(--text2);font-weight:600;word-break:break-all;">${_esc(u.email)}</div>
+        <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px;">
+          <span style="color:${meta.color};font-weight:800;">${meta.label}</span>
+          ${u.role === 'student' ? ' · Lớp ' + (u.grade || '--') : ''}
+          · ${u.score_count || 0} bài · ${_esc(u.created_at)}
+        </div>
+        ${linkHtml ? `<div style="font-size:11px;font-weight:700;margin-top:3px;color:var(--text2);">${linkHtml}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button onclick="adminEditUser('${u.id}')" title="Sửa" style="padding:7px 11px;border:2px solid #E0E8F0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:var(--text2);">✏️ Sửa</button>
+        <button onclick="adminToggleActive('${u.id}')" title="${locked ? 'Mở khóa' : 'Khóa'}" style="padding:7px 11px;border:2px solid #E0E8F0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:${locked ? '#2ED573' : '#F39C12'};">${locked ? '🔓 Mở' : '🔒 Khóa'}</button>
+        <button onclick="adminResetPassword('${u.id}')" title="Đặt lại mật khẩu" style="padding:7px 11px;border:2px solid #E0E8F0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:#4776E6;">🔑</button>
+        <button onclick="adminDeleteUser('${u.id}')" title="Xóa" style="padding:7px 11px;border:2px solid #FFD0D0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:var(--red);">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _adminFindUser(id) { return _adminUsers.find(u => u.id === id); }
+
+async function _adminApiSend(url, method, body) {
+  const opt = { method, headers: _adminAuthHeaders() };
+  if (body) opt.body = JSON.stringify(body);
+  const res = await fetch(url, opt);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || ('Lỗi ' + res.status));
+  }
+  return res.json().catch(() => ({}));
+}
+
+async function adminEditUser(id) {
+  const u = _adminFindUser(id);
+  if (!u) return;
+  const newName = prompt('Tên hiển thị:', u.username);
+  if (newName === null) return;
+  const newRole = prompt('Vai trò (student / parent / admin):', u.role);
+  if (newRole === null) return;
+  if (!['student', 'parent', 'admin'].includes(newRole.trim())) {
+    showAuthToast && showAuthToast('❌ Vai trò không hợp lệ.', 'var(--red)'); return;
+  }
+  const body = { username: newName.trim(), role: newRole.trim() };
+  if (newRole.trim() === 'student') {
+    const g = prompt('Lớp (3-9):', u.grade || 5);
+    if (g === null) return;
+    body.grade = parseInt(g) || 5;
+  }
+  try {
+    await _adminApiSend(`${CL_API}/admin/users/${id}`, 'PATCH', body);
+    showAuthToast && showAuthToast('✅ Đã cập nhật tài khoản.', 'var(--teal)');
+    loadAdminUsers();
+  } catch (e) { showAuthToast && showAuthToast('❌ ' + e.message, 'var(--red)'); }
+}
+
+async function adminToggleActive(id) {
+  const u = _adminFindUser(id);
+  if (!u) return;
+  try {
+    await _adminApiSend(`${CL_API}/admin/users/${id}`, 'PATCH', { is_active: !u.is_active });
+    showAuthToast && showAuthToast(u.is_active ? '🔒 Đã khóa tài khoản.' : '🔓 Đã mở khóa.', 'var(--teal)');
+    loadAdminUsers();
+  } catch (e) { showAuthToast && showAuthToast('❌ ' + e.message, 'var(--red)'); }
+}
+
+async function adminResetPassword(id) {
+  const u = _adminFindUser(id);
+  if (!u) return;
+  const pw = prompt(`Mật khẩu mới cho "${u.username}" (ít nhất 6 ký tự):`);
+  if (!pw) return;
+  try {
+    await _adminApiSend(`${CL_API}/admin/users/${id}/reset-password`, 'POST', { password: pw });
+    showAuthToast && showAuthToast('✅ Đã đặt lại mật khẩu.', 'var(--teal)');
+  } catch (e) { showAuthToast && showAuthToast('❌ ' + e.message, 'var(--red)'); }
+}
+
+async function adminDeleteUser(id) {
+  const u = _adminFindUser(id);
+  if (!u) return;
+  if (!confirm(`Xóa hẳn tài khoản "${u.username}" (${u.email})? Dữ liệu điểm số của tài khoản này cũng bị xóa và không thể khôi phục.`)) return;
+  try {
+    await _adminApiSend(`${CL_API}/admin/users/${id}`, 'DELETE');
+    showAuthToast && showAuthToast('🗑️ Đã xóa tài khoản.', 'var(--teal)');
+    loadAdminUsers();
+  } catch (e) { showAuthToast && showAuthToast('❌ ' + e.message, 'var(--red)'); }
+}
+
+async function openAdminCreate() {
+  const email = prompt('Email tài khoản mới:');
+  if (!email) return;
+  const username = prompt('Tên hiển thị:');
+  if (!username) return;
+  const role = prompt('Vai trò (student / parent / admin):', 'student');
+  if (role === null || !['student', 'parent', 'admin'].includes(role.trim())) {
+    showAuthToast && showAuthToast('❌ Vai trò không hợp lệ.', 'var(--red)'); return;
+  }
+  const password = prompt('Mật khẩu (ít nhất 6 ký tự):');
+  if (!password) return;
+  const body = { email: email.trim(), username: username.trim(), role: role.trim(), password };
+  if (role.trim() === 'student') body.grade = parseInt(prompt('Lớp (3-9):', '5')) || 5;
+  try {
+    await _adminApiSend(`${CL_API}/admin/users`, 'POST', body);
+    showAuthToast && showAuthToast('✅ Đã tạo tài khoản mới.', 'var(--teal)');
+    loadAdminUsers();
+  } catch (e) { showAuthToast && showAuthToast('❌ ' + e.message, 'var(--red)'); }
 }
 
 // ── Math Home tab switching ──────────────────────────────────
@@ -7690,13 +7925,17 @@ function renderAuthState() {
   const infoWrap = document.getElementById('user-info-wrap');
   const parentSection = document.getElementById('parent-sidebar-section');
   const studentSection = document.getElementById('student-sidebar-section');
+  const adminSection = document.getElementById('admin-sidebar-section');
   const parentLink = document.getElementById('parent-portal-link');
+  const adminLink  = document.getElementById('admin-portal-link');
 
   if (!authCurrentUser) {
     if (btnWrap)  btnWrap.style.display  = '';
     if (infoWrap) infoWrap.style.display = 'none';
     if (parentSection) parentSection.style.display = 'none';
+    if (adminSection) adminSection.style.display = 'none';
     if (studentSection) studentSection.style.display = '';
+    if (adminLink) adminLink.style.display = 'none';
     document.body.classList.remove('role-parent');
     return;
   }
@@ -7717,12 +7956,16 @@ function renderAuthState() {
   const letEl = el('user-avatar-letter');
   if (letEl) { letEl.style.display = 'flex'; letEl.textContent = name[0]?.toUpperCase() || '?'; }
 
-  // Show parent controls when role is parent; ẩn khu học sinh với phụ huynh
+  // Phân quyền hiển thị: admin / parent / student
   const isParent = u.role === 'parent';
+  const isAdmin  = u.role === 'admin';
   document.body.classList.toggle('role-parent', isParent);
   if (parentSection) parentSection.style.display = isParent ? '' : 'none';
-  if (studentSection) studentSection.style.display = isParent ? 'none' : '';
+  if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';
+  if (studentSection) studentSection.style.display = (isParent || isAdmin) ? 'none' : '';
   if (parentLink) parentLink.style.display = isParent ? '' : 'none';
+  if (adminLink) adminLink.style.display = isAdmin ? '' : 'none';
+  if (el('user-dropdown-email') && isAdmin && !email) el('user-dropdown-email').textContent = '🛡️ Quản trị viên';
   if (el('parent-welcome-msg') && isParent) el('parent-welcome-msg').textContent = 'Xin chào ' + name + '! Theo dõi con học tập.';
 
   // Update sidebar mascot greeting

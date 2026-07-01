@@ -1,47 +1,52 @@
 # ════════════════════════════════════════════════════════════════
-#  Render Blueprint — BuddyMath (Ver3.3: RAG chatbot + trang quản trị /monitor)
+#  Render Blueprint — BuddyMath (1 web service: BE phục vụ luôn FE)
 #  Dùng: Render Dashboard → New → Blueprint → trỏ vào repo này.
 #
 #  DỮ LIỆU NGƯỜI DÙNG: dùng Postgres NGOÀI bền vững (Neon/Supabase, free
 #  KHÔNG hết hạn) thay cho Postgres-free của Render (hết hạn sau 30 ngày).
 #  → Tạo DB ở Neon (https://neon.tech), copy "connection string", rồi dán
 #    vào biến môi trường DATABASE_URL trong Render Dashboard (xem bên dưới).
-#    Định dạng: postgresql://user:pass@host/dbname?sslmode=require
 #
-#  QUẢN LÝ NGƯỜI DÙNG sau khi deploy:
-#    • Trang chính:   https://<domain>/          (giao diện học sinh)
-#    • Trang quản trị: https://<domain>/monitor   (đăng nhập admin)
-#    • Tài khoản admin mặc định (db.py tự seed lần đầu):
-#         admin   / Admin@123
-#         monitor / Monitor@123
-#      → ĐỔI MẬT KHẨU ngay sau khi đăng nhập lần đầu.
+#  QUẢN LÝ NGƯỜI DÙNG sau khi deploy: đăng nhập bằng tài khoản admin
+#  (admin@smartbuddy.vn / admin123 — seed sẵn) rồi mở trang Quản trị.
 # ════════════════════════════════════════════════════════════════
 
 services:
   - type: web
     name: buddymath
     runtime: python
-    plan: free                       # ⚠ free web service ngủ sau ~15' không truy cập
-    rootDir: buddymath/Ver3.3/Ver3.3  # build & chạy trong thư mục Ver3.3
+    plan: free                  # ⚠ free web service ngủ sau ~15' không truy cập
+    rootDir: buddymath/BE        # build & chạy trong thư mục BE
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
       # DB BỀN: dán chuỗi kết nối Postgres của Neon/Supabase vào Dashboard.
-      # Nếu có DATABASE_URL, code ưu tiên dùng nó (bỏ qua DB_HOST/DB_PORT...).
+      # Định dạng: postgresql://user:pass@host/dbname?sslmode=require
       # (sync:false = không commit secret vào repo)
       - key: DATABASE_URL
         sync: false
-      # Secret Groq — điền trong Dashboard (sync:false = không commit vào repo)
+      # Secret — điền trong Dashboard (sync:false = không commit vào repo)
       - key: GROQ_API_KEY
         sync: false
-      # (tuỳ chọn) key cho Jina embedder nếu dùng
       - key: JINA_API_KEY
         sync: false
+      - key: SECRET_KEY
+        generateValue: true     # Render tự sinh chuỗi ngẫu nhiên
       # Cấu hình mặc định (có thể đổi trong Dashboard)
       - key: GROQ_MODEL
-        value: llama-3.3-70b-versatile
-      - key: GROQ_BASE_URL
-        value: https://api.groq.com/openai/v1
+        value: meta-llama/llama-4-scout-17b-16e-instruct
+      - key: JINA_MODEL
+        value: jina-embeddings-v3
+      # URL công khai dùng trong link email báo cáo (điền sau khi biết domain Render)
+      - key: PUBLIC_BASE_URL
+        sync: false
+      # Email báo cáo phụ huynh — tuỳ chọn, điền nếu muốn bật
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: FROM_EMAIL
+        sync: false

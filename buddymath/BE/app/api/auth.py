@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_admin_user, get_current_user
 from app.core.database import get_db
 from app.core.security import hash_password, make_token, verify_password
-from app.models.user import User
+from app.models.user import ParentChildLink, User
 from app.schemas.auth import LoginReq, RegisterReq
 from app.services.auth_service import seed_demo_accounts
 
@@ -93,9 +93,41 @@ async def admin_list_users(
     _admin: User = Depends(get_admin_user),
     db: Session = Depends(get_db),
 ):
-    """Danh sách toàn bộ tài khoản — chỉ quản trị viên."""
+    """
+    Danh sách toàn bộ tài khoản — chỉ quản trị viên.
+    Mỗi tài khoản kèm thông tin liên kết phụ huynh–học sinh:
+      • học sinh → danh sách phụ huynh đã liên kết (field 'linked')
+      • phụ huynh → danh sách học sinh đã liên kết
+    'linked' rỗng nghĩa là CHƯA liên kết với ai.
+    """
     users = db.query(User).order_by(User.created_at).all()
-    return [_admin_user_dict(u) for u in users]
+    links = db.query(ParentChildLink).all()
+
+    by_id = {u.id: u for u in users}
+    children_of: dict[str, list] = {}   # parent_id -> [con...]
+    parents_of:  dict[str, list] = {}   # child_id  -> [phụ huynh...]
+
+    def _brief(u: User) -> dict:
+        return {"id": u.id, "username": u.username, "email": u.email, "role": u.role}
+
+    for lk in links:
+        parent = by_id.get(lk.parent_id)
+        child = by_id.get(lk.child_id)
+        if parent and child:
+            children_of.setdefault(parent.id, []).append(_brief(child))
+            parents_of.setdefault(child.id, []).append(_brief(parent))
+
+    result = []
+    for u in users:
+        d = _admin_user_dict(u)
+        if u.role == "parent":
+            d["linked"] = children_of.get(u.id, [])
+        elif u.role == "student":
+            d["linked"] = parents_of.get(u.id, [])
+        else:
+            d["linked"] = []
+        result.append(d)
+    return result
 
 
 @router.get("/admin/stats")
