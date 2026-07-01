@@ -17,6 +17,7 @@
 databases:
   - name: buddymath-db
     plan: free
+    region: singapore           # PHẢI cùng region với web service (kết nối nội bộ)
     databaseName: mathbuddy
     user: mathbuddy
 
@@ -25,6 +26,7 @@ services:
     name: buddymath
     runtime: python
     plan: free                  # ⚠ free web service ngủ sau ~15' không truy cập
+    region: singapore           # cùng region với database ở trên
     rootDir: buddymath/BE        # build & chạy trong thư mục BE
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
