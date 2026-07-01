@@ -15,7 +15,7 @@
 # ════════════════════════════════════════════════════════════════
 
 databases:
-  - name: buddymath-db
+  - name: smartbuddy-db-sg
     plan: free
     region: singapore           # PHẢI cùng region với web service (kết nối nội bộ)
     databaseName: mathbuddy
@@ -34,10 +34,10 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
-      # DB BỀN: Render tự bơm chuỗi kết nối của "buddymath-db" vào đây.
+      # DB BỀN: Render tự bơm chuỗi kết nối của "smartbuddy-db-sg" (Singapore) vào đây.
       - key: DATABASE_URL
         fromDatabase:
-          name: buddymath-db
+          name: smartbuddy-db-sg
           property: connectionString
       # Secret — điền trong Dashboard (sync:false = không commit vào repo)
       - key: GROQ_API_KEY
