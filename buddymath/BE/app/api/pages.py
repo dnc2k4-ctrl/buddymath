@@ -36,6 +36,12 @@ async def serve_parent():
     return _serve("parent.html")
 
 
+@router.get("/admin")
+async def serve_admin():
+    """Trang quản trị riêng — có form đăng nhập, chỉ admin dùng được."""
+    return _serve("admin.html")
+
+
 @router.get("/robots.txt", include_in_schema=False)
 async def robots():
     from fastapi.responses import PlainTextResponse

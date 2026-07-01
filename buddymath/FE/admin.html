@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>SmartBuddy · Quản trị</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#ffffff; --line:#e6ebf2;
+    --t1:#1e293b; --t2:#64748b; --t3:#94a3b8;
+    --teal:#2EC4A0; --blue:#4776E6; --red:#EF4444; --orange:#F39C12; --green:#22C55E; --purple:#8B5CF6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#eef2f7;color:var(--t1);min-height:100vh}
+
+  /* ── Login ── */
+  #login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#1e3a8a,#0f766e);padding:20px}
+  .login-card{background:#fff;border-radius:20px;padding:34px 30px;width:100%;max-width:380px;
+    box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .login-logo{font-size:34px;text-align:center}
+  .login-title{font-size:22px;font-weight:800;text-align:center;margin-top:6px}
+  .login-sub{font-size:13px;color:var(--t2);text-align:center;margin:4px 0 22px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:5px}
+  .field input{width:100%;padding:11px 13px;border:2px solid var(--line);border-radius:11px;
+    font-size:14px;font-family:inherit;outline:none;transition:border .15s}
+  .field input:focus{border-color:var(--teal)}
+  .btn{width:100%;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--teal),var(--blue));
+    color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+  .btn:hover{opacity:.92}.btn:active{transform:scale(.98)}
+  .err{background:#fef2f2;color:var(--red);font-size:13px;font-weight:600;padding:9px 12px;
+    border-radius:9px;margin-bottom:12px;display:none}
+  .hint{font-size:11px;color:var(--t3);text-align:center;margin-top:14px;line-height:1.5}
+
+  /* ── Dashboard ── */
+  #app-view{display:none;max-width:1050px;margin:0 auto;padding:18px}
+  .topbar{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;
+    padding:14px 20px;box-shadow:0 4px 18px rgba(0,0,0,.06);margin-bottom:16px;flex-wrap:wrap}
+  .topbar h1{font-size:19px;font-weight:900}
+  .topbar .who{font-size:12px;color:var(--t2);font-weight:600}
+  .spacer{flex:1}
+  .btn-sm{padding:8px 14px;border:2px solid var(--line);border-radius:10px;background:#fff;
+    cursor:pointer;font-size:13px;font-weight:800;color:var(--t2);font-family:inherit}
+  .btn-sm.primary{background:linear-gradient(135deg,var(--teal),var(--blue));color:#fff;border:none}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+  .stat{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 3px 12px rgba(0,0,0,.05)}
+  .stat .n{font-size:26px;font-weight:900}
+  .stat .l{font-size:12px;color:var(--t2);font-weight:700;margin-top:2px}
+  .toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .toolbar input{flex:1;min-width:180px;padding:10px 13px;border:2px solid var(--line);
+    border-radius:11px;font-size:14px;font-family:inherit;outline:none}
+  .toolbar select{padding:10px 12px;border:2px solid var(--line);border-radius:11px;font-family:inherit;font-size:13px}
+  .user{background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  .user.locked{opacity:.7;border-color:#ffe0c0}
+  .ava{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
+    justify-content:center;color:#fff;font-weight:900;font-size:18px}
+  .u-main{flex:1;min-width:170px}
+  .u-name{font-weight:800;font-size:14.5px}
+  .u-email{font-size:12.5px;color:var(--t2);word-break:break-all}
+  .u-meta{font-size:11.5px;color:var(--t3);font-weight:600;margin-top:2px}
+  .badge{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:800;color:#fff}
+  .u-link{font-size:11.5px;font-weight:700;margin-top:3px}
+  .u-link.warn{color:var(--orange)}
+  .acts{display:flex;gap:6px;flex-wrap:wrap}
+  .acts button{padding:7px 10px;border:2px solid var(--line);border-radius:9px;background:#fff;
+    cursor:pointer;font-size:12px;font-weight:800;font-family:inherit}
+  .empty{text-align:center;padding:30px;color:var(--t3);font-size:14px}
+  .spin{text-align:center;padding:40px;color:var(--t2)}
+</style>
+</head>
+<body>
+
+<!-- ════════ LOGIN ════════ -->
+<div id="login-view">
+  <div class="login-card">
+    <div class="login-logo">🛡️</div>
+    <div class="login-title">Trang Quản Trị</div>
+    <div class="login-sub">SmartBuddy · dành cho quản trị viên</div>
+    <div class="err" id="login-err"></div>
+    <form id="login-form">
+      <div class="field">
+        <label>Email</label>
+        <input id="in-email" type="email" placeholder="admin@smartbuddy.vn" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label>Mật khẩu</label>
+        <input id="in-pass" type="password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button class="btn" type="submit" id="login-btn">Đăng nhập →</button>
+    </form>
+    <div class="hint">Chỉ tài khoản có vai trò <b>admin</b> mới vào được.<br>Mặc định: admin@smartbuddy.vn / admin123</div>
+  </div>
+</div>
+
+<!-- ════════ DASHBOARD ════════ -->
+<div id="app-view">
+  <div class="topbar">
+    <div style="font-size:24px">🛡️</div>
+    <div>
+      <h1>Quản lý người dùng</h1>
+      <div class="who" id="who"></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn-sm primary" onclick="openCreate()">＋ Tạo tài khoản</button>
+    <button class="btn-sm" onclick="loadAll()">🔄 Tải lại</button>
+    <button class="btn-sm" onclick="logout()">Đăng xuất</button>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input id="search" type="text" placeholder="🔎 Tìm theo tên hoặc email..." oninput="render()">
+    <select id="filter-role" onchange="render()">
+      <option value="">Tất cả vai trò</option>
+      <option value="student">Học sinh</option>
+      <option value="parent">Phụ huynh</option>
+      <option value="admin">Quản trị</option>
+    </select>
+  </div>
+
+  <div id="list"><div class="spin">Đang tải...</div></div>
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────
+const API = '';                       // cùng origin
+let TOKEN = localStorage.getItem('sb_admin_token') || '';
+let USERS = [];
+const ROLE = {
+  student: { label:'Học sinh', color:'#4776E6' },
+  parent:  { label:'Phụ huynh', color:'#8B5CF6' },
+  admin:   { label:'Quản trị', color:'#EF4444' },
+};
+
+// ─── Helpers ─────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function headers(){ return { 'Content-Type':'application/json', 'Authorization':'Bearer '+TOKEN }; }
+
+async function api(path, method='GET', body){
+  const opt = { method, headers: headers() };
+  if (body) opt.body = JSON.stringify(body);
+  const r = await fetch(API + path, opt);
+  if (r.status === 401 || r.status === 403){
+    // Token hết hạn hoặc không phải admin
+    if (path !== '/auth/login'){ logout(); throw new Error('Phiên đăng nhập hết hạn'); }
+  }
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || data.error || 'Lỗi máy chủ');
+  return data;
+}
+
+// ─── Login ───────────────────────────────────────────────
+$('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const errEl = $('login-err'); errEl.style.display = 'none';
+  const btn = $('login-btn'); btn.disabled = true; btn.textContent = 'Đang đăng nhập...';
+  try{
+    const email = $('in-email').value.trim().toLowerCase();
+    const pass  = $('in-pass').value;
+    const r = await fetch(API + '/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.detail || 'Đăng nhập thất bại');
+    if (data.user?.role !== 'admin')
+      throw new Error('Tài khoản này không phải quản trị viên.');
+    TOKEN = data.token;
+    localStorage.setItem('sb_admin_token', TOKEN);
+    localStorage.setItem('sb_admin_name', data.user.username || data.user.email);
+    showApp(data.user);
+  }catch(err){
+    errEl.textContent = '⚠️ ' + err.message; errEl.style.display = 'block';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Đăng nhập →';
+  }
+});
+
+function showApp(user){
+  $('login-view').style.display = 'none';
+  $('app-view').style.display = 'block';
+  $('who').textContent = '👤 ' + (user?.username || user?.email || localStorage.getItem('sb_admin_name') || '');
+  loadAll();
+}
+
+function logout(){
+  TOKEN = '';
+  localStorage.removeItem('sb_admin_token');
+  $('app-view').style.display = 'none';
+  $('login-view').style.display = 'flex';
+}
+
+// ─── Load data ───────────────────────────────────────────
+async function loadAll(){
+  $('list').innerHTML = '<div class="spin">Đang tải...</div>';
+  try{
+    const [users, stats] = await Promise.all([
+      api('/admin/users'),
+      api('/admin/stats').catch(() => null),
+    ]);
+    USERS = users;
+    if (stats) renderStats(stats);
+    render();
+  }catch(err){
+    $('list').innerHTML = '<div class="empty">⚠️ ' + esc(err.message) + '</div>';
+  }
+}
+
+function renderStats(s){
+  const cards = [
+    { n:s.total,    l:'Tổng tài khoản', c:'#1e293b' },
+    { n:s.students, l:'Học sinh',       c:'#4776E6' },
+    { n:s.parents,  l:'Phụ huynh',      c:'#8B5CF6' },
+    { n:s.admins,   l:'Quản trị',       c:'#EF4444' },
+    { n:s.active,   l:'Đang hoạt động', c:'#22C55E' },
+    { n:s.locked,   l:'Đã khóa',        c:'#F39C12' },
+  ];
+  $('stats').innerHTML = cards.map(c =>
+    `<div class="stat"><div class="n" style="color:${c.c}">${c.n ?? 0}</div><div class="l">${c.l}</div></div>`
+  ).join('');
+}
+
+// ─── Render list ─────────────────────────────────────────
+function render(){
+  const q = ($('search').value || '').trim().toLowerCase();
+  const rf = $('filter-role').value;
+  let rows = USERS.filter(u =>
+    (!q || (u.username||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)) &&
+    (!rf || u.role === rf));
+  if (!rows.length){ $('list').innerHTML = '<div class="empty">Không có tài khoản nào khớp.</div>'; return; }
+
+  $('list').innerHTML = rows.map(u => {
+    const meta = ROLE[u.role] || { label:u.role, color:'#888' };
+    const locked = !u.is_active;
+    const linked = Array.isArray(u.linked) ? u.linked : [];
+    let link = '';
+    if (u.role === 'student')
+      link = linked.length
+        ? `<div class="u-link">🔗 Phụ huynh: ${linked.map(p=>esc(p.username)).join(', ')}</div>`
+        : `<div class="u-link warn">⚠️ Chưa liên kết phụ huynh</div>`;
+    else if (u.role === 'parent')
+      link = linked.length
+        ? `<div class="u-link">🔗 Con: ${linked.map(c=>esc(c.username)).join(', ')}</div>`
+        : `<div class="u-link warn">⚠️ Chưa liên kết học sinh</div>`;
+    return `
+    <div class="user ${locked?'locked':''}">
+      <div class="ava" style="background:linear-gradient(135deg,${meta.color},${meta.color}99)">${esc((u.username||'?')[0].toUpperCase())}</div>
+      <div class="u-main">
+        <div class="u-name">${esc(u.username)} ${locked?'<span style="color:#E67E22;font-size:11px">🔒 đã khóa</span>':''}</div>
+        <div class="u-email">${esc(u.email)}</div>
+        <div class="u-meta">
+          <span class="badge" style="background:${meta.color}">${meta.label}</span>
+          ${u.role==='student' ? ' · Lớp '+(u.grade||'--') : ''}
+          · ${u.score_count||0} bài · ${esc(u.created_at)}
+        </div>
+        ${link}
+      </div>
+      <div class="acts">
+        <button onclick="editRole('${u.id}')" title="Đổi vai trò/lớp">✏️ Sửa</button>
+        <button onclick="toggleLock('${u.id}')" style="color:${locked?'#22C55E':'#F39C12'}">${locked?'🔓 Mở':'🔒 Khóa'}</button>
+        <button onclick="resetPw('${u.id}')" style="color:#4776E6" title="Đặt lại mật khẩu">🔑</button>
+        <button onclick="del('${u.id}')" style="color:#EF4444;border-color:#ffd0d0" title="Xóa">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+const find = id => USERS.find(u => u.id === id);
+
+// ─── Actions ─────────────────────────────────────────────
+async function toggleLock(id){
+  const u = find(id); if (!u) return;
+  try{ await api('/admin/users/'+id, 'PATCH', { is_active: !u.is_active }); loadAll(); }
+  catch(e){ alert('⚠️ '+e.message); }
+}
+async function resetPw(id){
+  const u = find(id); if (!u) return;
+  const pw = prompt(`Mật khẩu mới cho "${u.username}" (tối thiểu 6 ký tự):`);
+  if (pw === null) return;
+  try{ await api('/admin/users/'+id+'/reset-password', 'POST', { password: pw }); alert('✅ Đã đặt lại mật khẩu.'); }
+  catch(e){ alert('⚠️ '+e.message); }
+}
+async function del(id){
+  const u = find(id); if (!u) return;
+  if (!confirm(`Xóa hẳn tài khoản "${u.username}" (${u.email})? Không thể hoàn tác.`)) return;
+  try{ await api('/admin/users/'+id, 'DELETE'); loadAll(); }
+  catch(e){ alert('⚠️ '+e.message); }
+}
+async function editRole(id){
+  const u = find(id); if (!u) return;
+  const role = prompt('Vai trò (student / parent / admin):', u.role);
+  if (role === null) return;
+  if (!['student','parent','admin'].includes(role.trim())){ alert('Vai trò không hợp lệ'); return; }
+  const body = { role: role.trim() };
+  if (role.trim() === 'student'){
+    const g = prompt('Lớp (3-9):', u.grade || 5);
+    if (g !== null) body.grade = parseInt(g) || 5;
+  }
+  try{ await api('/admin/users/'+id, 'PATCH', body); loadAll(); }
+  catch(e){ alert('⚠️ '+e.message); }
+}
+async function openCreate(){
+  const email = prompt('Email tài khoản mới:'); if (!email) return;
+  const username = prompt('Tên hiển thị:'); if (!username) return;
+  const role = prompt('Vai trò (student / parent / admin):', 'student');
+  if (role === null || !['student','parent','admin'].includes(role.trim())){ alert('Vai trò không hợp lệ'); return; }
+  const password = prompt('Mật khẩu (tối thiểu 6 ký tự):'); if (!password) return;
+  const body = { email, username, role: role.trim(), password };
+  if (role.trim() === 'student') body.grade = parseInt(prompt('Lớp (3-9):', 5)) || 5;
+  try{ await api('/admin/users', 'POST', body); loadAll(); }
+  catch(e){ alert('⚠️ '+e.message); }
+}
+
+// ─── Auto-login nếu đã có token ──────────────────────────
+(async function init(){
+  if (!TOKEN) return;
+  try{
+    const me = await api('/auth/me');
+    if (me.role === 'admin') showApp(me); else logout();
+  }catch(_){ logout(); }
+})();
+</script>
+</body>
+</html>
