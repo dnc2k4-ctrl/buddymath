@@ -6,16 +6,19 @@ không cần host FE riêng).
 
 ## Cách 1 — Blueprint (khuyến nghị, dùng [render.yaml](render.yaml))
 
-1. Push repo này lên GitHub.
-2. Render Dashboard → **New → Blueprint** → chọn repo → Render đọc `render.yaml`,
-   tạo sẵn 1 web service `buddymath` + 1 PostgreSQL `buddymath-db`.
-3. Điền các **Environment Variables** được đánh dấu `sync:false`:
+1. **Tạo DB bền trước** (xem mục "Tạo Postgres bền với Neon" bên dưới) → có sẵn
+   chuỗi `DATABASE_URL`.
+2. Push repo này lên GitHub.
+3. Render Dashboard → **New → Blueprint** → chọn repo → Render đọc `render.yaml`,
+   tạo 1 web service `buddymath`.
+4. Điền các **Environment Variables** được đánh dấu `sync:false`:
+   - `DATABASE_URL` — **dán chuỗi kết nối Postgres của Neon** (giữ dữ liệu vĩnh viễn)
    - `GROQ_API_KEY` — key Groq
    - `JINA_API_KEY` — key Jina AI (embedding)
    - `PUBLIC_BASE_URL` — điền sau khi biết domain, vd `https://buddymath.onrender.com`
    - (tuỳ chọn) `SMTP_USER`, `SMTP_PASS`, `FROM_EMAIL` để bật email báo cáo
-   - `SECRET_KEY` đã được Render tự sinh; `DATABASE_URL` tự nối từ Postgres.
-4. **Create** → đợi build. Truy cập:
+   - `SECRET_KEY` đã được Render tự sinh.
+5. **Create** → đợi build. Truy cập:
    - `https://<app>.onrender.com/`            → trang đăng nhập
    - `https://<app>.onrender.com/app`         → app học sinh
    - `https://<app>.onrender.com/parent-portal` → cổng phụ huynh

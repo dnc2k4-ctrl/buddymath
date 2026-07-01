@@ -19,6 +19,12 @@ faiss.index
 metadata.pkl
 .ingested_manifest.json
 
+# Node
+node_modules/
+
+# Backup / thư mục trùng lặp (không đưa lên repo)
+FE - Copy/
+
 # OS / editor
 .DS_Store
 Thumbs.db

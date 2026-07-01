@@ -1,11 +1,12 @@
 # ════════════════════════════════════════════════════════════════
 #  Render Blueprint — BuddyMath (1 web service: BE phục vụ luôn FE)
 #  Dùng: Render Dashboard → New → Blueprint → trỏ vào repo này.
+#
+#  DỮ LIỆU NGƯỜI DÙNG: dùng Postgres NGOÀI bền vững (Neon/Supabase, free
+#  KHÔNG hết hạn) thay cho Postgres-free của Render (hết hạn sau 30 ngày).
+#  → Tạo DB ở Neon (https://neon.tech), copy "connection string", rồi dán
+#    vào biến môi trường DATABASE_URL trong Render Dashboard (xem bên dưới).
 # ════════════════════════════════════════════════════════════════
-
-databases:
-  - name: buddymath-db          # PostgreSQL (SQLite KHÔNG bền trên Render)
-    plan: free                  # ⚠ free Postgres hết hạn sau 30 ngày
 
 services:
   - type: web
@@ -19,11 +20,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
-      # DB lấy tự động từ Postgres ở trên (scheme postgres:// được config tự đổi)
+      # DB BỀN: dán chuỗi kết nối Postgres của Neon/Supabase vào Dashboard.
+      # Định dạng: postgresql://user:pass@host/dbname?sslmode=require
+      # (sync:false = không commit secret vào repo)
       - key: DATABASE_URL
-        fromDatabase:
-          name: buddymath-db
-          property: connectionString
+        sync: false
       # Secret — điền trong Dashboard (sync:false = không commit vào repo)
       - key: GROQ_API_KEY
         sync: false
