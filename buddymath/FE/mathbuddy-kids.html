@@ -4324,14 +4324,14 @@ Trả về JSON (không thêm text ngoài JSON):
         inp.classList.add('correct');
         if(itemEl) itemEl.classList.add('graded-correct');   // tô nền XANH cả câu
         const tag = document.createElement('div');
-        tag.innerHTML = '<span class="answer-correct-tag">✅ Đúng rồi! Giỏi lắm!</span>';
+        tag.innerHTML = '<span class="answer-correct-tag">✅ Đúng — Giỏi lắm!</span>';
         inp.parentNode.insertBefore(tag, inp.nextSibling);
         if(solEl) solEl.classList.add('show');   // giải thích lại vì sao đúng
       } else {
         inp.classList.add('wrong');
         if(itemEl) itemEl.classList.add('graded-wrong');     // tô nền ĐỎ cả câu
         const tag = document.createElement('div');
-        tag.innerHTML = `<span class="answer-wrong-tag">❌ Chưa đúng — Đáp án đúng: ${answers[i].dap_an}</span>`;
+        tag.innerHTML = `<span class="answer-wrong-tag">❌ Sai — Đáp án đúng: ${answers[i].dap_an}</span>`;
         inp.parentNode.insertBefore(tag, inp.nextSibling);
         if(solEl) solEl.classList.add('show');   // hiện lời giải để em sửa
       }
@@ -8372,14 +8372,16 @@ Trả về JSON (không thêm text ngoài JSON):
     window._engTestAnswers = exs.map(e => e.dap_an);
     window._engTestType    = typeLabels[type];
 
-    el.innerHTML = '<div class="test-exercises-wrap">' + exs.map((ex,i) => `
-      <div class="test-ex-item">
+    el.innerHTML = '<button type="button" onclick="exitEnglishTest()" style="margin-bottom:10px;padding:8px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:\'Nunito\',Arial;font-size:13px;font-weight:900;cursor:pointer;">← Quay lại</button>'
+      + '<div class="test-exercises-wrap">' + exs.map((ex,i) => `
+      <div class="test-ex-item" id="eng-item-${i}">
         <div class="ex-q"><span class="ex-number">${ex.so}</span>${ex.cau_hoi}</div>
         ${(ex.options||[]).map(opt => `
-          <label style="display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;font-size:13px;font-weight:700;padding:7px 10px;border-radius:10px;border:2px solid #E8E8FF;background:white;transition:all .15s;" onmouseover="this.style.background='#F5F0FF'" onmouseout="this.style.background='white'">
+          <label id="eng-opt-${i}-${opt[0]}" style="display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;font-size:13px;font-weight:700;padding:7px 10px;border-radius:10px;border:2px solid #E8E8FF;background:white;transition:all .15s;" onmouseover="this.style.background='#F5F0FF'" onmouseout="this.style.background='white'">
             <input type="radio" name="eng-q-${i}" value="${opt[0]}" style="accent-color:var(--purple);">
             ${opt}
           </label>`).join('')}
+        <div id="eng-tag-${i}"></div>
         <div class="solution-steps" id="eng-sol-${i}" style="margin-top:8px;">
           <div class="sol-title">💡 Giải thích:</div>
           <div class="sol-step">${ex.giai_thich||''}</div>
@@ -8393,14 +8395,40 @@ Trả về JSON (không thêm text ngoài JSON):
   }
 }
 
+function exitEnglishTest() {
+  const area = document.getElementById('english-test-area');
+  if (area) area.innerHTML = '';
+  const r = document.getElementById('english-test-result');
+  if (r) { r.classList.remove('show'); r.innerHTML = ''; }
+}
+
 async function submitEnglishTest(total, testType) {
   let correct = 0;
   const answers = window._engTestAnswers || [];
   for (let i = 0; i < total; i++) {
     const selected = document.querySelector(`input[name="eng-q-${i}"]:checked`);
     const solEl    = document.getElementById('eng-sol-'+i);
-    if (solEl) solEl.classList.add('show');
-    if (selected && selected.value === answers[i]) correct++;
+    const itemEl   = document.getElementById('eng-item-'+i);
+    const tagEl    = document.getElementById('eng-tag-'+i);
+    if (solEl) solEl.classList.add('show');   // luôn hiện giải thích chữa bài
+
+    const isCorrect = selected && selected.value === answers[i];
+    if (isCorrect) correct++;
+
+    // Khóa lựa chọn + tô màu từng đáp án: đúng = xanh, chọn sai = đỏ
+    document.getElementsByName('eng-q-'+i).forEach(r => {
+      r.disabled = true;
+      const label = r.closest('label');
+      if (!label) return;
+      if (r.value === answers[i]) { label.style.background='#EAFBF1'; label.style.borderColor='#2ED573'; }
+      else if (r.checked)        { label.style.background='#FFF0F0'; label.style.borderColor='#FF4757'; }
+    });
+
+    // Tô nền cả câu + nhãn Đúng/Sai
+    if (itemEl) itemEl.classList.add(isCorrect ? 'graded-correct' : 'graded-wrong');
+    if (tagEl) tagEl.innerHTML = isCorrect
+      ? '<span class="answer-correct-tag">✅ Đúng</span>'
+      : `<span class="answer-wrong-tag">❌ Sai — Đáp án đúng: ${answers[i]}</span>`;
   }
   const pct    = Math.round(correct/total*100);
   const emoji  = pct>=80?'🏆':pct>=60?'👍':'📚';

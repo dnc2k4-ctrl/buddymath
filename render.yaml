@@ -1,15 +1,24 @@
 # ════════════════════════════════════════════════════════════════
-#  Render Blueprint — BuddyMath (1 web service: BE phục vụ luôn FE)
-#  Dùng: Render Dashboard → New → Blueprint → trỏ vào repo này.
+#  Render Blueprint — BuddyMath (BE phục vụ luôn FE) + Postgres BỀN
 #
-#  DỮ LIỆU NGƯỜI DÙNG: dùng Postgres NGOÀI bền vững (Neon/Supabase, free
-#  KHÔNG hết hạn) thay cho Postgres-free của Render (hết hạn sau 30 ngày).
-#  → Tạo DB ở Neon (https://neon.tech), copy "connection string", rồi dán
-#    vào biến môi trường DATABASE_URL trong Render Dashboard (xem bên dưới).
+#  ✅ Khối "databases" bên dưới yêu cầu Render TỰ TẠO một PostgreSQL
+#     và tự gắn vào biến DATABASE_URL của web service (fromDatabase).
+#     → Dữ liệu người dùng KHÔNG còn bị reset mỗi lần deploy.
 #
-#  QUẢN LÝ NGƯỜI DÙNG sau khi deploy: đăng nhập bằng tài khoản admin
-#  (admin@smartbuddy.vn / admin123 — seed sẵn) rồi mở trang Quản trị.
+#  Cách áp dụng: Render Dashboard → Blueprints → chọn blueprint này →
+#     "Sync"/"Apply". Render sẽ tạo DB "buddymath-db" và deploy lại.
+#
+#  ⚠ Lưu ý: gói Postgres FREE của Render bị xoá sau ~30 ngày. Muốn giữ
+#     VĨNH VIỄN: tạo DB free ở Neon (https://neon.tech) — KHÔNG hết hạn —
+#     rồi thay dòng DATABASE_URL bên dưới bằng: {sync:false} và dán chuỗi
+#     kết nối Neon vào Environment trong Dashboard.
 # ════════════════════════════════════════════════════════════════
+
+databases:
+  - name: buddymath-db
+    plan: free
+    databaseName: mathbuddy
+    user: mathbuddy
 
 services:
   - type: web
@@ -23,11 +32,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
-      # DB BỀN: dán chuỗi kết nối Postgres của Neon/Supabase vào Dashboard.
-      # Định dạng: postgresql://user:pass@host/dbname?sslmode=require
-      # (sync:false = không commit secret vào repo)
+      # DB BỀN: Render tự bơm chuỗi kết nối của "buddymath-db" vào đây.
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: buddymath-db
+          property: connectionString
       # Secret — điền trong Dashboard (sync:false = không commit vào repo)
       - key: GROQ_API_KEY
         sync: false
@@ -43,7 +52,9 @@ services:
       # URL công khai dùng trong link email báo cáo (điền sau khi biết domain Render)
       - key: PUBLIC_BASE_URL
         sync: false
-      # Email báo cáo phụ huynh — tuỳ chọn, điền nếu muốn bật
+      # ── Email báo cáo phụ huynh (để dùng nút "Gửi báo cáo qua email") ──
+      # SMTP_USER = địa chỉ Gmail dùng để GỬI; SMTP_PASS = "App Password" 16 ký tự
+      # (tạo tại https://myaccount.google.com/apppasswords — cần bật 2FA trước).
       - key: SMTP_USER
         sync: false
       - key: SMTP_PASS
