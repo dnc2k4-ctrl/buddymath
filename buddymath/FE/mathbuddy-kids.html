@@ -1150,6 +1150,80 @@ body {
 }
 .user-dropdown-item:hover { background: #FFF0F0; }
 
+/* ═══════════ NOTIFICATION CENTER (chuông thông báo) ═══════════ */
+#notif-wrap { position: relative; }
+.notif-bell {
+  position: relative; width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.22); border: 2px solid rgba(255,255,255,0.5);
+  color: white; font-size: 17px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s cubic-bezier(.34,1.56,.64,1);
+}
+.notif-bell:hover { background: rgba(255,255,255,0.38); transform: scale(1.08); }
+.notif-bell:active { transform: scale(0.96); }
+.notif-bell.ring { animation: bellRing 0.7s ease; }
+@keyframes bellRing {
+  0%,100% { transform: rotate(0); }
+  15% { transform: rotate(-20deg); } 30% { transform: rotate(16deg); }
+  45% { transform: rotate(-12deg); } 60% { transform: rotate(8deg); }
+  75% { transform: rotate(-4deg); }
+}
+.notif-badge {
+  position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px;
+  padding: 0 4px; background: var(--red); color: white; border-radius: 10px;
+  border: 2px solid white; font-size: 10px; font-weight: 900; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.22); animation: badgePop 0.35s ease;
+}
+@keyframes badgePop { 0%{transform:scale(0);} 60%{transform:scale(1.35);} 100%{transform:scale(1);} }
+.notif-panel {
+  position: absolute; top: calc(100% + 10px); right: 0; width: 342px; max-width: 92vw;
+  background: white; border-radius: 18px; overflow: hidden; z-index: 300;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.22); border: 2px solid #F0EEFF;
+  animation: notifDrop 0.22s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes notifDrop { from{opacity:0;transform:translateY(-8px) scale(0.97);} to{opacity:1;transform:none;} }
+.notif-panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px; background: linear-gradient(135deg,#1FCBA6,#13B392);
+  color: white; font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 16px;
+}
+.notif-mark-read {
+  background: rgba(255,255,255,0.25); border: none; color: white; cursor: pointer;
+  font-family: 'Nunito', Arial; font-size: 11px; font-weight: 800;
+  padding: 5px 11px; border-radius: 12px; transition: background 0.15s;
+}
+.notif-mark-read:hover { background: rgba(255,255,255,0.45); }
+.notif-list { max-height: 384px; overflow-y: auto; }
+.notif-list::-webkit-scrollbar { width: 6px; }
+.notif-list::-webkit-scrollbar-thumb { background: #DDD; border-radius: 10px; }
+.notif-item {
+  display: flex; gap: 11px; padding: 12px 14px 12px 18px;
+  border-bottom: 1px solid #F4F2FB; transition: background 0.15s; position: relative;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: #FAF9FF; }
+.notif-item.unread { background: #F0FBF8; }
+.notif-item.unread::before {
+  content: ''; position: absolute; left: 7px; top: 50%; transform: translateY(-50%);
+  width: 7px; height: 7px; border-radius: 50%; background: var(--teal);
+}
+.notif-icon {
+  width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0; font-size: 19px;
+  display: flex; align-items: center; justify-content: center;
+}
+.notif-body-wrap { flex: 1; min-width: 0; }
+.notif-title { font-size: 13px; font-weight: 900; color: var(--text1); line-height: 1.35; }
+.notif-text { font-size: 12px; color: var(--text2); font-weight: 600; line-height: 1.45; margin-top: 2px; }
+.notif-time { font-size: 10.5px; color: var(--text3); font-weight: 700; margin-top: 4px; }
+.notif-empty { text-align: center; padding: 42px 22px; color: var(--text3); }
+.notif-panel-foot { padding: 9px 16px; border-top: 1px solid #F0EEFF; text-align: center; }
+.notif-clear-btn {
+  background: none; border: none; color: var(--text3); cursor: pointer;
+  font-family: 'Nunito', Arial; font-size: 12px; font-weight: 800; transition: color 0.15s;
+}
+.notif-clear-btn:hover { color: var(--red); }
+
 /* Modal overlay */
 #auth-modal-overlay {
   position: fixed; inset: 0; background: rgba(30,20,60,0.55);
@@ -1539,6 +1613,7 @@ body:not(.role-parent) #sb-mascot-banner { margin:8px; border-radius:18px; box-s
 @media (max-width:430px) {
   #user-display-name { display:none; }
   .user-avatar-pill { padding:4px 8px 4px 4px; gap:5px; }
+  .notif-bell { width:34px; height:34px; font-size:15px; }
 }
 
 /* ≤ 400px: màn rất nhỏ */
@@ -1689,6 +1764,22 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <!-- Mascot mood indicator -->
     <div id="mascot-mood" style="background:rgba(255,255,255,.18);border-radius:12px;padding:4px 10px;font-size:12px;font-weight:800;color:white;cursor:pointer;display:none;" onclick="goToBuddy()" title="Buddy đang chờ bạn!">
       🤖 <span id="mascot-msg">Buddy đây!</span>
+    </div>
+    <!-- Chuông thông báo -->
+    <div id="notif-wrap">
+      <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifPanel()" aria-label="Thông báo" aria-haspopup="true" title="Thông báo">
+        🔔<span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+      </button>
+      <div class="notif-panel" id="notif-panel" style="display:none;" role="dialog" aria-label="Danh sách thông báo">
+        <div class="notif-panel-head">
+          <span>🔔 Thông báo</span>
+          <button class="notif-mark-read" onclick="markAllNotifRead()">✓ Đọc hết</button>
+        </div>
+        <div class="notif-list" id="notif-list"></div>
+        <div class="notif-panel-foot">
+          <button class="notif-clear-btn" onclick="clearAllNotif()">🗑️ Xóa tất cả thông báo</button>
+        </div>
+      </div>
     </div>
     <!-- User info -->
     <div id="auth-btn-wrap">
@@ -1900,7 +1991,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
 
     <!-- ── Tiếng Anh (1 tab → mở panel hub có thẻ) ── -->
     <button class="topic-btn nav-group-header" data-color="green" data-topic="english_hub" onclick="selectTopic(this)" style="color:#1A8A50;">
-      <span>🌏</span> Tiếng Anh
+      <img src="/images/tienganh.jpg" alt="Tiếng Anh" style="width:26px;height:26px;object-fit:contain;border-radius:6px;background:#fff;flex-shrink:0;vertical-align:middle;" onerror="this.outerHTML='🌏'"> Tiếng Anh
     </button>
 
     <!-- ── Kỹ năng sống (1 tab → mở panel có thẻ, bỏ danh sách con) ── -->
@@ -4341,8 +4432,11 @@ Trả về JSON (không thêm text ngoài JSON):
     // Record score to backend
     const gradeNum = grade.replace('toan','');
     await recordScore('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, '', `${emoji} ${msg} (${correctCount}/${total} câu - ${pct}%)`);
+    notifyAchievement('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, pct);
   } catch(e) {
     alert('Không thể kết nối AI để chấm bài. Vui lòng thử lại!');
+    pushNotification('warning', 'Chưa chấm được bài kiểm tra',
+      'Không kết nối được máy chấm bài. Em kiểm tra mạng rồi bấm "Nộp bài" lại nhé.');
   }
 
   submitBtn.disabled = false;
@@ -6839,6 +6933,15 @@ let _sbToken = null;
             authCurrentUser = u;
             localStorage.setItem('sb_user', JSON.stringify(u));
             renderAuthState();
+            // Chào mừng quay lại — mỗi phiên trình duyệt 1 lần, im lặng để đỡ làm phiền
+            try {
+              if (!sessionStorage.getItem('sb_session_greeted')) {
+                sessionStorage.setItem('sb_session_greeted', '1');
+                const _n = u.username || u.name || 'bạn';
+                pushNotification('login', 'Chào mừng quay lại, ' + _n + '! 🎒',
+                  'Tiếp tục hành trình học tập cùng SmartBuddy nào.', { silent: true });
+              }
+            } catch(e) {}
             // Show mascot mood
             showMascotMood();
             if (u.role === 'parent') {
@@ -6975,6 +7078,8 @@ async function doModalLogin() {
       const uName = authCurrentUser.username || authCurrentUser.name || 'bạn';
       _authShowOk('auth-login-ok', '✅ Đăng nhập thành công! Xin chào ' + uName + ' 👋');
       renderAuthState();
+      pushNotification('login', 'Đăng nhập thành công 👋',
+        'Xin chào ' + uName + '! Chúc em một buổi học thật vui và hiệu quả.');
       showMascotMood && showMascotMood();
       // Auto-open portal theo vai trò
       if (authCurrentUser.role === 'parent') {
@@ -7013,6 +7118,8 @@ async function doModalRegister() {
     if (res.ok) {
       const data = await res.json();
       _authShowOk('auth-reg-ok', '🎉 Đăng ký thành công! Mời đăng nhập.');
+      pushNotification('register', 'Tạo tài khoản thành công 🎉',
+        'Chào mừng ' + name + ' đến với SmartBuddy! Hãy đăng nhập để bắt đầu học nhé.');
       setTimeout(() => { switchAuthTab('login'); fillLoginDemo(email, ''); document.getElementById('auth-login-pass').focus(); }, 1200);
     } else {
       const err = await res.json().catch(()=>({detail:'Đăng ký thất bại'}));
@@ -7623,6 +7730,8 @@ async function doLinkChild() {
     if (res.ok) {
       if (msgEl) { msgEl.style.display='block'; msgEl.style.color='#1A7A40'; msgEl.textContent = '✅ Đã liên kết thành công!'; }
       document.getElementById('link-child-email-input').value = '';
+      pushNotification('link', 'Liên kết con thành công 🔗',
+        'Đã kết nối với tài khoản học sinh ' + email + '. Bạn có thể theo dõi tiến độ học tập của con ngay bây giờ.');
       setTimeout(() => { toggleLinkChildForm(); loadParentDashboard(); }, 1200);
       setMascotPoseById('buddy-sprite-parent-header', 6); // celebrate
     } else {
@@ -8027,6 +8136,11 @@ function loginSuccess(acct) {
 }
 
 function logoutUser() {
+  // Ghi thông báo đăng xuất vào kho của người dùng trước khi xóa phiên (toast do dòng dưới lo)
+  if (authCurrentUser) {
+    const _who = authCurrentUser.username || authCurrentUser.name || 'bạn';
+    pushNotification('logout', 'Đã đăng xuất', 'Hẹn gặp lại ' + _who + '! Thành tích của em vẫn được lưu lại an toàn.', { silent: true });
+  }
   authCurrentUser = null;
   _sbToken = null;
   try {
@@ -8057,6 +8171,7 @@ function renderAuthState() {
     if (studentSection) studentSection.style.display = '';
     if (adminLink) adminLink.style.display = 'none';
     document.body.classList.remove('role-parent');
+    if (typeof renderNotifBadge === 'function') renderNotifBadge();
     return;
   }
 
@@ -8091,6 +8206,8 @@ function renderAuthState() {
   // Update sidebar mascot greeting
   setMascotPoseById('buddy-sprite-sidebar', u.role === 'parent' ? 1 : 4);
   setTimeout(showMascotMood, 500);
+  // Đồng bộ chuông thông báo theo kho của người dùng hiện tại
+  if (typeof renderNotifBadge === 'function') renderNotifBadge();
 }
 const id = s => document.getElementById(s);
 
@@ -8151,6 +8268,185 @@ function showAuthToast(msg, color) {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 4000);
 }
+
+// ════════════════════════════════════════════════════════════
+//  HỆ THỐNG THÔNG BÁO — Notification center (chuông 🔔)
+// ════════════════════════════════════════════════════════════
+const NOTIF_MAX = 40;
+const NOTIF_TYPES = {
+  login:       { icon: '👋', bg: '#E8FBF3', fg: '#1A9E6E' },
+  logout:      { icon: '🚪', bg: '#FFF1E8', fg: '#E67E22' },
+  register:    { icon: '🎉', bg: '#F3EEFF', fg: '#7A4FD0' },
+  achievement: { icon: '🏆', bg: '#FFF7DC', fg: '#C89A00' },
+  perfect:     { icon: '🌟', bg: '#FFF7DC', fg: '#C89A00' },
+  link:        { icon: '🔗', bg: '#EAF3FF', fg: '#1E7CD6' },
+  success:     { icon: '✅', bg: '#E8FBF3', fg: '#1A9E6E' },
+  reminder:    { icon: '⏰', bg: '#F3EEFF', fg: '#7A4FD0' },
+  info:        { icon: '💡', bg: '#EAF3FF', fg: '#1E7CD6' },
+  warning:     { icon: '⚠️', bg: '#FFF1E8', fg: '#E67E22' },
+  system:      { icon: '⚙️', bg: '#F0F0F5', fg: '#5A6890' },
+};
+
+// Mỗi người dùng có kho thông báo riêng (theo email/username), khách = 'guest'
+function _notifKey() {
+  const u = (typeof authCurrentUser !== 'undefined') ? authCurrentUser : null;
+  const id = u ? (u.email || u.username || 'guest') : 'guest';
+  return 'sb_notif_' + id;
+}
+function _loadNotifs() {
+  try { return JSON.parse(localStorage.getItem(_notifKey()) || '[]'); }
+  catch(e) { return []; }
+}
+function _saveNotifs(list) {
+  try { localStorage.setItem(_notifKey(), JSON.stringify(list.slice(0, NOTIF_MAX))); } catch(e) {}
+}
+
+// Thêm 1 thông báo. opts: {silent:true} = không hiện toast; {toastColor}
+function pushNotification(type, title, body, opts) {
+  opts = opts || {};
+  const list = _loadNotifs();
+  const now = Date.now();
+  // Chống trùng lặp: cùng type + title trong 4 giây
+  if (list[0] && list[0].type === type && list[0].title === title && (now - list[0].time) < 4000) return;
+  const n = {
+    id: 'n' + now + Math.random().toString(36).slice(2, 6),
+    type, title: title || '', body: body || '', time: now, read: false,
+  };
+  list.unshift(n);
+  _saveNotifs(list);
+  renderNotifBadge();
+  const panel = document.getElementById('notif-panel');
+  if (panel && panel.style.display !== 'none') renderNotifList();
+  ringBell();
+  if (!opts.silent) {
+    const meta = NOTIF_TYPES[type] || NOTIF_TYPES.info;
+    showAuthToast(`${meta.icon} ${title}`, opts.toastColor || meta.fg);
+  }
+  return n;
+}
+
+function ringBell() {
+  const bell = document.getElementById('notif-bell-btn');
+  if (!bell) return;
+  bell.classList.remove('ring');
+  void bell.offsetWidth;   // ép trình duyệt chạy lại animation
+  bell.classList.add('ring');
+}
+
+function renderNotifBadge() {
+  const badge = document.getElementById('notif-badge');
+  if (!badge) return;
+  const unread = _loadNotifs().filter(n => !n.read).length;
+  if (unread > 0) { badge.style.display = 'flex'; badge.textContent = unread > 99 ? '99+' : unread; }
+  else badge.style.display = 'none';
+}
+
+function _notifTimeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return 'Vừa xong';
+  const m = Math.floor(s / 60); if (m < 60) return m + ' phút trước';
+  const h = Math.floor(m / 60); if (h < 24) return h + ' giờ trước';
+  const d = Math.floor(h / 24); if (d < 7) return d + ' ngày trước';
+  return new Date(ts).toLocaleDateString('vi-VN');
+}
+
+function renderNotifList() {
+  const el = document.getElementById('notif-list');
+  if (!el) return;
+  const list = _loadNotifs();
+  if (!list.length) {
+    el.innerHTML = '<div class="notif-empty"><div style="font-size:42px;margin-bottom:8px;">🔕</div>'
+      + '<div style="font-weight:800;font-size:13px;color:var(--text2);">Chưa có thông báo nào</div>'
+      + '<div style="font-size:11.5px;margin-top:4px;">Các hoạt động của em sẽ hiện ở đây!</div></div>';
+    return;
+  }
+  el.innerHTML = list.map(n => {
+    const meta = NOTIF_TYPES[n.type] || NOTIF_TYPES.info;
+    return `<div class="notif-item ${n.read ? '' : 'unread'}">
+      <div class="notif-icon" style="background:${meta.bg};">${meta.icon}</div>
+      <div class="notif-body-wrap">
+        <div class="notif-title">${_esc(n.title)}</div>
+        ${n.body ? `<div class="notif-text">${_esc(n.body)}</div>` : ''}
+        <div class="notif-time">${_notifTimeAgo(n.time)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleNotifPanel(forceClose) {
+  const panel = document.getElementById('notif-panel');
+  if (!panel) return;
+  const willOpen = forceClose ? false : (panel.style.display === 'none');
+  panel.style.display = willOpen ? 'block' : 'none';
+  if (willOpen) {
+    renderNotifList();
+    // Xem xong 1.2s thì tự đánh dấu đã đọc (giữ panel để không nhấp nháy)
+    clearTimeout(window._notifReadTimer);
+    window._notifReadTimer = setTimeout(() => markAllNotifRead(true), 1200);
+  }
+}
+
+function markAllNotifRead(keepList) {
+  const list = _loadNotifs();
+  let changed = false;
+  list.forEach(n => { if (!n.read) { n.read = true; changed = true; } });
+  if (changed) {
+    _saveNotifs(list);
+    renderNotifBadge();
+    if (!keepList) renderNotifList();
+  }
+}
+
+function clearAllNotif() {
+  _saveNotifs([]);
+  renderNotifBadge();
+  renderNotifList();
+}
+
+// Đóng panel khi bấm ra ngoài
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('notif-wrap');
+  if (wrap && !wrap.contains(e.target)) toggleNotifPanel(true);
+});
+
+// Thông báo thành tích sau khi làm xong bài kiểm tra
+function notifyAchievement(subject, topic, correct, total, pct) {
+  const p = (typeof pct === 'number') ? pct : Math.round(correct / total * 100);
+  let type = 'achievement', title, body;
+  if (p >= 100) {
+    type = 'perfect';
+    title = `Điểm tuyệt đối môn ${subject}! 🌟`;
+    body  = `${topic}: ${correct}/${total} câu — Quá xuất sắc, em làm đúng hết!`;
+  } else if (p >= 80) {
+    title = `Thành tích tốt môn ${subject}! 🏆`;
+    body  = `${topic}: đúng ${correct}/${total} câu (${p}%). Xuất sắc lắm, cứ phát huy nhé!`;
+  } else if (p >= 50) {
+    title = `Đã hoàn thành bài ${subject}`;
+    body  = `${topic}: đúng ${correct}/${total} câu (${p}%). Khá tốt, cố thêm chút nữa nào!`;
+  } else {
+    type = 'reminder';
+    title = `Đã hoàn thành bài ${subject}`;
+    body  = `${topic}: đúng ${correct}/${total} câu (${p}%). Đừng nản — ôn lại rồi thử lại nhé! 💪`;
+  }
+  pushNotification(type, title, body);
+}
+
+// Khởi tạo trung tâm thông báo khi tải trang
+function initNotifCenter() {
+  renderNotifBadge();
+  // Chào mừng lần đầu truy cập (mỗi trình duyệt 1 lần)
+  try {
+    if (!localStorage.getItem('sb_welcomed')) {
+      localStorage.setItem('sb_welcomed', '1');
+      setTimeout(() => {
+        pushNotification('info', 'Chào mừng đến với SmartBuddy! 🎉',
+          'Gia sư AI đồng hành cùng em học Toán, Tiếng Anh và kỹ năng sống. Bấm chuông 🔔 để xem thông báo bất cứ lúc nào.');
+      }, 1500);
+    }
+  } catch(e) {}
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNotifCenter);
+else initNotifCenter();
 
 // ════════════════════════════════════════════════════════════
 //  IMAGE MENU & CAMERA CAPTURE
@@ -8548,6 +8844,7 @@ async function submitEnglishTest(total, testType) {
 
   // Record score
   await recordScore('Tiếng Anh', testType, correct, total, '', feedback);
+  notifyAchievement('Tiếng Anh', testType, correct, total, pct);
 }
 
 function addEnglishEncouragement(msg) {
