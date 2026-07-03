@@ -81,7 +81,7 @@ def create_app() -> FastAPI:
         "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
-        "img-src 'self' data: blob:; "
+        "img-src 'self' data: blob: https://qr.sepay.vn https://img.vietqr.io; "
         "connect-src 'self'; "
         "frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
     )
