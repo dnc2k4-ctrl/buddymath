@@ -15,6 +15,7 @@ Chạy:  uvicorn app.main:app --host 0.0.0.0 --port 8000
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -37,23 +38,38 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+async def _background_ingest():
+    """Nạp RAG/pipeline + ingest data/ ở NỀN (gọi Jina — chậm).
+
+    Chạy trong thread riêng để KHÔNG chặn khởi động: app phản hồi /health ngay,
+    tránh Render free health-check (timeout 5s) bị trượt → vòng lặp restart/502.
+    Trong lúc nạp, các endpoint cần RAG trả 503 tạm thời (auth/điểm/thanh toán vẫn chạy).
+    """
+    try:
+        logger.info("📂 (nền) Scan và ingest thư mục data/…")
+        summary = await asyncio.to_thread(runtime.init_runtime)
+        logger.info(
+            f"✅ (nền) Ingest hoàn tất: {summary['new_files_ingested']} file mới, "
+            f"{summary['skipped_files']} bỏ qua, {summary['total_chunks']} chunks."
+        )
+        if summary["errors"]:
+            logger.warning(f"⚠ (nền) Lỗi ingest: {summary['errors']}")
+    except Exception as e:
+        logger.warning(f"⚠ (nền) Nạp RAG lỗi: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("🚀 Khởi động BuddyMath backend…")
     init_db()
     seed_demo_accounts()
 
-    logger.info("📂 Scan và ingest thư mục data/…")
-    summary = runtime.init_runtime()
-    logger.info(
-        f"✅ Ingest hoàn tất: {summary['new_files_ingested']} file mới, "
-        f"{summary['skipped_files']} bỏ qua, {summary['total_chunks']} chunks."
-    )
-    if summary["errors"]:
-        logger.warning(f"⚠ Lỗi ingest: {summary['errors']}")
+    # Nạp RAG ở nền → khởi động xong tức thì, health check không còn timeout.
+    ingest_task = asyncio.create_task(_background_ingest())
 
-    logger.info("✅ BuddyMath sẵn sàng.")
+    logger.info("✅ BuddyMath sẵn sàng (RAG đang nạp ở nền).")
     yield
+    ingest_task.cancel()
     logger.info("🛑 Đang tắt BuddyMath backend.")
 
 
