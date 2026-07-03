@@ -4,13 +4,16 @@ email_service.py – Gửi email báo cáo cho phụ huynh (SMTP) + template HTM
 from __future__ import annotations
 
 import logging
+import re
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import httpx
 from sqlalchemy.orm import Session
 
 from app.config import (
+    BREVO_API_KEY,
     FROM_EMAIL,
     PUBLIC_BASE_URL,
     SMTP_HOST,
@@ -24,22 +27,62 @@ from app.models.user import ParentChildLink, User
 logger = logging.getLogger(__name__)
 
 
-def smtp_send(to: str, subject: str, html: str) -> None:
+def _parse_sender() -> tuple[str, str]:
+    """Tách FROM_EMAIL 'Tên <email>' → (tên, email). Nếu chỉ có email thì tên mặc định."""
+    m = re.match(r"\s*(.*?)\s*<\s*(.+?)\s*>\s*$", FROM_EMAIL or "")
+    if m:
+        return (m.group(1) or "SmartBuddy"), m.group(2)
+    return "SmartBuddy", (FROM_EMAIL or SMTP_USER or "no-reply@smartbuddy.vn")
+
+
+def _send_via_brevo(to: str, subject: str, html: str) -> None:
+    """Gửi email qua Brevo HTTP API (cổng 443 — không bị cloud chặn như SMTP)."""
+    name, email = _parse_sender()
+    resp = httpx.post(
+        "https://api.brevo.com/v3/smtp/email",
+        headers={
+            "api-key": BREVO_API_KEY,
+            "accept": "application/json",
+            "content-type": "application/json",
+        },
+        json={
+            "sender": {"name": name, "email": email},
+            "to": [{"email": to}],
+            "subject": subject,
+            "htmlContent": html,
+        },
+        timeout=15.0,
+    )
+    if resp.status_code >= 300:
+        raise RuntimeError(f"Brevo API lỗi {resp.status_code}: {resp.text[:200]}")
+
+
+def _send_via_smtp(to: str, subject: str, html: str) -> None:
     if not SMTP_USER:
-        raise ValueError("SMTP chưa cấu hình. Thêm SMTP_USER + SMTP_PASS vào file .env")
+        raise ValueError("Email chưa cấu hình (thiếu BREVO_API_KEY hoặc SMTP_USER/PASS).")
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"]    = FROM_EMAIL
     msg["To"]      = to
     msg.attach(MIMEText(html, "html", "utf-8"))
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
+    # timeout để KHÔNG treo event loop nếu cloud chặn cổng SMTP.
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=12) as s:
         s.starttls()
         s.login(SMTP_USER, SMTP_PASS)
         s.sendmail(FROM_EMAIL, to, msg.as_string())
 
 
+def smtp_send(to: str, subject: str, html: str) -> None:
+    """Gửi email: ưu tiên Brevo HTTP (hợp cloud), fallback SMTP (local)."""
+    if BREVO_API_KEY:
+        _send_via_brevo(to, subject, html)
+    else:
+        _send_via_smtp(to, subject, html)
+
+
 def smtp_configured() -> bool:
-    return bool(SMTP_USER and SMTP_PASS)
+    """Đã cấu hình kênh gửi email chưa (Brevo hoặc SMTP)."""
+    return bool(BREVO_API_KEY or (SMTP_USER and SMTP_PASS))
 
 
 def send_otp_email(to: str, code: str, purpose: str = "reset") -> None:

@@ -57,11 +57,16 @@ services:
       # ── Email báo cáo phụ huynh (để dùng nút "Gửi báo cáo qua email") ──
       # SMTP_USER = địa chỉ Gmail dùng để GỬI; SMTP_PASS = "App Password" 16 ký tự
       # (tạo tại https://myaccount.google.com/apppasswords — cần bật 2FA trước).
+      # Email qua Brevo HTTP API (Render CHẶN cổng SMTP nên KHÔNG dùng Gmail SMTP trên cloud).
+      # Lấy key ở https://app.brevo.com → SMTP & API; xác minh FROM_EMAIL trong Senders.
+      - key: BREVO_API_KEY
+        sync: false
+      - key: FROM_EMAIL
+        sync: false
+      # SMTP (không dùng trên Render vì bị chặn cổng — giữ để tương thích local).
       - key: SMTP_USER
         sync: false
       - key: SMTP_PASS
-        sync: false
-      - key: FROM_EMAIL
         sync: false
       # ── CORS: đặt domain thật để siết (vd https://tenmien.com). Bỏ trống = cho phép mọi origin. ──
       - key: ALLOWED_ORIGINS

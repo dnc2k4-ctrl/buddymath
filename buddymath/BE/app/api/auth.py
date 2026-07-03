@@ -3,6 +3,7 @@ auth.py – Router đăng ký/đăng nhập, profile và admin/debug.
 """
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -50,7 +51,7 @@ async def send_register_otp(req: SendOtpReq, db: Session = Depends(get_db)):
         resp["message"] = "SMTP chưa cấu hình — dùng mã dev bên dưới để thử (chỉ hiện ở dev)."
         return resp
     try:
-        send_otp_email(email, code, "register")
+        await asyncio.to_thread(send_otp_email, email, code, "register")
     except Exception:
         raise HTTPException(500, "Không gửi được email lúc này. Vui lòng thử lại.")
     return resp
@@ -122,7 +123,7 @@ async def forgot_password(req: ForgotReq, db: Session = Depends(get_db)):
         resp["message"] = "SMTP chưa cấu hình — dùng mã dev bên dưới để thử (chỉ hiện ở môi trường dev)."
         return resp
     try:
-        send_otp_email(email, code, "reset")
+        await asyncio.to_thread(send_otp_email, email, code, "reset")
     except Exception:
         raise HTTPException(500, "Không gửi được email lúc này. Vui lòng thử lại sau ít phút.")
     return resp

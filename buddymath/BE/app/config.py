@@ -105,12 +105,18 @@ JINA_MODEL   = os.environ.get("JINA_MODEL", "jina-embeddings-v3")
 JINA_URL     = os.environ.get("JINA_URL", "https://api.jina.ai/v1/embeddings")
 
 
-# ─── Email / SMTP (báo cáo phụ huynh) ─────────────────────────────────────────
+# ─── Email ────────────────────────────────────────────────────────────────────
+# Ưu tiên gửi qua HTTP API (BREVO_API_KEY) vì cloud thường CHẶN cổng SMTP ra ngoài
+# (Render chặn 25/465/587 → gửi SMTP bị treo). Brevo/Sendinblue: https://app.brevo.com
+# → SMTP & API → tạo API key; xác minh "Senders" = FROM_EMAIL. Free 300 email/ngày.
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
+
+# SMTP (chỉ dùng khi KHÔNG có BREVO_API_KEY — vd chạy local).
 SMTP_HOST  = os.environ.get("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT  = int(os.environ.get("SMTP_PORT", "587"))
 SMTP_USER  = os.environ.get("SMTP_USER", "")
 SMTP_PASS  = os.environ.get("SMTP_PASS", "")
-FROM_EMAIL = os.environ.get("FROM_EMAIL") or SMTP_USER
+FROM_EMAIL = os.environ.get("FROM_EMAIL") or SMTP_USER or "SmartBuddy <no-reply@smartbuddy.vn>"
 
 # URL gốc dùng trong nội dung email
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000")
