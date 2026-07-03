@@ -11,7 +11,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app import plans
+from app.config import ENABLE_MOCK_BILLING
 from app.api.deps import get_admin_user, get_current_user, get_optional_user
+from app.api.ratelimit import rate_limit_auth
 from app.core.database import get_db
 from app.core.security import hash_password, make_token, verify_password
 from app.models.user import ParentChildLink, User
@@ -33,7 +35,7 @@ class ResetReq(BaseModel):
     new_password: str
 
 
-@router.post("/auth/send-otp")
+@router.post("/auth/send-otp", dependencies=[Depends(rate_limit_auth)])
 async def send_register_otp(req: SendOtpReq, db: Session = Depends(get_db)):
     """Gửi mã OTP xác minh email khi ĐĂNG KÝ."""
     email = req.email.strip().lower()
@@ -54,7 +56,7 @@ async def send_register_otp(req: SendOtpReq, db: Session = Depends(get_db)):
     return resp
 
 
-@router.post("/auth/register")
+@router.post("/auth/register", dependencies=[Depends(rate_limit_auth)])
 async def register(req: RegisterReq, db: Session = Depends(get_db)):
     email = req.email.strip().lower()
     if db.query(User).filter(User.email == email).first():
@@ -64,11 +66,14 @@ async def register(req: RegisterReq, db: Session = Depends(get_db)):
     phone = (req.phone or "").strip() or None
     if phone and db.query(User).filter(User.phone == phone).first():
         raise HTTPException(400, "Số điện thoại này đã được đăng ký rồi")
-    # Nếu FE gửi mã OTP thì bắt buộc xác minh email trước khi tạo tài khoản
-    if req.code:
-        ok, msg = otp_service.verify_otp("register", email, req.code)
-        if not ok:
-            raise HTTPException(400, msg)
+    # BẮT BUỘC xác minh email bằng OTP trước khi tạo tài khoản (chống đăng ký chui/bot).
+    # Tài khoản demo được seed sẵn ở server lúc khởi động nên không đi qua đây.
+    code = (req.code or "").strip()
+    if not code:
+        raise HTTPException(400, "Vui lòng nhập mã xác minh đã gửi tới email.")
+    ok, msg = otp_service.verify_otp("register", email, code)
+    if not ok:
+        raise HTTPException(400, msg)
     # Đăng ký công khai chỉ cho phép student/parent — không tự cấp quyền admin
     role = req.role if req.role in ("student", "parent") else "student"
     user = User(
@@ -85,7 +90,7 @@ async def register(req: RegisterReq, db: Session = Depends(get_db)):
     return {"token": make_token(user.id, user.role), "user": user.to_dict()}
 
 
-@router.post("/auth/login")
+@router.post("/auth/login", dependencies=[Depends(rate_limit_auth)])
 async def login(req: LoginReq, db: Session = Depends(get_db)):
     ident = (req.email or "").strip()
     # Cho phép đăng nhập bằng EMAIL hoặc SỐ ĐIỆN THOẠI
@@ -99,7 +104,7 @@ async def login(req: LoginReq, db: Session = Depends(get_db)):
     return {"token": make_token(user.id, user.role), "user": user.to_dict()}
 
 
-@router.post("/auth/forgot-password")
+@router.post("/auth/forgot-password", dependencies=[Depends(rate_limit_auth)])
 async def forgot_password(req: ForgotReq, db: Session = Depends(get_db)):
     """Gửi mã OTP đặt lại mật khẩu về email. Luôn trả success để không lộ email nào tồn tại."""
     email = req.email.strip().lower()
@@ -123,7 +128,7 @@ async def forgot_password(req: ForgotReq, db: Session = Depends(get_db)):
     return resp
 
 
-@router.post("/auth/reset-password")
+@router.post("/auth/reset-password", dependencies=[Depends(rate_limit_auth)])
 async def reset_password(req: ResetReq, db: Session = Depends(get_db)):
     email = req.email.strip().lower()
     if len(req.new_password) < 6:
@@ -170,7 +175,10 @@ async def mock_upgrade(
     MOCK: xác nhận thanh toán → nâng gói cho user đang đăng nhập (+N tháng).
     ⚠️ Chưa nối cổng thanh toán thật; endpoint này chỉ để chạy thử luồng.
     Hết hạn sẽ tự về Free (KHÔNG gia hạn ngầm) nhờ effective_plan().
+    ⚠️ Chỉ hoạt động khi bật ENABLE_MOCK_BILLING (dev). Production dùng thanh toán thật.
     """
+    if not ENABLE_MOCK_BILLING:
+        raise HTTPException(403, "Nâng gói thử nghiệm đã tắt. Vui lòng thanh toán qua chuyển khoản (VietQR).")
     if req.plan not in ("standard", "premium"):
         raise HTTPException(400, "Gói không hợp lệ. Chỉ nhận 'standard' hoặc 'premium'.")
     months = max(1, min(int(req.months or 1), 12))

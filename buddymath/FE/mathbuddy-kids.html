@@ -5518,71 +5518,121 @@ async function confirmPay() {
     if (typeof showAuthToast === 'function') showAuthToast('😅 Chưa nâng cấp được, em thử lại nhé!', 'var(--red)');
   }
 }
+let _sbPollTimer = null;
+function _fmtVnd(n){ try { return Number(n).toLocaleString('vi-VN') + 'đ'; } catch(e){ return n + 'đ'; } }
+
 function openCheckout(planId) {
   const _P = _sbp();
   const _plan = (_P && _P.plans && _P.plans[planId]) ? _P.plans[planId] : null;
-  const name  = _plan ? _plan.name : (planId || '');
-  const price = _plan ? (_sbFmtPrice(_plan) + _sbPriceSuffix(_plan)) : '';
-  _payMethod = 'momo'; window._coPlan = planId; window._coName = name; window._coPrice = price;
+  window._coPlan = planId;
+  window._coName = _plan ? _plan.name : (planId || '');
+  const tok = localStorage.getItem('sb_token');
+  if (!tok) {
+    if (typeof showAuthToast === 'function') showAuthToast('Em đăng nhập để nâng cấp gói nhé! 😊', 'var(--teal)');
+    if (typeof openAuthModal === 'function') openAuthModal('login');
+    return;
+  }
   let m = document.getElementById('checkout-modal');
   if (!m) {
     m = document.createElement('div');
     m.id = 'checkout-modal';
-    m.style.cssText = 'position:fixed;inset:0;z-index:1300;background:rgba(18,49,74,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px;';
+    m.style.cssText = 'position:fixed;inset:0;z-index:1300;background:rgba(18,49,74,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;';
     m.onclick = e => { if (e.target === m) closeCheckout(); };
     document.body.appendChild(m);
   }
-  m.innerHTML = `
-    <div style="background:#fff;border-radius:20px;max-width:400px;width:100%;padding:24px;box-shadow:0 30px 70px rgba(0,0,0,.3);position:relative;">
-      <button onclick="closeCheckout()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-weight:900;cursor:pointer;">✕</button>
-      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:21px;color:var(--text1);margin-bottom:14px;">Thanh toán gói ${name}</div>
-      <div style="background:#F6FBF9;border:1px solid #E1F0EB;border-radius:14px;padding:14px 16px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text2);font-weight:700;"><span>Gói ${name} · 1 tháng</span><span style="color:var(--text1);font-weight:900;">${price}</span></div>
-        <div style="border-top:1px dashed #D6E7E1;margin:10px 0;"></div>
-        <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:900;color:var(--text1);"><span>Tổng cộng</span><span style="color:var(--teal-d);">${price}</span></div>
-      </div>
-      <div style="font-size:12px;font-weight:800;color:var(--text2);margin-bottom:8px;">Chọn phương thức thanh toán</div>
-      <div id="pay-methods" style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">${_payMethodsHtml()}</div>
-      <button id="pay-btn" onclick="payNow()" style="width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;color:#fff;background:#A50064;box-shadow:0 5px 14px #A5006455;">Thanh toán qua MoMo</button>
-      <div style="text-align:center;margin-top:10px;"><a href="#" onclick="closeCheckout();openPremium();return false;" style="font-size:12px;color:var(--text3);font-weight:700;">← Chọn gói khác</a></div>
-    </div>`;
   m.style.display = 'flex';
-}
-function closeCheckout() { const m = document.getElementById('checkout-modal'); if (m) m.style.display = 'none'; }
-function _pickBank(el) {
-  el.parentNode.querySelectorAll('button').forEach(b => { b.style.borderColor = '#E4EEEB'; b.style.background = '#fff'; });
-  el.style.borderColor = '#1E7CD6'; el.style.background = '#EAF3FF';
-}
-function payNow() {
-  const m = document.getElementById('checkout-modal'); if (!m) return;
-  const name = window._coName || '', price = window._coPrice || '';
-  const meta = PAY_METHODS[_payMethod] || PAY_METHODS.momo;
-  let inner;
-  if (_payMethod === 'momo') {
-    inner = `<div style="width:168px;height:168px;margin:0 auto;border:2px dashed #A50064;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#FDF2F9;color:#A50064;font-weight:800;text-align:center;font-size:13px;padding:12px;line-height:1.5;">Mã QR MoMo<br>sẽ hiện ở đây</div>`;
-  } else if (_payMethod === 'bank') {
-    const banks = ['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV', 'VPBank', 'ACB', 'Agribank', 'Sacombank', 'TPBank'];
-    inner = `<div style="font-size:12px;font-weight:800;color:var(--text2);margin-bottom:8px;text-align:left;">Chọn ngân hàng liên kết</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${banks.map(b => `<button onclick="_pickBank(this)" style="border:1.5px solid #E4EEEB;border-radius:10px;padding:11px 4px;font-size:11px;font-weight:800;color:#1E7CD6;background:#fff;cursor:pointer;font-family:'Nunito',Arial;">${b}</button>`).join('')}</div>`;
-  } else {
-    inner = `<div style="text-align:left;">
-      <div style="font-size:12px;font-weight:800;color:var(--text2);margin-bottom:8px;">Thông tin thẻ (Visa · Mastercard · JCB)</div>
-      <input placeholder="Số thẻ  ••••  ••••  ••••  ••••" style="width:100%;padding:12px 14px;border:2px solid #E4EEEB;border-radius:11px;font-size:14px;margin-bottom:9px;font-family:'Nunito',Arial;outline:none;box-sizing:border-box;">
-      <div style="display:flex;gap:9px;">
-        <input placeholder="MM/YY" style="flex:1;padding:12px 14px;border:2px solid #E4EEEB;border-radius:11px;font-size:14px;font-family:'Nunito',Arial;outline:none;box-sizing:border-box;">
-        <input placeholder="CVV" style="width:104px;padding:12px 14px;border:2px solid #E4EEEB;border-radius:11px;font-size:14px;font-family:'Nunito',Arial;outline:none;box-sizing:border-box;">
-      </div>
+  m.innerHTML = `<div style="background:#fff;border-radius:20px;max-width:380px;width:100%;padding:30px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.3);">
+      <div style="font-size:34px;">⏳</div>
+      <div style="font-weight:800;color:var(--text1);margin-top:8px;">Đang tạo mã thanh toán…</div>
     </div>`;
-  }
-  const box = m.querySelector('div');
-  box.innerHTML = `
-    <button onclick="closeCheckout()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-weight:900;cursor:pointer;">✕</button>
-    <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:20px;color:${meta.c};margin-bottom:2px;">${meta.label}</div>
-    <div style="text-align:center;font-size:13px;color:var(--text2);font-weight:600;margin-bottom:16px;">Gói <b>${name}</b> · <b>${price}</b></div>
-    ${inner}
-    <div style="background:#FFF7E6;border:1px solid #FFE0A3;border-radius:12px;padding:11px;font-size:11.5px;color:#8A5A08;font-weight:600;line-height:1.5;margin-top:14px;text-align:left;">⚙️ Xem trước luồng. Cổng thật (MoMo · ngân hàng · thẻ) sẽ xử lý khi bạn cung cấp merchant key — mình cắm vào là trừ tiền được ngay.</div>
-    <button onclick="confirmPay()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:12px;cursor:pointer;font-weight:900;color:#fff;background:${meta.c};box-shadow:0 5px 14px ${meta.c}55;font-family:'Nunito',Arial;">Xác nhận thanh toán</button>
-    <div style="text-align:center;margin-top:9px;"><a href="#" onclick="openCheckout(window._coPlan);return false;" style="font-size:12px;color:var(--text3);font-weight:700;">← Chọn phương thức khác</a></div>`;
+  fetch(`${CL_API}/billing/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
+    body: JSON.stringify({ plan: planId, months: 1 })
+  }).then(async res => {
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { _renderCheckoutError((data && data.detail) || 'Không tạo được đơn thanh toán.'); return; }
+    _renderQrCheckout(data);
+  }).catch(() => _renderCheckoutError('Không kết nối được server. Em thử lại nhé!'));
+}
+
+function _renderCheckoutError(msg) {
+  const m = document.getElementById('checkout-modal'); if (!m) return;
+  m.innerHTML = `<div style="background:#fff;border-radius:20px;max-width:360px;width:100%;padding:26px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.3);position:relative;">
+      <button onclick="closeCheckout()" style="position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-weight:900;cursor:pointer;">✕</button>
+      <div style="font-size:34px;">😅</div>
+      <div style="font-weight:800;color:var(--text1);margin:8px 0 4px;line-height:1.5;">${msg}</div>
+      <button onclick="openCheckout(window._coPlan)" style="margin-top:12px;padding:10px 20px;border:none;border-radius:11px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;font-weight:900;cursor:pointer;font-family:'Nunito',Arial;">Thử lại</button>
+    </div>`;
+}
+
+function _renderQrCheckout(data) {
+  const m = document.getElementById('checkout-modal'); if (!m) return;
+  const name = window._coName || '';
+  const bank = data.bank || {};
+  const code = data.transfer_content || (data.order && data.order.code) || '';
+  const amount = data.amount || (data.order && data.order.amount) || 0;
+  m.innerHTML = `<div style="background:#fff;border-radius:20px;max-width:400px;width:100%;padding:22px;box-shadow:0 30px 70px rgba(0,0,0,.3);position:relative;">
+      <button onclick="closeCheckout()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-weight:900;cursor:pointer;">✕</button>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:20px;color:var(--text1);margin-bottom:2px;">Quét mã để thanh toán</div>
+      <div style="text-align:center;font-size:13px;color:var(--text2);font-weight:600;margin-bottom:12px;">Gói <b>${name}</b> · <b>${_fmtVnd(amount)}</b>/tháng</div>
+      <div style="text-align:center;">
+        <img src="${data.qr_url}" alt="VietQR" style="width:210px;height:210px;object-fit:contain;border-radius:14px;border:1px solid #E1F0EB;background:#fff;" onerror="this.style.opacity=.3">
+      </div>
+      <div style="background:#F6FBF9;border:1px solid #E1F0EB;border-radius:14px;padding:12px 14px;margin:14px 0;font-size:13px;color:var(--text2);font-weight:600;line-height:1.9;">
+        <div style="display:flex;justify-content:space-between;"><span>Ngân hàng</span><b style="color:var(--text1);">${bank.bank_code || ''}</b></div>
+        <div style="display:flex;justify-content:space-between;"><span>Số tài khoản</span><b style="color:var(--text1);">${bank.account_number || ''}</b></div>
+        <div style="display:flex;justify-content:space-between;"><span>Chủ tài khoản</span><b style="color:var(--text1);">${bank.account_name || ''}</b></div>
+        <div style="display:flex;justify-content:space-between;"><span>Số tiền</span><b style="color:var(--teal-d);">${_fmtVnd(amount)}</b></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span>Nội dung CK</span><b style="color:#E8590C;letter-spacing:.5px;">${code}</b></div>
+      </div>
+      <div style="background:#FFF7E6;border:1px solid #FFE0A3;border-radius:12px;padding:10px 12px;font-size:11.5px;color:#8A5A08;font-weight:600;line-height:1.5;">⚠️ Chuyển khoản <b>đúng số tiền</b> và giữ nguyên nội dung <b>"${code}"</b> để hệ thống tự nâng gói. Gói mở khóa trong vài giây sau khi chuyển.</div>
+      <div id="pay-status" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;font-weight:800;color:var(--text2);font-size:13px;">
+        <span style="width:14px;height:14px;border:2.5px solid #CBD8D3;border-top-color:var(--teal);border-radius:50%;display:inline-block;animation:spin .7s linear infinite;"></span> Đang chờ thanh toán…
+      </div>
+      <div style="text-align:center;margin-top:8px;"><a href="#" onclick="closeCheckout();openPremium();return false;" style="font-size:12px;color:var(--text3);font-weight:700;">← Chọn gói khác</a></div>
+    </div>`;
+  _startPolling(code);
+}
+
+function _startPolling(code) {
+  if (_sbPollTimer) clearInterval(_sbPollTimer);
+  const tok = localStorage.getItem('sb_token');
+  _sbPollTimer = setInterval(async () => {
+    const modal = document.getElementById('checkout-modal');
+    if (!modal || modal.style.display === 'none') { clearInterval(_sbPollTimer); _sbPollTimer = null; return; }
+    try {
+      const res = await fetch(`${CL_API}/billing/order-status?code=${encodeURIComponent(code)}`, { headers: { 'Authorization': 'Bearer ' + tok } });
+      const data = await res.json().catch(() => ({}));
+      if (data.status === 'paid') { clearInterval(_sbPollTimer); _sbPollTimer = null; _onPaid(data); }
+      else if (data.status === 'expired') {
+        clearInterval(_sbPollTimer); _sbPollTimer = null;
+        const s = document.getElementById('pay-status');
+        if (s) s.innerHTML = '⌛ Mã đã hết hạn. <a href="#" onclick="openCheckout(window._coPlan);return false;" style="color:var(--teal-d);font-weight:900;">Tạo mã mới</a>';
+      }
+    } catch (e) {}
+  }, 4000);
+}
+
+function _onPaid(data) {
+  try {
+    if (data.user) {
+      const u = JSON.parse(localStorage.getItem('sb_user') || '{}');
+      u.plan = data.user.plan; u.plan_expires_at = data.user.plan_expires_at;
+      localStorage.setItem('sb_user', JSON.stringify(u));
+      if (typeof authCurrentUser !== 'undefined' && authCurrentUser) { authCurrentUser.plan = data.user.plan; authCurrentUser.plan_expires_at = data.user.plan_expires_at; }
+    }
+  } catch (e) {}
+  closeCheckout();
+  if (typeof confetti === 'function') confetti();
+  if (typeof showAuthToast === 'function') showAuthToast('🎉 Thanh toán thành công! Gói đã được kích hoạt.', 'var(--teal)');
+  if (typeof pushNotification === 'function') pushNotification('system', 'Nâng cấp gói thành công', 'Cảm ơn bạn! Gói mới đã được kích hoạt.', {});
+  if (typeof renderAuthState === 'function') renderAuthState();
+}
+
+function closeCheckout() {
+  const m = document.getElementById('checkout-modal'); if (m) m.style.display = 'none';
+  if (_sbPollTimer) { clearInterval(_sbPollTimer); _sbPollTimer = null; }
 }
 
 // ── Quên mật khẩu (trong modal của app) ──

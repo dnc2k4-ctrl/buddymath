@@ -114,3 +114,16 @@ FROM_EMAIL = os.environ.get("FROM_EMAIL") or SMTP_USER
 
 # URL gốc dùng trong nội dung email
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000")
+
+
+# ─── Thanh toán: VietQR + SePay (đối soát chuyển khoản tự động) ────────────────
+# BANK_CODE: mã ngân hàng theo VietQR/SePay (vd: MB, VCB, TPB, ACB, VPB, TCB, BIDV…).
+# BANK_ACCOUNT_NUMBER: số tài khoản nhận tiền. BANK_ACCOUNT_NAME: tên chủ TK (để hiển thị).
+# SEPAY_API_KEY: khóa để XÁC THỰC webhook SePay gọi về (đặt trùng với cấu hình trên SePay).
+BANK_ACCOUNT_NUMBER = os.environ.get("BANK_ACCOUNT_NUMBER", "")
+BANK_CODE           = os.environ.get("BANK_CODE", "")
+BANK_ACCOUNT_NAME   = os.environ.get("BANK_ACCOUNT_NAME", "")
+SEPAY_API_KEY       = os.environ.get("SEPAY_API_KEY", "")
+ORDER_TTL_MIN       = int(os.environ.get("ORDER_TTL_MIN", "30"))   # đơn hết hạn sau N phút
+# Bật endpoint nâng gói GIẢ (không thanh toán) — CHỈ để dev/thử. Mặc định TẮT ở production.
+ENABLE_MOCK_BILLING = os.environ.get("ENABLE_MOCK_BILLING", "").lower() in ("1", "true", "yes")

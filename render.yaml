@@ -63,3 +63,16 @@ services:
         sync: false
       - key: FROM_EMAIL
         sync: false
+      # ── CORS: đặt domain thật để siết (vd https://tenmien.com). Bỏ trống = cho phép mọi origin. ──
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # ── Thanh toán VietQR + SePay (điền trong Dashboard) ──
+      # BANK_CODE: mã NH theo VietQR (MB, VCB, TPB, ACB...). SEPAY_API_KEY: khóa xác thực webhook.
+      - key: BANK_ACCOUNT_NUMBER
+        sync: false
+      - key: BANK_CODE
+        sync: false
+      - key: BANK_ACCOUNT_NAME
+        sync: false
+      - key: SEPAY_API_KEY
+        sync: false

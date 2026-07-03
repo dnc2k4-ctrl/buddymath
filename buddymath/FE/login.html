@@ -3,8 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartBuddy — Đăng nhập</title>
+<meta name="theme-color" content="#1FCBA6">
+<title>SmartBuddy — Gia sư AI Toán & Tiếng Anh cho học sinh lớp 3–9</title>
+<meta name="description" content="SmartBuddy: gia sư AI thân thiện dạy Toán, Tiếng Anh và kỹ năng sống cho học sinh lớp 3–9 theo chương trình Việt Nam. Hướng dẫn tư duy từng bước, không làm bài thay. Đăng ký miễn phí.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="/">
+<!-- Open Graph / mạng xã hội -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SmartBuddy">
+<meta property="og:title" content="SmartBuddy — Gia sư AI cho học sinh lớp 3–9">
+<meta property="og:description" content="Học Toán, Tiếng Anh & kỹ năng sống cùng gia sư AI thân thiện. Hướng dẫn tư duy từng bước, không làm bài thay.">
+<meta property="og:image" content="/images/anhtrangchu.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/images/logogiaodienmoi.jpg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"EducationalOrganization","name":"SmartBuddy","description":"Gia sư AI dạy Toán, Tiếng Anh và kỹ năng sống cho học sinh lớp 3–9 theo chương trình Việt Nam.","url":"/","logo":"/images/logogiaodienmoi.jpg","areaServed":"VN","audience":{"@type":"EducationalAudience","educationalRole":"student"}}
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{overflow-x:hidden;}
@@ -285,7 +300,7 @@ body{
             <input class="inp" id="reg-name" type="text" placeholder="Nhập họ và tên"></div>
         </div>
         <div class="field">
-          <label>Email</label>
+          <label>Email <span style="color:var(--text3);font-weight:600;">(nhận mã xác minh)</span></label>
           <div class="input-wrap"><span class="ic">📧</span>
             <input class="inp" id="reg-email" type="email" placeholder="Nhập email của bạn" autocomplete="email" oninput="resetOtpState()"></div>
         </div>
@@ -304,7 +319,7 @@ body{
         </div>
 
         <div class="field">
-          <label>Số điện thoại <span style="color:var(--text3);font-weight:600;">(tùy chọn)</span></label>
+          <label>Số điện thoại <span style="color:var(--text3);font-weight:600;">(tùy chọn — dùng để đăng nhập thay email)</span></label>
           <div class="input-wrap"><span class="ic">📱</span>
             <input class="inp" id="reg-phone" type="tel" inputmode="numeric" placeholder="Nhập số điện thoại"></div>
         </div>
@@ -331,7 +346,7 @@ body{
 
         <label class="chk span2">
           <input type="checkbox" id="reg-agree" checked>
-          <span>Tôi đồng ý với <a class="link" onclick="return false;">Điều khoản sử dụng</a> và <a class="link" onclick="return false;">Chính sách bảo mật</a></span>
+          <span>Tôi đồng ý với <a class="link" href="/terms" target="_blank" rel="noopener">Điều khoản sử dụng</a> và <a class="link" href="/privacy" target="_blank" rel="noopener">Chính sách bảo mật</a></span>
         </label>
 
         <button class="btn-primary span2" id="reg-btn" onclick="onRegisterPrimary()">✉️ Gửi mã xác minh</button>
@@ -559,14 +574,8 @@ document.addEventListener('keydown', e => {
   } else { doLogin(); }
 });
 
-// Tự tạo tài khoản demo lần đầu (không cần OTP — đăng ký nội bộ)
-(async function seedDemo(){
-  const demos = [
-    { email:'student@demo.vn', username:'Học Sinh Demo', password:'demo123', role:'student', grade:5 },
-    { email:'parent@demo.vn',  username:'Phụ Huynh Demo', password:'demo123', role:'parent',  grade:0 },
-  ];
-  for (const d of demos){ try{ await fetch(`${API}/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}); }catch(_){} }
-})();
+// (Tài khoản demo được seed sẵn ở server lúc khởi động — xem seed_demo_accounts()
+//  trong BE. Không đăng ký lại từ client vì đăng ký nay bắt buộc mã OTP.)
 
 // Điền sẵn email đã ghi nhớ
 const savedEmail = localStorage.getItem('sb_saved_email');

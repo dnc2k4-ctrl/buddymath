@@ -80,3 +80,37 @@ async def rate_limit_llm(request: Request) -> None:
         if len(_store) > 5000:  # dọn key rỗng để không phình RAM
             for k in [k for k, v in _store.items() if not v]:
                 _store.pop(k, None)
+
+
+# ── Rate-limit riêng cho endpoint auth (đăng nhập/đăng ký/OTP) ──────────────────
+# Khoá THEO IP (chưa đăng nhập). Chặt hơn LLM để chống dò mật khẩu & spam OTP.
+_AUTH_WINDOWS = [
+    (60,   _env_int("RL_AUTH_PER_MIN", 15)),    # 15 lần/phút/IP
+    (3600, _env_int("RL_AUTH_PER_HOUR", 80)),   # 80 lần/giờ/IP
+]
+_auth_store: dict[str, deque] = defaultdict(deque)
+_MAX_AUTH_WIN = max(w[0] for w in _AUTH_WINDOWS)
+
+
+async def rate_limit_auth(request: Request) -> None:
+    """Dependency: chặn 429 khi 1 IP gọi endpoint auth quá dày (chống brute-force/spam)."""
+    key = f"auth:{_client_ip(request)}"
+    now = time.time()
+    with _lock:
+        dq = _auth_store[key]
+        while dq and now - dq[0] > _MAX_AUTH_WIN:
+            dq.popleft()
+        for win, limit in _AUTH_WINDOWS:
+            count = sum(1 for ts in dq if now - ts <= win)
+            if count >= limit:
+                oldest = next((ts for ts in dq if now - ts <= win), now)
+                retry = max(1, int(win - (now - oldest)))
+                raise HTTPException(
+                    status_code=429,
+                    detail="Bạn thao tác hơi nhanh. Vui lòng đợi một lát rồi thử lại nhé.",
+                    headers={"Retry-After": str(retry)},
+                )
+        dq.append(now)
+        if len(_auth_store) > 5000:
+            for k in [k for k, v in _auth_store.items() if not v]:
+                _auth_store.pop(k, None)

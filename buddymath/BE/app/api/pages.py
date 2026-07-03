@@ -43,6 +43,18 @@ async def serve_admin():
     return _serve("admin.html")
 
 
+@router.get("/terms")
+async def serve_terms():
+    """Điều khoản sử dụng (bắt buộc cho sản phẩm công khai)."""
+    return _serve("terms.html")
+
+
+@router.get("/privacy")
+async def serve_privacy():
+    """Chính sách bảo mật (bắt buộc cho sản phẩm công khai)."""
+    return _serve("privacy.html")
+
+
 # ─── Gói đăng ký: 1 nguồn duy nhất (app/plans.py) phơi ra cho FE ──────────────
 @router.get("/config/plans.js", include_in_schema=False)
 async def plans_js():
@@ -82,6 +94,8 @@ _SITEMAP_PAGES = [
     ("/",             "weekly",  "1.0"),
     ("/app",          "weekly",  "0.8"),
     ("/parent-portal", "monthly", "0.5"),
+    ("/terms",        "yearly",  "0.3"),
+    ("/privacy",      "yearly",  "0.3"),
 ]
 
 

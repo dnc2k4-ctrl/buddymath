@@ -16,13 +16,15 @@ Chạy:  uvicorn app.main:app --host 0.0.0.0 --port 8000
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.gzip import GZipMiddleware
 
-from app.api import auth, catalog, chat, classroom, pages, parent, scores
+from app.api import auth, billing, catalog, chat, classroom, pages, parent, scores
 from app.config import IMAGES_DIR
 from app.core.database import init_db
 from app.services import runtime
@@ -58,10 +60,17 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     app = FastAPI(title="BuddyMath API", version="3.0.0", lifespan=lifespan)
 
+    # Nén gzip cho HTML/JS/CSS/JSON (trang app ~600KB → giảm mạnh dung lượng tải).
+    app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+    # CORS: xác thực dùng Bearer token (localStorage), KHÔNG dùng cookie → allow_credentials=False.
+    # Mặc định "*" (an toàn khi không có credentials). Khi lên domain riêng, đặt env
+    # ALLOWED_ORIGINS="https://tenmien.com" để siết chỉ cho domain của bạn.
+    _origins = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "*").split(",") if o.strip()]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
+        allow_origins=_origins or ["*"],
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -96,7 +105,7 @@ def create_app() -> FastAPI:
     app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
 
     # Routers
-    for module in (pages, auth, scores, parent, chat, catalog, classroom):
+    for module in (pages, auth, billing, scores, parent, chat, catalog, classroom):
         app.include_router(module.router)
 
     return app
