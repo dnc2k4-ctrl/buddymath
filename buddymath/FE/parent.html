@@ -3,407 +3,740 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1FCBA6">
 <title>SmartBuddy — Cổng Phụ Huynh</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="/images/mascot/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --teal:#2EC4A0;--teal-d:#1A7A60;
-  --blue:#3742FA;--purple:#A55EEA;
-  --yellow:#FFD700;--orange:#FF6B35;
-  --red:#FF4757;--green:#2ED573;
-  --bg:#EEF8F5;--white:#fff;
-  --text1:#1A2340;--text2:#5A6890;--text3:#A0AABF;
-  --shadow:0 4px 0 rgba(0,0,0,.10);
+  --red:#FF6B6B;--orange:#FF6B35;--yellow:#FFCB45;--green:#2ED573;
+  --teal:#1FCBA6;--teal-d:#11917A;--teal-dd:#0E8F79;
+  --blue:#1E90FF;--purple:#A55EEA;--pink:#FF6EB4;
+  --white:#FFFFFF;--bg:#F2FBF9;--card:#FFFFFF;
+  --text1:#1A2340;--text2:#5A6890;--text3:#A0AABF;--line:#E9EEF5;
+  --shadow:0 6px 0 rgba(0,0,0,0.12);--shadow-sm:0 3px 0 rgba(0,0,0,0.10);
 }
-html,body{height:100%;overflow:hidden;font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:flex;flex-direction:column;height:100vh;position:relative;}
+
+/* ── Floating bubbles (giống trang học sinh) ── */
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bubble-shape{position:absolute;border-radius:50%;opacity:.16;filter:blur(.4px);animation:floatUp linear infinite;}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg) scale(1);}50%{transform:translateY(-40px) rotate(180deg) scale(1.1);}100%{transform:translateY(0) rotate(360deg) scale(1);}}
 
 /* ── Header ── */
-.header{
-  height:62px;background:linear-gradient(135deg,#2EC4A0,#1E90FF 60%,#A55EEA);
-  display:flex;align-items:center;gap:14px;padding:0 20px;
-  box-shadow:0 4px 0 rgba(0,0,0,.12);flex-shrink:0;
-}
-.h-logo{font-family:'Baloo 2',cursive;font-size:22px;color:white;font-weight:800;display:flex;align-items:center;gap:8px;}
-.h-badge{background:rgba(255,255,255,.25);color:white;font-size:11px;font-weight:900;padding:3px 10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.4);}
-.h-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
-.h-user{color:white;font-size:13px;font-weight:800;display:flex;align-items:center;gap:7px;}
-.h-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:16px;}
-.logout-btn{background:rgba(255,255,255,.18);color:white;border:1.5px solid rgba(255,255,255,.4);border-radius:10px;padding:6px 13px;font-family:'Nunito',Arial;font-size:12px;font-weight:800;cursor:pointer;transition:all .15s;}
-.logout-btn:hover{background:rgba(255,255,255,.3);}
+.header{background:linear-gradient(135deg,#1FCBA6 0%,#13B392 45%,#0FA678 100%);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px;flex-shrink:0;position:relative;z-index:10;box-shadow:0 4px 0 rgba(27,184,147,0.35);}
+.logo{display:flex;align-items:center;gap:9px;color:white;}
+.logo-chip{width:44px;height:44px;flex-shrink:0;background:white;border-radius:13px;overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;}
+.logo-chip img{width:100%;height:100%;object-fit:contain;}
+.logo-txt{font-family:'Baloo 2',cursive;font-size:19px;font-weight:800;letter-spacing:.3px;text-shadow:1px 1px 0 rgba(0,0,0,0.12);line-height:1.1;}
+.logo-sub{font-size:9px;opacity:.85;font-weight:700;letter-spacing:.08em;}
+.badge-pill{background:rgba(255,255,255,0.25);color:white;font-size:11px;font-weight:800;padding:5px 13px;border-radius:20px;border:2px solid rgba(255,255,255,0.4);letter-spacing:.05em;}
+.header-right{margin-left:auto;display:flex;gap:10px;align-items:center;}
+.user-pill{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.35);border-radius:16px;padding:4px 12px 4px 5px;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.user-name{font-size:13px;font-weight:900;color:white;line-height:1.15;}
+.user-role{font-size:10px;font-weight:700;color:rgba(255,255,255,0.85);}
+.logout-btn{background:rgba(255,255,255,0.18);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:12px;padding:8px 13px;font-family:'Nunito',Arial;font-size:12.5px;font-weight:900;cursor:pointer;transition:all .15s;box-shadow:0 3px 0 rgba(0,0,0,0.12);}
+.logout-btn:hover{background:rgba(255,255,255,0.32);transform:translateY(-1px);}
 
 /* ── Layout ── */
-.layout{display:grid;grid-template-columns:280px 1fr;flex:1;overflow:hidden;height:calc(100vh - 62px);}
+.layout{display:grid;grid-template-columns:300px 1fr;flex:1;overflow:hidden;position:relative;z-index:1;}
 
 /* ── Sidebar ── */
-.sidebar{background:white;border-right:2px solid rgba(0,0,0,.06);padding:16px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
-.sidebar-title{font-size:10px;font-weight:900;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding:0 4px;}
-
-.child-card{
-  background:linear-gradient(135deg,#F8FFFE,#EFF8FF);border-radius:16px;padding:14px;
-  border:2px solid #D0F0E8;cursor:pointer;transition:all .18s cubic-bezier(.34,1.56,.64,1);
-}
-.child-card:hover,.child-card.active{border-color:var(--teal);box-shadow:0 5px 0 rgba(46,196,160,.2);}
-.child-card.active{background:linear-gradient(135deg,#E8FFF8,#E0F8FF);}
+.sidebar{background:linear-gradient(180deg,#F0FFFA 0%,#E8F8F4 60%,#F2FBF9 100%);border-right:3px solid rgba(46,196,160,0.15);padding:16px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+.sidebar-title{font-size:10px;font-weight:900;color:var(--teal-d);letter-spacing:.12em;text-transform:uppercase;padding:2px 4px;}
+.child-card{background:#fff;border-radius:16px;padding:14px;border:2.5px solid #E1F2EC;cursor:pointer;transition:all .18s cubic-bezier(.34,1.56,.64,1);box-shadow:0 3px 0 rgba(0,0,0,0.05);}
+.child-card:hover,.child-card.active{border-color:var(--teal);box-shadow:0 5px 0 rgba(31,203,166,.25);transform:translateY(-1px);}
+.child-card.active{background:linear-gradient(135deg,#EAFBF4,#E6F5FF);}
 .cc-name{font-size:15px;font-weight:900;color:var(--text1);display:flex;align-items:center;gap:8px;}
 .cc-meta{font-size:12px;color:var(--text2);font-weight:600;margin-top:4px;}
 .cc-stats{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-.cc-stat{background:white;border-radius:10px;padding:6px 10px;font-size:11px;font-weight:800;color:var(--text2);border:1.5px solid #E0F0EA;}
+.cc-stat{background:#F6FBFA;border-radius:10px;padding:6px 10px;font-size:11px;font-weight:800;color:var(--text2);border:1.5px solid #E1F2EC;}
 .cc-stat span{color:var(--teal-d);font-weight:900;}
-
-/* Link child form */
-.link-box{background:linear-gradient(135deg,#F5F0FF,#EEF4FF);border-radius:16px;padding:14px;border:2px solid #D8D0FF;}
-.link-title{font-size:13px;font-weight:900;color:var(--purple);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.link-input{width:100%;padding:10px 12px;border:2px solid #D8D0FF;border-radius:12px;font-family:'Nunito',Arial;font-size:13px;font-weight:700;color:var(--text1);outline:none;background:white;margin-bottom:8px;transition:all .2s;}
-.link-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(165,94,234,.12);}
-.link-btn{width:100%;padding:10px;border:none;border-radius:12px;background:linear-gradient(135deg,#A55EEA,#3742FA);color:white;font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 rgba(55,66,250,.3);transition:all .15s;}
-.link-btn:hover{transform:translateY(-1px);}
+.link-box{background:linear-gradient(135deg,#EAFBF5,#EAF6FF);border-radius:16px;padding:14px;border:2.5px solid #CDEEE4;box-shadow:0 3px 0 rgba(0,0,0,0.04);}
+.link-title{font-size:13px;font-weight:900;color:var(--teal-d);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.link-input{width:100%;padding:10px 12px;border:2.5px solid #CDEEE4;border-radius:12px;font-family:'Nunito',Arial;font-size:13px;font-weight:700;color:var(--text1);outline:none;background:#fff;margin-bottom:8px;transition:all .2s;}
+.link-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(31,203,166,.15);}
+.link-btn{width:100%;padding:11px;border:none;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#11917A);color:#fff;font-family:'Nunito',Arial;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 rgba(17,145,122,.32);transition:all .15s;}
+.link-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(17,145,122,.32);}
+.link-btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(17,145,122,.32);}
+.side-tip{margin-top:auto;background:linear-gradient(135deg,#FFF3E6,#FFEDF3);border:2.5px solid #FFDDC4;border-radius:16px;padding:12px 14px;text-align:center;box-shadow:0 4px 0 rgba(255,140,80,0.14);}
+.side-tip img{height:66px;width:auto;margin:0 auto 6px;display:block;filter:drop-shadow(0 6px 10px rgba(18,49,74,.12));}
+.side-tip .st-title{font-family:'Baloo 2',cursive;font-size:15px;color:var(--text1);}
+.side-tip .st-sub{font-size:11.5px;color:var(--text2);font-weight:600;line-height:1.5;margin-top:2px;}
 
 /* ── Main ── */
-.main{overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:18px;}
+.main{overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:18px;position:relative;z-index:1;}
 
-/* No child selected state */
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px;color:var(--text3);font-weight:700;text-align:center;}
+/* Hero greeting */
+.hero{display:flex;align-items:center;gap:18px;background:linear-gradient(120deg,#FFFFFF 0%,#EEFBF6 100%);border:2.5px solid #D2F0E7;border-radius:22px;padding:16px 22px;box-shadow:0 5px 0 rgba(46,196,160,0.15);}
+.hero-mascot{height:84px;width:auto;flex-shrink:0;filter:drop-shadow(0 8px 14px rgba(18,49,74,.14));animation:wobble 3s ease-in-out infinite;}
+@keyframes wobble{0%,100%{transform:rotate(-3deg);}50%{transform:rotate(3deg);}}
+.hero-title{font-family:'Baloo 2',cursive;font-size:24px;color:var(--text1);}
+.hero-title span{color:var(--orange);}
+.hero-sub{font-size:14px;color:var(--text2);font-weight:600;margin-top:3px;line-height:1.5;max-width:660px;}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46vh;gap:14px;color:var(--text3);font-weight:700;text-align:center;}
 .empty-icon{font-size:48px;}
+.empty-mascot{height:120px;width:auto;filter:drop-shadow(0 10px 18px rgba(18,49,74,.14));animation:wobble 3s ease-in-out infinite;}
 
-/* ── Report header ── */
-.report-header{display:flex;align-items:center;gap:14px;background:white;border-radius:20px;padding:18px 20px;box-shadow:var(--shadow);border:2px solid #E8F5F0;}
-.rh-avatar{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#2EC4A0,#1E90FF);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 5px 0 rgba(46,196,160,.3);}
+/* Report header */
+.report-header{display:flex;align-items:center;gap:14px;background:#fff;border-radius:20px;padding:16px 20px;box-shadow:0 5px 0 rgba(0,0,0,0.06);border:2.5px solid #EAF5F1;flex-wrap:wrap;}
+.rh-avatar{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 5px 0 rgba(31,203,166,.28);flex-shrink:0;}
 .rh-name{font-family:'Baloo 2',cursive;font-size:22px;color:var(--text1);}
-.rh-meta{font-size:13px;color:var(--text2);font-weight:600;margin-top:2px;}
-.rh-actions{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;}
-.period-btn{padding:8px 14px;border:2.5px solid #E0E8F0;border-radius:12px;background:white;cursor:pointer;font-family:'Nunito',Arial;font-size:12px;font-weight:800;color:var(--text2);transition:all .15s;}
-.period-btn.active,.period-btn:hover{background:var(--teal);color:white;border-color:var(--teal);}
-.send-report-btn{padding:8px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#FF6B35,#FF4757);color:white;font-family:'Nunito',Arial;font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 rgba(255,71,87,.3);transition:all .15s;}
-.send-report-btn:hover{transform:translateY(-1px);}
+.rh-meta{font-size:13px;color:var(--text2);font-weight:700;margin-top:2px;}
+.rh-actions{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.period-toggle{display:flex;background:#F1F7F5;border:2px solid #E4EFEB;border-radius:12px;padding:3px;gap:3px;}
+.period-btn{padding:7px 14px;border:none;border-radius:9px;background:transparent;cursor:pointer;font-family:'Nunito',Arial;font-size:12px;font-weight:900;color:var(--text2);transition:all .15s;}
+.period-btn.active{background:var(--teal);color:#fff;box-shadow:0 3px 0 rgba(17,145,122,.3);}
+.send-report-btn{padding:9px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#11917A);color:#fff;font-family:'Nunito',Arial;font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 rgba(17,145,122,.32);transition:all .15s;}
+.send-report-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(17,145,122,.32);}
+.send-report-btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(17,145,122,.32);}
 
-/* ── Stats row ── */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.stat-card{background:white;border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);border:2px solid transparent;text-align:center;}
-.stat-card:nth-child(1){border-color:#D0F0E8;}
-.stat-card:nth-child(2){border-color:#D8D0FF;}
-.stat-card:nth-child(3){border-color:#FFE0B0;}
-.stat-num{font-family:'Baloo 2',cursive;font-size:32px;font-weight:900;}
-.stat-card:nth-child(1) .stat-num{color:var(--teal);}
-.stat-card:nth-child(2) .stat-num{color:var(--purple);}
-.stat-card:nth-child(3) .stat-num{color:var(--orange);}
-.stat-label{font-size:12px;color:var(--text2);font-weight:700;margin-top:4px;}
+/* Tab nav */
+.tab-nav{display:flex;gap:10px;}
+.tab-btn{flex:1;padding:13px;border:2.5px solid #E4EFEB;border-radius:16px;background:#fff;cursor:pointer;font-family:'Nunito',Arial;font-size:15px;font-weight:900;color:var(--text2);transition:all .18s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 0 rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;gap:8px;}
+.tab-btn:hover{transform:translateY(-2px);}
+.tab-btn.active{color:#fff;border-color:transparent;box-shadow:0 4px 0 rgba(17,145,122,.35);}
+#tab-report.active,#tab-advisor.active{background:linear-gradient(135deg,#1FCBA6,#11917A);}
 
-/* ── Subject panels ── */
-.subj-section{background:white;border-radius:18px;padding:18px 20px;box-shadow:var(--shadow);border:2px solid #F0F0FF;}
-.subj-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.subj-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 0 rgba(0,0,0,.12);}
+#view-report{display:flex;flex-direction:column;gap:18px;}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.stat-card{background:#fff;border-radius:18px;padding:16px;box-shadow:0 5px 0 rgba(0,0,0,0.06);border:2.5px solid #EAF5F1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;}
+.stat-card.c-teal::before{background:var(--teal);}
+.stat-card.c-blue::before{background:var(--blue);}
+.stat-card.c-orange::before{background:var(--orange);}
+.stat-card.c-purple::before{background:var(--purple);}
+.stat-ico{font-size:22px;margin:2px 0;}
+.stat-num{font-family:'Baloo 2',cursive;font-size:30px;font-weight:900;line-height:1;}
+.c-teal .stat-num{color:var(--teal-d);}.c-blue .stat-num{color:var(--blue);}
+.c-orange .stat-num{color:var(--orange);}.c-purple .stat-num{color:var(--purple);}
+.stat-label{font-size:12px;color:var(--text2);font-weight:800;margin-top:4px;}
+
+/* Charts */
+.charts-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;}
+.chart-card{background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 4px 0 rgba(0,0,0,0.06);border:2.5px solid #EAF5F1;}
+.chart-title{font-family:'Baloo 2',cursive;font-size:16px;color:var(--text1);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.line-chart svg{width:100%;height:auto;display:block;}
+.donut-wrap{display:flex;align-items:center;gap:18px;}
+.donut{width:134px;height:134px;border-radius:50%;flex-shrink:0;position:relative;}
+.donut::after{content:'';position:absolute;inset:27px;background:#fff;border-radius:50%;box-shadow:inset 0 2px 5px rgba(0,0,0,.05);}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;}
+.donut-num{font-family:'Baloo 2',cursive;font-size:27px;color:var(--text1);line-height:1;}
+.donut-label{font-size:9.5px;color:var(--text3);font-weight:900;letter-spacing:.08em;margin-top:2px;}
+.donut-legend{display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
+.dl-item{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:var(--text2);}
+.dl-dot{width:11px;height:11px;border-radius:4px;flex-shrink:0;}
+.dl-val{margin-left:auto;color:var(--text1);font-weight:900;white-space:nowrap;}
+
+/* Subject panels */
+.subj-section{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 4px 0 rgba(0,0,0,0.06);border:2.5px solid #EAF5F1;}
+.subj-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.subj-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 0 rgba(0,0,0,.1);flex-shrink:0;}
 .subj-name{font-family:'Baloo 2',cursive;font-size:18px;color:var(--text1);}
-.subj-avg{margin-left:auto;font-size:22px;font-weight:900;font-family:'Baloo 2',cursive;}
-
+.subj-count{font-size:12px;color:var(--text3);font-weight:700;}
+.subj-avg{margin-left:auto;font-size:24px;font-weight:900;font-family:'Baloo 2',cursive;}
 .score-timeline{display:flex;flex-direction:column;gap:8px;}
-.score-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#FAFAFA;border-radius:12px;border:1.5px solid #EEE;font-size:13px;}
-.score-topic{flex:1;font-weight:700;color:var(--text1);}
-.score-date{font-size:11px;color:var(--text3);font-weight:600;white-space:nowrap;}
+.score-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#FAFCFE;border-radius:12px;border:1.5px solid var(--line);font-size:13px;flex-wrap:wrap;}
+.score-topic{flex:1;min-width:120px;font-weight:800;color:var(--text1);}
+.score-date{font-size:11px;color:var(--text3);font-weight:700;white-space:nowrap;}
+.score-bar-bg{flex:1;min-width:80px;height:8px;background:#EDF1F6;border-radius:8px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:8px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
 .score-pct{width:52px;text-align:center;font-weight:900;font-size:14px;padding:4px 8px;border-radius:8px;}
 .score-pct.great{background:#E8FFF4;color:#1A7A40;}
-.score-pct.good{background:#FFF8E0;color:#856404;}
+.score-pct.good{background:#FFF4E0;color:#8A5300;}
 .score-pct.low{background:#FFF0F0;color:#C0392B;}
-.score-bar-bg{flex:1;height:8px;background:#EEE;border-radius:8px;overflow:hidden;}
-.score-bar-fill{height:100%;border-radius:8px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
-
-/* Feedback box */
-.feedback-text{font-size:12px;color:var(--text2);font-weight:600;margin-top:6px;padding:8px 12px;background:#F8F8FF;border-radius:8px;border-left:3px solid var(--purple);line-height:1.5;display:none;}
+.feedback-text{flex-basis:100%;font-size:12px;color:var(--text2);font-weight:600;margin-top:2px;padding:8px 12px;background:#EFFAF6;border-radius:8px;border-left:3px solid var(--teal);line-height:1.5;display:none;}
 .score-row:hover .feedback-text{display:block;}
 
-/* Toast */
-.toast{
-  position:fixed;bottom:20px;right:20px;background:#1A2340;color:white;
-  border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;
-  z-index:9999;opacity:0;transform:translateY(20px);
-  transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 24px rgba(0,0,0,.2);
-}
-.toast.show{opacity:1;transform:translateY(0);}
+/* ── AI Advisor view ── */
+.assess-box{background:linear-gradient(135deg,#EAFBF5,#EAF6FF);border:2.5px solid #CDEEE4;border-radius:18px;padding:16px 20px;box-shadow:0 4px 0 rgba(31,203,166,0.14);}
+.assess-title{font-size:14px;font-weight:900;color:var(--teal-d);margin-bottom:6px;display:flex;align-items:center;gap:7px;}
+.assess-text{font-size:14px;color:var(--text1);font-weight:600;line-height:1.65;}
+.assess-text b{font-weight:900;color:var(--teal-d);}
+.advisor-card{background:#fff;border-radius:20px;border:2.5px solid #EAF5F1;box-shadow:0 5px 0 rgba(0,0,0,0.06);display:flex;flex-direction:column;overflow:hidden;margin-top:16px;}
+.advisor-head{display:flex;align-items:center;gap:12px;padding:15px 18px;background:linear-gradient(135deg,#1FCBA6,#11917A);}
+.advisor-head img{height:40px;width:auto;filter:drop-shadow(0 4px 6px rgba(0,0,0,.15));}
+.advisor-head .ah-emoji{font-size:26px;}
+.advisor-head .ah-title{font-family:'Baloo 2',cursive;font-size:17px;color:#fff;line-height:1.15;}
+.advisor-head .ah-sub{font-size:11.5px;color:rgba(255,255,255,.9);font-weight:700;}
+.advisor-messages{padding:18px;display:flex;flex-direction:column;gap:14px;max-height:44vh;overflow-y:auto;}
+.advisor-messages::-webkit-scrollbar{width:6px;}
+.advisor-messages::-webkit-scrollbar-thumb{background:#DDD;border-radius:10px;}
+.msg-row{display:flex;gap:10px;max-width:88%;animation:slideIn .25s cubic-bezier(.34,1.56,.64,1);}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px) scale(.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+.msg-row.user{align-self:flex-end;flex-direction:row-reverse;}
+.msg-row.ai{align-self:flex-start;}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:2px;box-shadow:0 3px 0 rgba(0,0,0,.12);overflow:hidden;}
+.avatar.ai{background:linear-gradient(135deg,#1FCBA6,#11917A);}
+.avatar.user{background:linear-gradient(135deg,#2ED573,#1E90FF);}
+.avatar img{width:24px;height:24px;object-fit:contain;}
+.bubble{padding:11px 15px;font-size:14px;line-height:1.65;color:var(--text1);font-weight:600;}
+.msg-row.ai .bubble{background:#F7FAF9;border-radius:20px 20px 20px 6px;box-shadow:0 3px 0 rgba(0,0,0,.06);border:2px solid #EDF3F1;}
+.msg-row.user .bubble{background:linear-gradient(135deg,#2ED573,#1E90FF);color:#fff;border-radius:20px 20px 6px 20px;box-shadow:0 4px 0 rgba(30,144,255,.28);}
+.bubble p{margin-bottom:6px;}.bubble p:last-child{margin-bottom:0;}.bubble strong{font-weight:900;}
+.bubble .fmt-list{margin:4px 0 6px 2px;padding-left:18px;}
+.bubble .fmt-list li{margin-bottom:4px;}
+.bubble .fmt-h{font-family:'Baloo 2',cursive;font-size:15px;margin:4px 0;color:var(--text1);}
+.bubble code{background:rgba(0,0,0,0.06);border-radius:5px;padding:1px 5px;font-size:12.5px;}
+.msg-row.user .bubble code{background:rgba(255,255,255,0.22);}
+.dots-wrap{display:flex;gap:5px;align-items:center;padding:4px 0;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--teal);opacity:.6;animation:boing 1s ease-in-out infinite;}
+.dot:nth-child(2){animation-delay:.15s;}.dot:nth-child(3){animation-delay:.3s;}
+@keyframes boing{0%,80%,100%{transform:scale(1);}40%{transform:scale(1.5);opacity:1;}}
+.advisor-quick{display:flex;gap:7px;flex-wrap:wrap;padding:0 18px 12px;}
+.qp{font-family:'Nunito',Arial;font-size:12.5px;font-weight:800;padding:8px 13px;border-radius:18px;border:2px solid #DBEFE9;background:#fff;color:var(--text2);cursor:pointer;transition:all .15s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 0 rgba(0,0,0,0.06);}
+.qp:hover{border-color:var(--teal);color:var(--teal-d);transform:translateY(-1px);}
+.advisor-input-row{display:flex;gap:10px;align-items:flex-end;padding:12px 16px 16px;border-top:2.5px solid #F0F5F3;background:#fff;}
+.advisor-input{flex:1;min-height:48px;max-height:120px;padding:12px 16px;border-radius:16px;border:2.5px solid #CDEEE4;background:#F7FCFB;font-family:'Nunito',Arial;font-size:14px;font-weight:700;color:var(--text1);resize:none;outline:none;transition:all .2s;line-height:1.5;}
+.advisor-input:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 4px rgba(31,203,166,.14);}
+.advisor-input::placeholder{color:var(--text3);font-weight:600;}
+.send-btn{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#1FCBA6,#11917A);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex-shrink:0;box-shadow:0 5px 0 rgba(17,145,122,.38);transition:all .15s;}
+.send-btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 rgba(17,145,122,.38);}
+.send-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(17,145,122,.38);}
+.send-btn:disabled{background:#DDD;box-shadow:0 3px 0 #BBB;cursor:not-allowed;transform:none;}
 
-/* Loading */
-.loading-spinner{width:36px;height:36px;border-radius:50%;border:4px solid #E0F0EA;border-top-color:var(--teal);animation:spin .7s linear infinite;margin:auto;}
+/* Toast + spinner */
+.toast{position:fixed;bottom:20px;right:20px;background:#1A2340;color:#fff;border-radius:14px;padding:12px 20px;font-size:13px;font-weight:800;z-index:9999;opacity:0;transform:translateY(20px);transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 24px rgba(0,0,0,.2);}
+.toast.show{opacity:1;transform:translateY(0);}
+.loading-spinner{width:36px;height:36px;border-radius:50%;border:4px solid #E0F0EA;border-top-color:var(--teal);animation:spin .7s linear infinite;margin:24px auto;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:1000px){.charts-grid{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:760px){.layout{grid-template-columns:1fr;}.sidebar{max-height:34vh;}}
+
+/* ── Thu nhỏ + đơn giản hoá giao diện chính ── */
+.main{max-width:1120px;margin:0 auto;width:100%;padding:16px 20px;gap:14px;}
+.hero{padding:12px 18px;gap:14px;border-radius:18px;}
+.hero-mascot{height:56px;}
+.hero-title{font-size:20px;}
+.hero-sub{font-size:12.5px;max-width:560px;margin-top:2px;}
+.report-header{padding:12px 16px;border-radius:16px;}
+.rh-avatar{width:46px;height:46px;border-radius:14px;font-size:22px;}
+.rh-name{font-size:18px;}
+.rh-meta{font-size:12px;}
+.tab-btn{padding:10px;font-size:13.5px;border-radius:13px;}
+.stats-row{gap:11px;}
+.stat-card{padding:12px 10px;border-radius:14px;}
+.stat-ico{font-size:18px;}
+.stat-num{font-size:23px;}
+.stat-label{font-size:11px;}
+.charts-grid{gap:13px;}
+.chart-card{padding:13px 15px;border-radius:15px;}
+.chart-title{font-size:14px;margin-bottom:9px;}
+.donut{width:112px;height:112px;}
+.donut::after{inset:22px;}
+.donut-num{font-size:22px;}
+.subj-section{padding:14px 16px;border-radius:15px;}
+.subj-header{margin-bottom:11px;}
+.subj-icon{width:38px;height:38px;font-size:19px;border-radius:11px;}
+.subj-name{font-size:16px;}
+.subj-avg{font-size:21px;}
+
+/* ── Nhận xét chi tiết từng bài ── */
+.score-row{align-items:center;gap:8px 12px;padding:9px 12px;}
+.score-meta{font-size:11.5px;font-weight:800;color:var(--text2);white-space:nowrap;}
+.score-meta b{color:var(--text1);font-weight:900;}
+.detail-btn{border:1.5px solid #CDEEE4;background:#F3FBF8;color:var(--teal-d);font-family:'Nunito',Arial;font-size:11px;font-weight:900;padding:5px 10px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.detail-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
+.detail-btn:disabled{opacity:.55;cursor:default;}
+.detail-box{flex-basis:100%;margin-top:4px;padding:11px 14px;background:#F7FCFB;border:1.5px solid #DDEFE9;border-left:3px solid var(--teal);border-radius:10px;font-size:12.5px;color:var(--text1);font-weight:600;line-height:1.6;}
+.detail-box .fmt-h{font-family:'Baloo 2',cursive;font-size:13px;color:var(--teal-d);margin:6px 0 3px;}
+.detail-box .fmt-list{margin:2px 0 6px;padding-left:16px;}
+.detail-box .fmt-list li{margin-bottom:3px;}
+.detail-box p{margin-bottom:5px;}
+.detail-box p:last-child{margin-bottom:0;}
+.detail-box strong{color:var(--teal-d);font-weight:900;}
+.detail-box .q-list{display:flex;flex-direction:column;gap:5px;margin:6px 0 10px;}
+.detail-box .q-item{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;font-size:12px;padding:6px 9px;border-radius:8px;background:#fff;border:1px solid #E6EFEB;}
+.detail-box .q-item.ok{background:#F2FCF7;border-color:#D8EFE3;}
+.detail-box .q-item.bad{background:#FFF6F6;border-color:#FADADA;}
+.detail-box .q-no{font-weight:900;color:var(--text2);white-space:nowrap;}
+.detail-box .q-txt{color:var(--text1);font-weight:600;flex:1;min-width:120px;}
+.detail-box .q-fix{font-weight:800;color:var(--red);white-space:nowrap;font-size:11.5px;}
+.detail-box .q-fix b{color:var(--text1);}
 </style>
 </head>
 <body>
 
 <!-- Header -->
-<div class="header">
-  <div class="h-logo">
-    <span>🤖</span> SmartBuddy
+<header class="header">
+  <div class="logo">
+    <div class="logo-chip"><img src="/images/taodang1.png" alt="SmartBuddy" onerror="this.parentNode.textContent='🤖'"></div>
+    <div>
+      <div class="logo-txt">SmartBuddy</div>
+      <div class="logo-sub">HỌC THÔNG MINH · TIẾN VỮNG VÀNG</div>
+    </div>
   </div>
-  <div class="h-badge">Cổng Phụ Huynh</div>
-  <div class="h-right">
-    <div class="h-user">
-      <div class="h-avatar">👨‍👩‍👧</div>
-      <span id="parent-name">Phụ huynh</span>
+  <span class="badge-pill">Cổng Phụ Huynh</span>
+  <div class="header-right">
+    <div class="user-pill">
+      <div class="user-avatar">👨‍👩‍👧</div>
+      <div>
+        <div class="user-name" id="parent-name">Phụ huynh</div>
+        <div class="user-role">Phụ huynh của Buddy</div>
+      </div>
     </div>
     <button class="logout-btn" onclick="logout()">🚪 Đăng xuất</button>
   </div>
-</div>
+</header>
 
 <div class="layout">
   <!-- Sidebar -->
   <div class="sidebar">
-    <div class="sidebar-title">Con em tôi</div>
-    <div id="children-list">
-      <div class="loading-spinner"></div>
-    </div>
+    <div class="sidebar-title">👨‍👩‍👧 Con em tôi</div>
+    <div id="children-list"><div class="loading-spinner"></div></div>
 
-    <div style="margin-top:8px;"></div>
-    <div class="sidebar-title">Thêm tài khoản con</div>
+    <div class="sidebar-title" style="margin-top:4px;">➕ Thêm tài khoản con</div>
     <div class="link-box">
       <div class="link-title">🔗 Liên kết tài khoản học sinh</div>
       <input class="link-input" id="child-email-input" type="email" placeholder="Email của con em...">
       <button class="link-btn" onclick="linkChild()">➕ Liên kết</button>
-      <div id="link-msg" style="font-size:12px;margin-top:8px;font-weight:600;color:var(--teal);display:none;"></div>
+      <div id="link-msg" style="font-size:12px;margin-top:8px;font-weight:700;color:var(--teal-d);display:none;"></div>
+    </div>
+
+    <div class="side-tip">
+      <img src="/images/mascot/reading.png" alt="" onerror="this.style.display='none'">
+      <div class="st-title">Cùng con học mỗi ngày!</div>
+      <div class="st-sub">Đồng hành cùng con trên hành trình chinh phục tri thức.</div>
     </div>
   </div>
 
   <!-- Main content -->
   <div class="main" id="main-content">
-    <div class="empty-state" id="empty-state">
-      <div class="empty-icon">👨‍👩‍👧</div>
-      <div style="font-size:18px;font-weight:900;color:var(--text2);">Chọn con em để xem báo cáo</div>
-      <div style="max-width:280px;line-height:1.6;">Nhấn vào tên con em ở thanh bên trái để xem chi tiết tiến trình học tập.</div>
+    <div class="hero">
+      <img class="hero-mascot" src="/images/mascot/waving.png" alt="" onerror="this.style.display='none'">
+      <div>
+        <div class="hero-title">Xin chào, <span id="hero-name">Phụ huynh</span>! 👋</div>
+        <div class="hero-sub">Cùng đồng hành và giúp con tiến bộ mỗi ngày. Chọn con em ở thanh bên trái để xem báo cáo học tập và trò chuyện cùng <b>AI Cố vấn</b>.</div>
+      </div>
     </div>
-    <div id="report-content" style="display:none;flex-direction:column;gap:18px;"></div>
+
+    <div class="empty-state" id="empty-state">
+      <img class="empty-mascot" src="/images/mascot/search.png" alt="" onerror="this.outerHTML='&lt;div class=&quot;empty-icon&quot;&gt;👨‍👩‍👧&lt;/div&gt;'">
+      <div style="font-size:18px;font-weight:900;color:var(--text2);">Chọn con em để xem báo cáo</div>
+      <div style="max-width:300px;line-height:1.6;">Nhấn vào tên con em ở thanh bên trái để xem chi tiết tiến trình học tập.</div>
+    </div>
+
+    <!-- Child view -->
+    <div id="child-view" style="display:none;flex-direction:column;gap:18px;">
+      <div class="report-header">
+        <div class="rh-avatar">🎒</div>
+        <div>
+          <div class="rh-name" id="rh-name">—</div>
+          <div class="rh-meta" id="rh-meta">—</div>
+        </div>
+        <div class="rh-actions">
+          <div class="period-toggle">
+            <button class="period-btn active" id="pb-week" onclick="setPeriod('week')">7 ngày</button>
+            <button class="period-btn" id="pb-month" onclick="setPeriod('month')">30 ngày</button>
+          </div>
+          <button class="send-report-btn" onclick="sendEmailReport()">📧 Gửi báo cáo email</button>
+        </div>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" id="tab-report" onclick="switchTab('report')">📊 Báo cáo học tập</button>
+        <button class="tab-btn" id="tab-advisor" onclick="switchTab('advisor')">💬 AI Cố vấn</button>
+      </div>
+
+      <div id="view-report"><div class="loading-spinner"></div></div>
+
+      <div id="view-advisor" style="display:none;">
+        <div id="advisor-assessment"></div>
+        <div class="advisor-card">
+          <div class="advisor-head">
+            <img src="/images/mascot/idea.png" alt="" onerror="this.outerHTML='&lt;span class=&quot;ah-emoji&quot;&gt;🤖&lt;/span&gt;'">
+            <div>
+              <div class="ah-title">Trợ lý Tư vấn Giáo dục</div>
+              <div class="ah-sub">Tư vấn dựa trên điểm số & lứa tuổi của con</div>
+            </div>
+          </div>
+          <div class="advisor-messages" id="advisor-messages"></div>
+          <div class="advisor-quick" id="advisor-quick"></div>
+          <div class="advisor-input-row">
+            <textarea id="advisor-input" class="advisor-input" rows="1" placeholder="Hỏi về việc học, tâm lý, thói quen của con..." oninput="autoH(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdvisor();}"></textarea>
+            <button class="send-btn" id="advisor-send" onclick="sendAdvisor()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// Same-origin: BE phục vụ luôn FE nên API trỏ về chính domain đang chạy
-// (localhost khi dev, *.onrender.com khi deploy). Fallback localhost khi mở file://.
+// ── Bubbles nền (đã bỏ để giao diện gọn hơn — giữ guard cho an toàn) ──
+(function(){
+  const colors=['#FF6B6B','#FF6B35','#FFCB45','#2ED573','#1E90FF','#A55EEA','#FF6EB4'];
+  const w=document.getElementById('bubbles');
+  if(!w) return;
+  for(let i=0;i<16;i++){
+    const b=document.createElement('div'); b.className='bubble-shape';
+    const s=30+Math.random()*70;
+    b.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${colors[i%colors.length]};animation-duration:${6+Math.random()*8}s;animation-delay:${Math.random()*6}s;`;
+    w.appendChild(b);
+  }
+})();
+
+// Same-origin API (localhost khi dev, *.onrender.com khi deploy)
 const API = (location.protocol !== 'file:' && location.hostname)
   ? location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
   : 'http://localhost:8000';
-let token      = localStorage.getItem('sb_token');
-let user       = JSON.parse(localStorage.getItem('sb_user') || 'null');
+let token         = localStorage.getItem('sb_token');
+let user          = JSON.parse(localStorage.getItem('sb_user') || 'null');
 let selectedChild = null;
 let currentPeriod = 'week';
+let currentReport = null;
+let advisorHistory = [];
 
-// ── Auth guard ─────────────────────────────────────────────────────────────────
-if (!token || !user) {
-  window.location.href = '/';
-}
-if (user && user.role !== 'parent') {
-  window.location.href = '/app';
-}
+// Style / màu theo môn
+const SUBJ_STYLE = {
+  'Toán':{icon:'📐',color:'#1E90FF'},'Toán học':{icon:'📐',color:'#1E90FF'},
+  'Tiếng Việt':{icon:'📖',color:'#1FCBA6'},'Tiếng Anh':{icon:'🌏',color:'#FF6B35'},
+  'Khoa học':{icon:'🔬',color:'#A55EEA'},'Kỹ năng sống':{icon:'🌟',color:'#FF6EB4'},
+};
+const PALETTE=['#1FCBA6','#1E90FF','#FF6B35','#A55EEA','#FF6EB4','#FFCB45'];
+function subjStyle(name,i){return SUBJ_STYLE[name]||{icon:'📚',color:PALETTE[i%PALETTE.length]};}
 
+// Auth guard
+if(!token || !user){ window.location.href='/'; }
+if(user && user.role!=='parent'){ window.location.href='/app'; }
 document.getElementById('parent-name').textContent = user?.username || 'Phụ huynh';
+document.getElementById('hero-name').textContent   = user?.username || 'Phụ huynh';
 
-// ── Load children ─────────────────────────────────────────────────────────────
-async function loadChildren() {
-  try {
-    const res     = await authFetch('/parent/children');
-    const children = await res.json();
-    const list    = document.getElementById('children-list');
-
-    if (!children.length) {
-      list.innerHTML = `<div style="font-size:13px;color:var(--text3);font-weight:600;text-align:center;padding:12px;">
-        Chưa có con em nào được liên kết.<br>Thêm email con em bên dưới!
-      </div>`;
+// ── Load children ──
+async function loadChildren(){
+  try{
+    const res=await authFetch('/parent/children');
+    const children=await res.json();
+    const list=document.getElementById('children-list');
+    if(!children.length){
+      list.innerHTML=`<div style="font-size:13px;color:var(--text3);font-weight:600;text-align:center;padding:12px;">Chưa có con em nào được liên kết.<br>Thêm email con em bên dưới!</div>`;
       return;
     }
-
-    list.innerHTML = children.map(c => `
-      <div class="child-card" onclick="selectChild('${c.id}', '${c.username}', ${c.grade})" id="child-${c.id}">
+    list.innerHTML=children.map(c=>`
+      <div class="child-card" onclick="selectChild('${c.id}')" id="child-${c.id}">
         <div class="cc-name">🎒 ${c.username}</div>
         <div class="cc-meta">Lớp ${c.grade} · ${c.email}</div>
         <div class="cc-stats">
           <div class="cc-stat">Tuần này: <span>${c.week_sessions} bài</span></div>
-          ${c.week_avg_pct !== null ? `<div class="cc-stat">TB: <span>${c.week_avg_pct}%</span></div>` : ''}
+          ${c.week_avg_pct!==null?`<div class="cc-stat">TB: <span>${c.week_avg_pct}%</span></div>`:''}
           <div class="cc-stat">Tổng: <span>${c.total_sessions}</span></div>
         </div>
-      </div>
-    `).join('');
-  } catch(e) {
-    console.error(e);
-  }
+      </div>`).join('');
+  }catch(e){ console.error(e); }
 }
 
-// ── Select child ───────────────────────────────────────────────────────────────
-async function selectChild(id, name, grade) {
-  selectedChild = { id, name, grade };
-  document.querySelectorAll('.child-card').forEach(c => c.classList.remove('active'));
+// ── Select child ──
+async function selectChild(id){
+  selectedChild={id};
+  document.querySelectorAll('.child-card').forEach(c=>c.classList.remove('active'));
   document.getElementById('child-'+id)?.classList.add('active');
+  // Reset advisor cho con mới
+  advisorHistory=[];
+  document.getElementById('advisor-messages').innerHTML='';
+  switchTab('report');
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('child-view').style.display='flex';
   loadReport();
 }
 
-// ── Load report ────────────────────────────────────────────────────────────────
-async function loadReport() {
-  if (!selectedChild) return;
-  document.getElementById('empty-state').style.display   = 'none';
-  const rc = document.getElementById('report-content');
-  rc.style.display   = 'flex';
-  rc.innerHTML       = '<div class="loading-spinner"></div>';
-
-  try {
-    const res    = await authFetch(`/parent/reports/${selectedChild.id}?period=${currentPeriod}`);
-    const report = await res.json();
+// ── Load report ──
+async function loadReport(){
+  if(!selectedChild) return;
+  const vr=document.getElementById('view-report');
+  vr.innerHTML='<div class="loading-spinner"></div>';
+  try{
+    const res=await authFetch(`/parent/reports/${selectedChild.id}?period=${currentPeriod}`);
+    const report=await res.json();
+    currentReport=report;
     renderReport(report);
-  } catch(e) {
-    rc.innerHTML = `<div style="color:var(--red);font-weight:700;padding:20px;">Lỗi tải báo cáo: ${e.message}</div>`;
+    setupAdvisor(report);
+  }catch(e){
+    vr.innerHTML=`<div style="color:var(--red);font-weight:700;padding:20px;">Lỗi tải báo cáo: ${e.message}</div>`;
   }
 }
 
-// ── Render report ─────────────────────────────────────────────────────────────
-function renderReport(r) {
-  const rc     = document.getElementById('report-content');
-  const total  = r.total_sessions;
-  const subjKeys = Object.keys(r.by_subject);
+// ── Render report ──
+function renderReport(r){
+  const vr=document.getElementById('view-report');
+  const total=r.total_sessions, byS=r.by_subject, subjKeys=Object.keys(byS);
+  let allRecs=[]; subjKeys.forEach(s=>byS[s].forEach(rec=>allRecs.push({...rec,subject:s})));
+  const allPcts=allRecs.map(x=>x.pct);
+  const overallAvg=allPcts.length?Math.round(allPcts.reduce((a,b)=>a+b,0)/allPcts.length):null;
+  const goodCount=allRecs.filter(x=>x.pct>=80).length;
+  const lineRecs=[...allRecs].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const periodLabel=currentPeriod==='week'?'7 ngày qua':'30 ngày qua';
 
-  // Calculate overall avg
-  let allPcts = [];
-  for (const [_, recs] of Object.entries(r.by_subject)) {
-    for (const rec of recs) allPcts.push(rec.pct);
-  }
-  const overallAvg = allPcts.length ? Math.round(allPcts.reduce((a,b) => a+b,0)/allPcts.length) : null;
+  // Identity + period active
+  document.getElementById('rh-name').textContent=r.child.username;
+  document.getElementById('rh-meta').textContent=`Lớp ${r.child.grade} · ${periodLabel}`;
+  document.getElementById('pb-week').classList.toggle('active',currentPeriod==='week');
+  document.getElementById('pb-month').classList.toggle('active',currentPeriod==='month');
 
-  const periodLabel = currentPeriod === 'week' ? '7 ngày qua' : '30 ngày qua';
-
-  rc.innerHTML = `
-    <!-- Header -->
-    <div class="report-header">
-      <div class="rh-avatar">🎒</div>
-      <div>
-        <div class="rh-name">${r.child.username}</div>
-        <div class="rh-meta">Lớp ${r.child.grade} · ${periodLabel}</div>
-      </div>
-      <div class="rh-actions">
-        <button class="period-btn ${currentPeriod==='week'?'active':''}" onclick="setPeriod('week')">7 ngày</button>
-        <button class="period-btn ${currentPeriod==='month'?'active':''}" onclick="setPeriod('month')">30 ngày</button>
-        <button class="send-report-btn" onclick="sendEmailReport()">📧 Gửi báo cáo qua email</button>
-      </div>
-    </div>
-
-    <!-- Stats -->
+  vr.innerHTML=`
     <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-num">${total}</div>
-        <div class="stat-label">Bài đã hoàn thành</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num">${subjKeys.length}</div>
-        <div class="stat-label">Môn đã học</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num">${overallAvg !== null ? overallAvg + '%' : '—'}</div>
-        <div class="stat-label">Điểm trung bình</div>
-      </div>
+      <div class="stat-card c-teal"><div class="stat-ico">📚</div><div class="stat-num">${total}</div><div class="stat-label">Bài đã hoàn thành</div></div>
+      <div class="stat-card c-blue"><div class="stat-ico">🎯</div><div class="stat-num">${subjKeys.length}</div><div class="stat-label">Môn đã học</div></div>
+      <div class="stat-card c-orange"><div class="stat-ico">⭐</div><div class="stat-num">${overallAvg!==null?overallAvg+'%':'—'}</div><div class="stat-label">Điểm trung bình</div></div>
+      <div class="stat-card c-purple"><div class="stat-ico">🏆</div><div class="stat-num">${goodCount}</div><div class="stat-label">Bài đạt tốt (≥80%)</div></div>
     </div>
-
-    ${total === 0 ? `
-    <div class="empty-state" style="height:200px;">
-      <div class="empty-icon">📚</div>
-      <div>Chưa có bài nào trong ${periodLabel}</div>
-    </div>` : ''}
-
-    ${subjKeys.map(subj => renderSubjectPanel(subj, r.by_subject[subj])).join('')}
+    ${total===0?`
+    <div class="empty-state" style="min-height:180px;">
+      <div class="empty-icon">📭</div>
+      <div>Con em chưa làm bài nào trong ${periodLabel}.</div>
+    </div>`:`
+    <div class="charts-grid">
+      <div class="chart-card"><div class="chart-title">📈 Tiến độ điểm theo thời gian</div>${genLineChart(lineRecs)}</div>
+      <div class="chart-card"><div class="chart-title">🍩 Phân bố bài theo môn</div>${genDonut(byS,subjKeys)}</div>
+    </div>
+    ${subjKeys.map((s,i)=>renderSubjectPanel(s,byS[s],i)).join('')}`}
   `;
 }
 
-function renderSubjectPanel(subj, recs) {
-  const avg   = Math.round(recs.reduce((s,r)=>s+r.pct,0)/recs.length);
-  const color = avg >= 80 ? '#2ED573' : avg >= 60 ? '#FF6B35' : '#FF4757';
-  const icon  = subj==='Toán'?'📐':subj==='Tiếng Anh'?'🌏':subj==='Kỹ năng sống'?'🌟':'📚';
+// ── Biểu đồ đường ──
+function genLineChart(recs){
+  if(!recs.length) return '';
+  const W=580,H=190,pl=34,pr=16,pt=16,pb=30,iw=W-pl-pr,ih=H-pt-pb,n=recs.length;
+  const xOf=i=>n===1?pl+iw/2:pl+i*iw/(n-1);
+  const yOf=p=>pt+(100-p)/100*ih;
+  const pts=recs.map((r,i)=>[xOf(i),yOf(r.pct)]);
+  const line=pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const area=`${pl},${pt+ih} ${line} ${xOf(n-1).toFixed(1)},${pt+ih}`;
+  let grid='';[0,25,50,75,100].forEach(v=>{const y=yOf(v);grid+=`<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" stroke="#EDF1F6" stroke-width="1"/><text x="${pl-8}" y="${y+3}" text-anchor="end" font-size="9" fill="#A0AABF" font-weight="700">${v}</text>`;});
+  let xlab='';const step=Math.max(1,Math.ceil(n/5));
+  recs.forEach((r,i)=>{if(i%step===0||i===n-1){const d=new Date(r.date).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});xlab+=`<text x="${xOf(i).toFixed(1)}" y="${H-9}" text-anchor="middle" font-size="9" fill="#A0AABF" font-weight="700">${d}</text>`;}});
+  const dots=pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="#fff" stroke="#1FCBA6" stroke-width="2.5"/>`).join('');
+  return `<div class="line-chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FCBA6" stop-opacity="0.28"/><stop offset="1" stop-color="#1FCBA6" stop-opacity="0"/></linearGradient></defs>${grid}<polygon points="${area}" fill="url(#areaGrad)"/><polyline points="${line}" fill="none" stroke="#1FCBA6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${dots}${xlab}</svg></div>`;
+}
 
-  const rows = recs.slice(0,10).map(r => {
-    const cls   = r.pct>=80?'great':r.pct>=60?'good':'low';
-    const fColor = r.pct>=80?'#2ED573':r.pct>=60?'#FF6B35':'#FF4757';
-    const dateStr = new Date(r.date).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});
-    return `
-      <div class="score-row">
-        <div class="score-topic">
-          ${r.topic || '—'}
-          ${r.feedback ? `<div class="feedback-text">💬 ${r.feedback}</div>` : ''}
-        </div>
-        <div class="score-date">${dateStr}</div>
-        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${r.pct}%;background:${fColor};"></div></div>
-        <div class="score-pct ${cls}">${r.pct}%</div>
-      </div>`;
-  }).join('');
+// ── Donut ──
+function genDonut(byS,keys){
+  const total=keys.reduce((s,k)=>s+byS[k].length,0);
+  if(!total) return '';
+  let acc=0;const stops=[];let legend='';
+  keys.forEach((k,i)=>{const c=byS[k].length,st=subjStyle(k,i),start=acc/total*100;acc+=c;const end=acc/total*100;stops.push(`${st.color} ${start.toFixed(2)}% ${end.toFixed(2)}%`);legend+=`<div class="dl-item"><span class="dl-dot" style="background:${st.color}"></span>${st.icon} ${k}<span class="dl-val">${c} bài</span></div>`;});
+  return `<div class="donut-wrap"><div class="donut" style="background:conic-gradient(${stops.join(',')})"><div class="donut-center"><div class="donut-num">${total}</div><div class="donut-label">TỔNG BÀI</div></div></div><div class="donut-legend">${legend}</div></div>`;
+}
 
-  return `
-    <div class="subj-section">
-      <div class="subj-header">
-        <div class="subj-icon" style="background:linear-gradient(135deg,${color}99,${color}55);">${icon}</div>
-        <div class="subj-name">${subj}</div>
-        <div class="subj-avg" style="color:${color}">${avg}%</div>
-      </div>
-      <div class="score-timeline">${rows}</div>
+// ── Nhận xét CHI TIẾT một bài (AI phân tích phần con còn yếu) ──
+async function loadRecordAssessment(id,btn){
+  if(!id) return;
+  const box=document.getElementById('detail-'+id);
+  if(!box) return;
+  if(box.dataset.loaded==='1'){ box.style.display=box.style.display==='none'?'block':'none'; return; }
+  box.style.display='block';
+  box.innerHTML='<div class="loading-spinner" style="width:22px;height:22px;border-width:3px;margin:8px auto;"></div>';
+  const old=btn.textContent; btn.disabled=true; btn.textContent='⏳ Đang phân tích...';
+  try{
+    const res=await authFetch('/parent/assess-record','POST',{record_id:id});
+    const data=await res.json();
+    if(!res.ok){ box.innerHTML='<div style="color:var(--red);font-size:12px;font-weight:700;">⚠️ '+(data.detail||'Không tạo được nhận xét')+'</div>'; }
+    else{
+      const head=`<div class="fmt-h">📋 ${esc(data.subject||'')} — ${esc(data.topic||'—')} · Đúng ${data.correct}/${data.total} (${data.pct}%)</div>`;
+      let qHtml='';
+      if(Array.isArray(data.questions) && data.questions.length){
+        qHtml='<div class="q-list">'+data.questions.map(q=>{
+          const txt=esc(String(q.q||'').slice(0,90));
+          return q.correct
+            ? `<div class="q-item ok"><span>✅</span><span class="q-no">Câu ${q.no}</span><span class="q-txt">${txt}</span></div>`
+            : `<div class="q-item bad"><span>❌</span><span class="q-no">Câu ${q.no}</span><span class="q-txt">${txt}</span><span class="q-fix">con chọn <b>${esc(q.chosen||'—')}</b> · đúng <b>${esc(q.answer||'—')}</b></span></div>`;
+        }).join('')+'</div>';
+      }
+      box.innerHTML=head+qHtml+fmt(data.assessment||'');
+      box.dataset.loaded='1';
+    }
+  }catch(e){ box.innerHTML='<div style="color:var(--red);font-size:12px;font-weight:700;">⚠️ Lỗi kết nối máy chủ</div>'; }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+
+// ── Panel từng môn ──
+function renderSubjectPanel(subj,recs,idx){
+  const avg=Math.round(recs.reduce((s,r)=>s+r.pct,0)/recs.length);
+  const st=subjStyle(subj,idx);
+  const color=avg>=80?'#2ED573':avg>=60?'#FF6B35':'#FF4757';
+  const rows=recs.slice(0,12).map(r=>{
+    const cls=r.pct>=80?'great':r.pct>=60?'good':'low';
+    const fColor=r.pct>=80?'#2ED573':r.pct>=60?'#FF6B35':'#FF4757';
+    const dateStr=new Date(r.date).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});
+    const correct=Math.round(r.score||0), total=Math.round(r.total||0), wrong=Math.max(0,total-correct);
+    const rid=r.id||'';
+    return `<div class="score-row" id="row-${rid}">
+      <div class="score-topic">${esc(r.topic||'—')}</div>
+      <div class="score-meta">✅ Đúng ${correct} · ❌ Sai ${wrong} · <b>${correct}/${total}</b></div>
+      <div class="score-date">${dateStr}</div>
+      <div class="score-bar-bg"><div class="score-bar-fill" style="width:${r.pct}%;background:${fColor};"></div></div>
+      <div class="score-pct ${cls}">${r.pct}%</div>
+      <button class="detail-btn" onclick="loadRecordAssessment('${rid}',this)">📋 Nhận xét chi tiết</button>
+      <div class="detail-box" id="detail-${rid}" style="display:none;"></div>
     </div>`;
+  }).join('');
+  return `<div class="subj-section"><div class="subj-header"><div class="subj-icon" style="background:linear-gradient(135deg,${st.color}CC,${st.color}66);">${st.icon}</div><div><div class="subj-name">${subj}</div><div class="subj-count">${recs.length} bài trong kỳ này</div></div><div class="subj-avg" style="color:${color}">${avg}%</div></div><div class="score-timeline">${rows}</div></div>`;
 }
 
-// ── Set period ─────────────────────────────────────────────────────────────────
-function setPeriod(p) {
-  currentPeriod = p;
-  if (selectedChild) loadReport();
+// ── Tabs ──
+function switchTab(tab){
+  document.getElementById('tab-report').classList.toggle('active',tab==='report');
+  document.getElementById('tab-advisor').classList.toggle('active',tab==='advisor');
+  document.getElementById('view-report').style.display=tab==='report'?'flex':'none';
+  document.getElementById('view-advisor').style.display=tab==='advisor'?'block':'none';
 }
 
-// ── Link child ─────────────────────────────────────────────────────────────────
-async function linkChild() {
-  const email = document.getElementById('child-email-input').value.trim();
-  if (!email) return;
-  const msgEl = document.getElementById('link-msg');
-  msgEl.style.display = 'block';
-  msgEl.style.color   = 'var(--text2)';
-  msgEl.textContent   = '🔄 Đang liên kết...';
+// ── Set period ──
+function setPeriod(p){ currentPeriod=p; if(selectedChild) loadReport(); }
 
-  try {
-    const res  = await authFetch('/parent/link-child', 'POST', { child_email: email });
-    const data = await res.json();
-    if (!res.ok) { msgEl.style.color='var(--red)'; msgEl.textContent='⚠️ '+data.detail; return; }
-    msgEl.style.color   = 'var(--teal)';
-    msgEl.textContent   = `✅ Đã liên kết với ${data.child.username}!`;
-    document.getElementById('child-email-input').value = '';
-    loadChildren();
-  } catch(e) {
-    msgEl.style.color='var(--red)'; msgEl.textContent='❌ Lỗi kết nối';
+// ════════ AI ADVISOR ════════
+function setupAdvisor(r){
+  const subjKeys=Object.keys(r.by_subject);
+  let allRecs=[]; subjKeys.forEach(s=>r.by_subject[s].forEach(x=>allRecs.push({...x,subject:s})));
+  // Nhận xét nhanh dựa trên điểm thật
+  renderAssessment(r,allRecs);
+  // Gợi ý câu hỏi (động theo môn yếu)
+  const subjAvg=subjKeys.map(s=>({s,a:Math.round(r.by_subject[s].reduce((x,y)=>x+y.pct,0)/r.by_subject[s].length)})).sort((a,b)=>a.a-b.a);
+  const weak=subjAvg[0];
+  const qs=[];
+  if(weak) qs.push(`Làm sao giúp con học tốt hơn môn ${weak.s}?`);
+  qs.push('Con nên tập trung cải thiện điều gì trước?');
+  qs.push('Mỗi ngày con nên học bao lâu là hợp lý?');
+  qs.push('Cách động viên con mà không tạo áp lực?');
+  qs.push('Con hay nản khi điểm thấp, em nên làm gì?');
+  document.getElementById('advisor-quick').innerHTML=qs.map(q=>`<button class="qp" onclick="sendAdvisor(this.dataset.q)" data-q="${q.replace(/"/g,'&quot;')}">${q}</button>`).join('');
+  // Lời chào (một lần cho mỗi con)
+  const msgs=document.getElementById('advisor-messages');
+  if(!msgs.children.length){
+    addMsg(msgs,'ai',fmt(
+      `Chào anh/chị! 👋 Em là **trợ lý tư vấn giáo dục** của SmartBuddy.\n\n`+
+      `Em đã xem qua kết quả học tập của **${r.child.username}** (lớp ${r.child.grade}). Anh/chị đang băn khoăn điều gì về việc học, tâm lý hay thói quen của con ạ?\n\n`+
+      `Anh/chị có thể chọn nhanh một câu hỏi bên dưới, hoặc gõ câu hỏi của mình. 😊`
+    ));
   }
 }
 
-// ── Send email report ──────────────────────────────────────────────────────────
-async function sendEmailReport() {
-  if (!selectedChild) return;
+function renderAssessment(r,allRecs){
+  const el=document.getElementById('advisor-assessment');
+  const subjects=Object.keys(r.by_subject);
+  const periodLabel=currentPeriod==='month'?'30 ngày qua':'7 ngày qua';
+  if(!allRecs.length){
+    el.innerHTML=`<div class="assess-box"><div class="assess-title">💬 Nhận xét về con · ${periodLabel}</div><div class="assess-text">Con chưa có bài làm nào trong ${periodLabel}. Hãy khích lệ con học cùng SmartBuddy mỗi ngày 15–20 phút để bắt đầu nhé! 🌱</div></div>`;
+    return;
+  }
+  const avg=Math.round(allRecs.reduce((a,x)=>a+x.pct,0)/allRecs.length);
+  const subjAvg=subjects.map(s=>({s,a:Math.round(r.by_subject[s].reduce((x,y)=>x+y.pct,0)/r.by_subject[s].length)})).sort((a,b)=>b.a-a.a);
+  const best=subjAvg[0],weak=subjAvg[subjAvg.length-1];
+  let head,advice;
+  if(avg>=80){head='🏆 Con đang học rất tốt!';advice=`Con duy trì phong độ xuất sắc với điểm trung bình <b>${avg}%</b>. Hãy tiếp tục khen ngợi và có thể cho con thử các bài nâng cao hơn.`;}
+  else if(avg>=60){head='👍 Con đang tiến bộ ổn định.';advice=`Điểm trung bình <b>${avg}%</b> cho thấy con nắm bài khá tốt. Cố gắng đều đặn thêm chút nữa là con sẽ bứt phá.`;}
+  else{head='💪 Con cần được đồng hành thêm.';advice=`Điểm trung bình <b>${avg}%</b>. Đây là lúc con cần cha mẹ động viên — hãy cùng con ôn lại phần còn yếu, chia nhỏ bài học và tránh tạo áp lực.`;}
+  let extra='';
+  if(subjAvg.length>1&&best.s!==weak.s) extra=` Con mạnh nhất ở <b>${best.s}</b> (${best.a}%) và nên ôn thêm <b>${weak.s}</b> (${weak.a}%).`;
+  el.innerHTML=`<div class="assess-box"><div class="assess-title">💬 Nhận xét về con · ${periodLabel}</div><div class="assess-text">${head} ${advice}${extra}<br><span style="color:var(--text3);font-size:12px;">Hoàn thành ${allRecs.length} bài · ${subjects.length} môn. Hỏi thêm trợ lý AI bên dưới để có lời khuyên cụ thể. 👇</span></div></div>`;
+}
+
+async function sendAdvisor(preset){
+  if(!selectedChild) return;
+  const input=document.getElementById('advisor-input');
+  const text=(preset||input.value||'').trim();
+  if(!text) return;
+  if(!preset){ input.value=''; autoH(input); }
+  const msgs=document.getElementById('advisor-messages');
+  addMsg(msgs,'user',esc(text));
+  const sendBtn=document.getElementById('advisor-send'); sendBtn.disabled=true;
+  const typing=addTyping(msgs);
+  try{
+    const res=await authFetch('/parent/advisor','POST',{child_id:selectedChild.id,message:text,history:advisorHistory.slice(-8),period:currentPeriod});
+    const data=await res.json();
+    typing.remove();
+    if(!res.ok){ addMsg(msgs,'ai','⚠️ '+(data.detail||'Trợ lý chưa phản hồi được, anh/chị thử lại nhé.')); }
+    else{
+      const reply=data.answer||'…';
+      addMsg(msgs,'ai',fmt(reply));
+      advisorHistory.push({role:'user',content:text});
+      advisorHistory.push({role:'assistant',content:reply});
+    }
+  }catch(e){ typing.remove(); addMsg(msgs,'ai','⚠️ Không kết nối được máy chủ. Kiểm tra server đang chạy nhé.'); }
+  finally{ sendBtn.disabled=false; msgs.scrollTop=msgs.scrollHeight; }
+}
+
+function addMsg(container,role,html){
+  const row=document.createElement('div'); row.className='msg-row '+role;
+  const ava=role==='ai'?'<img src="/images/mascot/head.png" onerror="this.outerHTML=\'🤖\'">':'👤';
+  row.innerHTML=`<div class="avatar ${role}">${ava}</div><div class="bubble">${html}</div>`;
+  container.appendChild(row); container.scrollTop=container.scrollHeight; return row;
+}
+function addTyping(container){
+  const row=document.createElement('div'); row.className='msg-row ai';
+  row.innerHTML=`<div class="avatar ai">🤖</div><div class="bubble"><div class="dots-wrap"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  container.appendChild(row); container.scrollTop=container.scrollHeight; return row;
+}
+function autoH(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+
+// ── Markdown nhẹ (an toàn: escape trước) ──
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtInline(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/(^|[^*])\*(?!\*)([^*]+?)\*(?!\*)/g,'$1<em>$2</em>').replace(/`([^`]+)`/g,'<code>$1</code>');}
+function fmt(text){
+  const lines=String(text).split('\n');const out=[];let inList=false;
+  for(let raw of lines){
+    const line=raw.replace(/\s+$/,'');
+    if(/^#{1,4}\s/.test(line)){ if(inList){out.push('</ul>');inList=false;} out.push('<div class="fmt-h">'+fmtInline(line.replace(/^#{1,4}\s/,''))+'</div>'); continue; }
+    if(/^\s*[-*]\s+/.test(line)){ if(!inList){out.push('<ul class="fmt-list">');inList=true;} out.push('<li>'+fmtInline(line.replace(/^\s*[-*]\s+/,''))+'</li>'); continue; }
+    if(/^\s*\d+[.)]\s+/.test(line)){ if(!inList){out.push('<ul class="fmt-list">');inList=true;} out.push('<li>'+fmtInline(line.replace(/^\s*\d+[.)]\s+/,''))+'</li>'); continue; }
+    if(line.trim()===''){ if(inList){out.push('</ul>');inList=false;} continue; }
+    if(inList){out.push('</ul>');inList=false;}
+    out.push('<p>'+fmtInline(line)+'</p>');
+  }
+  if(inList) out.push('</ul>');
+  return out.join('');
+}
+
+// ── Link child ──
+async function linkChild(){
+  const email=document.getElementById('child-email-input').value.trim();
+  if(!email) return;
+  const msgEl=document.getElementById('link-msg');
+  msgEl.style.display='block'; msgEl.style.color='var(--text2)'; msgEl.textContent='🔄 Đang liên kết...';
+  try{
+    const res=await authFetch('/parent/link-child','POST',{child_email:email});
+    const data=await res.json();
+    if(!res.ok){ msgEl.style.color='var(--red)'; msgEl.textContent='⚠️ '+data.detail; return; }
+    msgEl.style.color='var(--teal-d)'; msgEl.textContent=`✅ Đã liên kết với ${data.child.username}!`;
+    document.getElementById('child-email-input').value=''; loadChildren();
+  }catch(e){ msgEl.style.color='var(--red)'; msgEl.textContent='❌ Lỗi kết nối'; }
+}
+
+// ── Send email report ──
+async function sendEmailReport(){
+  if(!selectedChild) return;
   showToast('📧 Đang gửi báo cáo...');
-  try {
-    const res  = await authFetch('/parent/send-report', 'POST', {
-      child_id: selectedChild.id, period: currentPeriod
-    });
-    const data = await res.json();
-    if (!res.ok) { showToast('❌ '+data.detail, 4000); return; }
-    showToast('✅ '+data.message, 3000);
-  } catch(e) {
-    showToast('❌ Lỗi gửi email: '+e.message, 4000);
-  }
+  try{
+    const res=await authFetch('/parent/send-report','POST',{child_id:selectedChild.id,period:currentPeriod});
+    const data=await res.json();
+    if(!res.ok){ showToast('❌ '+data.detail,4000); return; }
+    showToast('✅ '+data.message,3000);
+  }catch(e){ showToast('❌ Lỗi gửi email: '+e.message,4000); }
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-async function authFetch(path, method='GET', body=null) {
-  const opts = {
-    method,
-    headers: {'Authorization':'Bearer '+token, 'Content-Type':'application/json'},
-  };
-  if (body) opts.body = JSON.stringify(body);
-  return fetch(API+path, opts);
+// ── Helpers ──
+async function authFetch(path,method='GET',body=null){
+  const opts={method,headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  return fetch(API+path,opts);
+}
+function showToast(msg,duration=2500){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),duration);
+}
+function logout(){
+  localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); window.location.href='/';
 }
 
-function showToast(msg, duration=2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), duration);
-}
-
-function logout() {
-  localStorage.removeItem('sb_token');
-  localStorage.removeItem('sb_user');
-  window.location.href = '/';
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
 loadChildren();
 </script>
 </body>

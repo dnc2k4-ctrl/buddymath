@@ -9,8 +9,10 @@ import logging
 from collections import defaultdict
 from typing import AsyncIterator, Optional
 
-from app.config import HISTORY_WINDOW, RAG_TOP_K
+from app.config import GROQ_VISION_MODEL, HISTORY_WINDOW, RAG_TOP_K
 from app.llm.client import LLMClient, is_vision_model
+from app.llm.math_verifier import verification_note
+from app.llm.smart_buddy import with_core
 from app.rag.engine import RAGEngine, RetrievedChunk
 from app.rag.router import PromptBuilder, RAGRouter, Route, RouteResult
 
@@ -67,7 +69,8 @@ class MathBuddyPipeline:
         memory: Optional[SessionMemory] = None,
     ):
         self.rag    = rag_engine
-        self.llm    = llm_client or LLMClient()
+        self.llm    = llm_client or LLMClient()                    # TEXT (mặc định 70B)
+        self.vision_llm = LLMClient(model=GROQ_VISION_MODEL)       # ẢNH/OCR (scout có vision)
         self.router = router or RAGRouter(llm_fallback=self._llm_route_fallback)
         self.memory = memory or SessionMemory()
 
@@ -113,18 +116,20 @@ class MathBuddyPipeline:
         subject: str | None = None,
         image_base64: str | None = None,
         image_media_type: str = "image/jpeg",
+        grade: int | None = None,
     ) -> dict:
         system_prompt, chunks, route_result = await self._prepare(message, topic, subject)
         logger.info(f"[{session_id}] Route={route_result.route.value} conf={route_result.confidence:.2f}")
 
-        user_content = _build_user_content(self.llm.model, message, image_base64, image_media_type)
+        client = self.vision_llm if image_base64 else self.llm   # ảnh → vision, còn lại → text
+        user_content = _build_user_content(client.model, message, image_base64, image_media_type)
         messages = (
-            [{"role": "system", "content": system_prompt}]
+            [{"role": "system", "content": with_core(system_prompt + verification_note(message), grade=grade)}]
             + self.memory.get(session_id)
             + [{"role": "user", "content": user_content}]
         )
 
-        answer = await self.llm.complete(messages)
+        answer = await client.complete(messages)
         self.memory.add(session_id, "user", message)
         self.memory.add(session_id, "assistant", answer)
 
@@ -132,7 +137,7 @@ class MathBuddyPipeline:
             {**chunk.document.to_dict(), "score": round(chunk.score, 4)}
             for chunk in chunks
         ]
-        return {"answer": answer, "sources": sources, "route": route_result.route.value}
+        return {"answer": answer, "sources": sources, "route": route_result.route.value, "model": client.model}
 
     async def stream(
         self,
@@ -142,12 +147,14 @@ class MathBuddyPipeline:
         subject: str | None = None,
         image_base64: str | None = None,
         image_media_type: str = "image/jpeg",
+        grade: int | None = None,
     ) -> AsyncIterator[str]:
         system_prompt, chunks, route_result = await self._prepare(message, topic, subject)
 
-        user_content = _build_user_content(self.llm.model, message, image_base64, image_media_type)
+        client = self.vision_llm if image_base64 else self.llm
+        user_content = _build_user_content(client.model, message, image_base64, image_media_type)
         messages = (
-            [{"role": "system", "content": system_prompt}]
+            [{"role": "system", "content": with_core(system_prompt + verification_note(message), grade=grade)}]
             + self.memory.get(session_id)
             + [{"role": "user", "content": user_content}]
         )
@@ -159,7 +166,7 @@ class MathBuddyPipeline:
         })
 
         full_reply: list[str] = []
-        async for delta in self.llm.stream(messages):
+        async for delta in client.stream(messages):
             full_reply.append(delta)
             yield json.dumps({"type": "delta", "text": delta})
 

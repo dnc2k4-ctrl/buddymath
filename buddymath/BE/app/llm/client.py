@@ -14,7 +14,8 @@ import httpx
 from app.config import (
     GROQ_API_KEY,
     GROQ_BASE_URL,
-    GROQ_MODEL,
+    GROQ_TEXT_MODEL,
+    GROQ_VISION_MODEL,
     LLM_TIMEOUT,
     vision_models,
 )
@@ -35,7 +36,10 @@ if GROQ_API_KEY:
     logger.info(f"Groq key loaded: {_k[:8]}…{_k[-4:]} (len={len(_k)})")
 else:
     logger.warning("GROQ_API_KEY chưa cấu hình trong .env — các tính năng chat sẽ lỗi.")
-logger.info(f"Vision support: {'✅ YES' if is_vision_model(GROQ_MODEL) else '❌ NO'} — model={GROQ_MODEL}")
+logger.info(
+    f"Model TEXT={GROQ_TEXT_MODEL} | VISION={GROQ_VISION_MODEL} "
+    f"(vision ok: {'✅' if is_vision_model(GROQ_VISION_MODEL) else '❌'})"
+)
 
 
 class LLMClient:
@@ -43,7 +47,7 @@ class LLMClient:
         self,
         base_url: str  = GROQ_BASE_URL,
         api_key: str   = GROQ_API_KEY,
-        model: str     = GROQ_MODEL,
+        model: str     = GROQ_TEXT_MODEL,
         timeout: float = LLM_TIMEOUT,
     ):
         self.base_url = base_url.rstrip("/")

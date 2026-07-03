@@ -3,29 +3,77 @@ auth.py – Router đăng ký/đăng nhập, profile và admin/debug.
 """
 from __future__ import annotations
 
+from datetime import datetime, timedelta
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_admin_user, get_current_user
+from app import plans
+from app.api.deps import get_admin_user, get_current_user, get_optional_user
 from app.core.database import get_db
 from app.core.security import hash_password, make_token, verify_password
 from app.models.user import ParentChildLink, User
-from app.schemas.auth import LoginReq, RegisterReq
+from app.schemas.auth import LoginReq, RegisterReq, SendOtpReq
+from app.services import otp_service, quota_service
 from app.services.auth_service import seed_demo_accounts
+from app.services.email_service import send_otp_email, smtp_configured
 
 router = APIRouter(tags=["auth"])
 
 
+class ForgotReq(BaseModel):
+    email: str
+
+
+class ResetReq(BaseModel):
+    email: str
+    code: str
+    new_password: str
+
+
+@router.post("/auth/send-otp")
+async def send_register_otp(req: SendOtpReq, db: Session = Depends(get_db)):
+    """Gửi mã OTP xác minh email khi ĐĂNG KÝ."""
+    email = req.email.strip().lower()
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(400, "Email này đã được đăng ký rồi")
+    if not otp_service.can_send("register", email):
+        raise HTTPException(429, "Bạn vừa yêu cầu mã. Vui lòng đợi khoảng 45 giây.")
+    code = otp_service.create_otp("register", email)
+    resp = {"ok": True, "message": "Mã xác minh đã được gửi tới email của bạn."}
+    if not smtp_configured():
+        resp["dev_code"] = code
+        resp["message"] = "SMTP chưa cấu hình — dùng mã dev bên dưới để thử (chỉ hiện ở dev)."
+        return resp
+    try:
+        send_otp_email(email, code, "register")
+    except Exception:
+        raise HTTPException(500, "Không gửi được email lúc này. Vui lòng thử lại.")
+    return resp
+
+
 @router.post("/auth/register")
 async def register(req: RegisterReq, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == req.email.lower()).first():
+    email = req.email.strip().lower()
+    if db.query(User).filter(User.email == email).first():
         raise HTTPException(400, "Email này đã được đăng ký rồi")
     if len(req.password) < 6:
         raise HTTPException(400, "Mật khẩu phải có ít nhất 6 ký tự")
+    phone = (req.phone or "").strip() or None
+    if phone and db.query(User).filter(User.phone == phone).first():
+        raise HTTPException(400, "Số điện thoại này đã được đăng ký rồi")
+    # Nếu FE gửi mã OTP thì bắt buộc xác minh email trước khi tạo tài khoản
+    if req.code:
+        ok, msg = otp_service.verify_otp("register", email, req.code)
+        if not ok:
+            raise HTTPException(400, msg)
     # Đăng ký công khai chỉ cho phép student/parent — không tự cấp quyền admin
     role = req.role if req.role in ("student", "parent") else "student"
     user = User(
-        email=req.email.lower(),
+        email=email,
+        phone=phone,
         username=req.username.strip(),
         password_hash=hash_password(req.password),
         role=role,
@@ -39,17 +87,109 @@ async def register(req: RegisterReq, db: Session = Depends(get_db)):
 
 @router.post("/auth/login")
 async def login(req: LoginReq, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == req.email.lower()).first()
+    ident = (req.email or "").strip()
+    # Cho phép đăng nhập bằng EMAIL hoặc SỐ ĐIỆN THOẠI
+    user = db.query(User).filter(User.email == ident.lower()).first()
+    if not user and ident:
+        user = db.query(User).filter(User.phone == ident).first()
     if not user or not verify_password(req.password, user.password_hash):
-        raise HTTPException(401, "Email hoặc mật khẩu không đúng")
+        raise HTTPException(401, "Email/SĐT hoặc mật khẩu không đúng")
     if not user.is_active:
         raise HTTPException(403, "Tài khoản đã bị khóa")
     return {"token": make_token(user.id, user.role), "user": user.to_dict()}
 
 
+@router.post("/auth/forgot-password")
+async def forgot_password(req: ForgotReq, db: Session = Depends(get_db)):
+    """Gửi mã OTP đặt lại mật khẩu về email. Luôn trả success để không lộ email nào tồn tại."""
+    email = req.email.strip().lower()
+    user = db.query(User).filter(User.email == email).first()
+    resp = {"ok": True, "message": "Nếu email tồn tại trong hệ thống, mã xác minh đã được gửi."}
+    if not user:
+        return resp
+    if not otp_service.can_send("reset", email):
+        raise HTTPException(429, "Bạn vừa yêu cầu mã. Vui lòng đợi khoảng 45 giây rồi thử lại.")
+    code = otp_service.create_otp("reset", email)
+    if not smtp_configured():
+        # Chưa cấu hình SMTP (thường là môi trường dev) → trả mã để test cục bộ.
+        # Trên production đã cấu hình SMTP thì KHÔNG bao giờ lộ mã.
+        resp["dev_code"] = code
+        resp["message"] = "SMTP chưa cấu hình — dùng mã dev bên dưới để thử (chỉ hiện ở môi trường dev)."
+        return resp
+    try:
+        send_otp_email(email, code, "reset")
+    except Exception:
+        raise HTTPException(500, "Không gửi được email lúc này. Vui lòng thử lại sau ít phút.")
+    return resp
+
+
+@router.post("/auth/reset-password")
+async def reset_password(req: ResetReq, db: Session = Depends(get_db)):
+    email = req.email.strip().lower()
+    if len(req.new_password) < 6:
+        raise HTTPException(400, "Mật khẩu mới phải có ít nhất 6 ký tự")
+    ok, msg = otp_service.verify_otp("reset", email, req.code)
+    if not ok:
+        raise HTTPException(400, msg)
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(404, "Không tìm thấy tài khoản")
+    user.password_hash = hash_password(req.new_password)
+    db.commit()
+    return {"ok": True, "message": "Đặt lại mật khẩu thành công! Mời bạn đăng nhập lại."}
+
+
 @router.get("/auth/me")
 async def me(current_user: User = Depends(get_current_user)):
     return current_user.to_dict()
+
+
+# ─── Gói đăng ký: usage hiện tại + nâng gói (mock thanh toán) ───────────────────
+class UpgradeReq(BaseModel):
+    plan: str                       # "standard" | "premium"
+    months: Optional[int] = 1       # số tháng (mặc định 1)
+
+
+@router.get("/billing/usage")
+async def billing_usage(
+    request: Request,
+    user: Optional[User] = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    """Gói đang hiệu lực + số lượt đã dùng hôm nay (để FE hiện 'còn X lượt')."""
+    return quota_service.usage_summary(db, request, user)
+
+
+@router.post("/billing/mock-upgrade")
+async def mock_upgrade(
+    req: UpgradeReq,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    MOCK: xác nhận thanh toán → nâng gói cho user đang đăng nhập (+N tháng).
+    ⚠️ Chưa nối cổng thanh toán thật; endpoint này chỉ để chạy thử luồng.
+    Hết hạn sẽ tự về Free (KHÔNG gia hạn ngầm) nhờ effective_plan().
+    """
+    if req.plan not in ("standard", "premium"):
+        raise HTTPException(400, "Gói không hợp lệ. Chỉ nhận 'standard' hoặc 'premium'.")
+    months = max(1, min(int(req.months or 1), 12))
+    # Cộng dồn nếu đang còn hạn cùng gói, ngược lại tính từ hôm nay.
+    now = datetime.utcnow()
+    base = current_user.plan_expires_at if (
+        current_user.plan == req.plan
+        and current_user.plan_expires_at
+        and current_user.plan_expires_at > now
+    ) else now
+    current_user.plan = req.plan
+    current_user.plan_expires_at = base + timedelta(days=30 * months)
+    db.commit()
+    db.refresh(current_user)
+    return {
+        "ok": True,
+        "message": f"Đã nâng cấp gói {plans.get_plan(req.plan)['name']} thành công!",
+        "user": current_user.to_dict(),
+    }
 
 
 @router.post("/auth/update-profile")
@@ -83,6 +223,7 @@ def _admin_user_dict(u: User) -> dict:
         "grade":       u.grade,
         "avatar":      u.avatar,
         "is_active":   u.is_active,
+        "plan":        u.effective_plan(),
         "created_at":  u.created_at.strftime("%Y-%m-%d %H:%M") if u.created_at else "",
         "score_count": len(u.scores),
     }

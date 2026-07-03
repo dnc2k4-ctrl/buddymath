@@ -31,3 +31,19 @@ def init_db() -> None:
     from app import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+
+    # Migration nhẹ: thêm cột mới cho DB cũ chưa có (SQLite/Postgres).
+    # Mỗi ALTER chạy trong transaction riêng — nếu cột đã tồn tại thì bỏ qua,
+    # không làm hỏng các ALTER sau (Postgres sẽ abort cả transaction khi lỗi).
+    from sqlalchemy import text
+    _migrations = [
+        "ALTER TABLE users ADD COLUMN phone VARCHAR",
+        "ALTER TABLE users ADD COLUMN plan VARCHAR DEFAULT 'free'",
+        "ALTER TABLE users ADD COLUMN plan_expires_at TIMESTAMP",
+    ]
+    for ddl in _migrations:
+        try:
+            with engine.begin() as conn:
+                conn.execute(text(ddl))
+        except Exception:
+            pass  # cột đã tồn tại

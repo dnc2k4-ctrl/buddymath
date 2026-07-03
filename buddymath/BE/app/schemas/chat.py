@@ -11,6 +11,7 @@ class ChatRequest(BaseModel):
     session_id: str           = "default"
     topic:      Optional[str] = None
     subject:    Optional[str] = None
+    grade:      Optional[int] = None   # lớp học sinh (3–9) để AI điều chỉnh độ khó/từ ngữ
     stream:     bool          = False
 
 
@@ -29,12 +30,15 @@ class ImageChatRequest(BaseModel):
     session_id:   str           = "buddy-main"
     topic:        Optional[str] = None
     subject:      Optional[str] = None
+    grade:        Optional[int] = None
 
 
 class GroqDirectRequest(BaseModel):
     messages:         list[dict]
     system:           Optional[str] = None
     model:            Optional[str] = None
+    subject:          Optional[str] = None   # môn (math/english/life_skills) để enforce gói
+    grade:            Optional[int] = None   # lớp học sinh (3–9) để tiêm vào ngữ cảnh AI
     max_tokens:       int           = 1000
     temperature:      float         = 0.5
     image_base64:     Optional[str] = None

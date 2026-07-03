@@ -158,7 +158,7 @@ class PromptBuilder:
     """Xây system prompt theo route đã phát hiện."""
 
     BASE_SYSTEM = (
-        "Bạn là MathBuddy – gia sư toán học AI thân thiện, kiên nhẫn, chính xác và khích lệ học sinh. "
+        "Bạn là Smart Buddy – gia sư toán học AI thân thiện, kiên nhẫn, chính xác và khích lệ học sinh. "
         "Câu hỏi là ngôn ngữ gì thì trả lời bằng ngôn ngữ đó. Ví dụ: Nếu hỏi tiếng việt thì trả lời bằng tiếng việt, nếu hỏi tiếng anh thì trả lời bằng tiếng anh. Sử dụng LaTeX cho công thức ($...$).\n\n"
 
         "NGUYÊN TẮC BẮT BUỘC KHI XỬ LÝ TÍNH TOÁN CỦA HỌC SINH:\n"

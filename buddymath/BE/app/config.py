@@ -46,6 +46,13 @@ GROQ_API_KEY  = os.environ.get("GROQ_API_KEY", "")
 GROQ_BASE_URL = os.environ.get("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
 GROQ_MODEL    = os.environ.get("GROQ_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")
 
+# ── Tách model theo modality (độ chính xác + vision) ──
+# TEXT: model mạnh cho toán/lập luận (không cần vision). Mặc định 70B của Groq.
+# VISION: model đọc được ảnh/OCR. Mặc định = GROQ_MODEL (scout — có vision).
+# Đổi qua env GROQ_TEXT_MODEL / GROQ_VISION_MODEL nếu muốn.
+GROQ_TEXT_MODEL   = os.environ.get("GROQ_TEXT_MODEL", "llama-3.3-70b-versatile")
+GROQ_VISION_MODEL = os.environ.get("GROQ_VISION_MODEL", GROQ_MODEL)
+
 LLM_TIMEOUT    = float(os.environ.get("LLM_TIMEOUT", "60"))
 RAG_TOP_K      = int(os.environ.get("RAG_TOP_K", "5"))
 HISTORY_WINDOW = int(os.environ.get("HISTORY_WINDOW", "10"))
@@ -62,6 +69,28 @@ _BUILTIN_VISION_MODELS: set[str] = {
 def vision_models() -> set[str]:
     extra = os.environ.get("GROQ_VISION_MODELS", "")
     return _BUILTIN_VISION_MODELS | {m.strip() for m in extra.split(",") if m.strip()}
+
+
+# Model được phép override qua field `model` của /v1/messages (để so sánh model bằng eval).
+# Ứng viên phổ biến trên Groq — client CHỈ chọn được trong danh sách này (chặn lạm dụng model đắt).
+# Thêm model khác qua env GROQ_ALLOWED_MODELS="a,b". Model phải có trong gói Groq của bạn.
+_BUILTIN_ALLOWED_MODELS: set[str] = {
+    "meta-llama/llama-4-maverick-17b-128e-instruct",
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "openai/gpt-oss-20b",
+    "openai/gpt-oss-120b",
+}
+
+
+def allowed_models() -> set[str]:
+    extra = os.environ.get("GROQ_ALLOWED_MODELS", "")
+    return (
+        {GROQ_MODEL, GROQ_TEXT_MODEL, GROQ_VISION_MODEL}
+        | vision_models()
+        | _BUILTIN_ALLOWED_MODELS
+        | {m.strip() for m in extra.split(",") if m.strip()}
+    )
 
 
 # ─── LLM: Claude (proxy tuỳ chọn) ─────────────────────────────────────────────

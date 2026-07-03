@@ -38,6 +38,34 @@ def smtp_send(to: str, subject: str, html: str) -> None:
         s.sendmail(FROM_EMAIL, to, msg.as_string())
 
 
+def smtp_configured() -> bool:
+    return bool(SMTP_USER and SMTP_PASS)
+
+
+def send_otp_email(to: str, code: str, purpose: str = "reset") -> None:
+    """Gửi mã OTP 6 số qua email (đặt lại mật khẩu / xác minh đăng ký)."""
+    title = "Đặt lại mật khẩu" if purpose == "reset" else "Xác minh email"
+    lead = (
+        "Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu tài khoản SmartBuddy."
+        if purpose == "reset"
+        else "Cảm ơn bạn đã đăng ký SmartBuddy! Hãy nhập mã dưới đây để xác minh email."
+    )
+    html = f"""
+    <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.10);">
+      <div style="background:linear-gradient(135deg,#1FCBA6,#13B392);padding:22px;text-align:center;">
+        <h2 style="color:#fff;margin:0;">🔐 {title}</h2>
+        <p style="color:rgba(255,255,255,.9);margin:4px 0 0;font-size:13px;">SmartBuddy — Học thông minh, Tiến vững vàng</p>
+      </div>
+      <div style="background:#fff;padding:24px;text-align:center;">
+        <p style="color:#444;font-size:14px;margin:0 0 14px;">{lead}</p>
+        <div style="font-size:36px;font-weight:900;letter-spacing:10px;color:#12314A;background:#F0FBF8;border:2px dashed #1FCBA6;border-radius:14px;padding:16px;display:inline-block;">{code}</div>
+        <p style="color:#888;font-size:12.5px;margin:16px 0 0;">Mã có hiệu lực trong <strong>10 phút</strong>. Không chia sẻ mã này cho bất kỳ ai.</p>
+        <p style="color:#bbb;font-size:11px;margin:12px 0 0;">Nếu không phải bạn yêu cầu, hãy bỏ qua email này.</p>
+      </div>
+    </div>"""
+    smtp_send(to, f"[SmartBuddy] Mã {title}: {code}", html)
+
+
 def notify_parents(student: User, rec: ScoreRecord, db: Session) -> None:
     """Gửi email thông báo điểm tới tất cả phụ huynh đã liên kết."""
     if not SMTP_USER:

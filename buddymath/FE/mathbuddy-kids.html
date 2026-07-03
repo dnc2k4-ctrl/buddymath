@@ -26,6 +26,8 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
   onload="window._katexReady=true"></script>
+<!-- Gói đăng ký: NGUỒN DUY NHẤT từ backend (app/plans.py) → gán window.SB_PLANS -->
+<script src="/config/plans.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -141,7 +143,7 @@ body {
   padding: 6px 12px;
   background: linear-gradient(135deg, #3742FA, #A55EEA);
   border: none; border-radius: 10px; cursor: pointer;
-  font-family: 'Nunito', Arial; font-size: 11px; font-weight: 900; color: white;
+  font-family: 'Nunito', Arial; font-size: 13px; font-weight: 900; color: white;
   box-shadow: 0 3px 0 rgba(55,66,250,0.3); transition: all 0.15s;
   display: flex; align-items: center; gap: 5px;
 }
@@ -152,9 +154,10 @@ body {
 .welcome-box { text-align:center; max-width:460px; padding:16px; }
 .robot-face { width:80px; height:80px; margin:0 auto 14px; background: linear-gradient(135deg,#3742FA,#A55EEA); border-radius:24px; display:flex; align-items:center; justify-content:center; font-size:44px; box-shadow: 0 8px 0 rgba(55,66,250,0.35); animation: wobble 3s ease-in-out infinite; }
 @keyframes wobble { 0%,100%{transform:rotate(-3deg);} 50%{transform:rotate(3deg);} }
-.welcome-title { font-family:'Baloo 2',cursive; font-size:26px; color:var(--text1); margin-bottom:8px; }
+.welcome-mascot { height:132px; width:auto; margin:0 auto 12px; display:block; animation: wobble 3s ease-in-out infinite; filter: drop-shadow(0 12px 20px rgba(18,49,74,.16)); }
+.welcome-title { font-family:'Baloo 2',cursive; font-size:30px; color:var(--text1); margin-bottom:8px; }
 .welcome-title span { color:var(--orange); }
-.welcome-sub { font-size:14px; color:var(--text2); line-height:1.65; margin-bottom:20px; font-weight:600; }
+.welcome-sub { font-size:16.5px; color:var(--text2); line-height:1.7; margin-bottom:20px; font-weight:600; }
 .welcome-sub strong { color:var(--purple); }
 .example-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .example-card { background:white; border-radius:16px; padding:12px; cursor:pointer; border:3px solid transparent; box-shadow:0 5px 0 rgba(0,0,0,0.08); transition:all 0.18s cubic-bezier(.34,1.56,.64,1); font-family:'Nunito',Arial; text-align:left; }
@@ -184,7 +187,7 @@ body {
 /* INPUT */
 .input-area { padding:10px 16px 14px; background:white; border-top:3px solid rgba(0,0,0,0.06); display:flex; flex-direction:column; gap:10px; flex-shrink:0; }
 .quick-prompts{display:flex; gap:6px; flex-wrap:wrap;}
-.qp { font-family:'Nunito',Arial; font-size:11px; font-weight:800; padding:5px 11px; border-radius:18px; border:2.5px solid #EEE; background:white; color:var(--text2); cursor:pointer; transition:all 0.15s cubic-bezier(.34,1.56,.64,1); box-shadow:0 2px 0 rgba(0,0,0,0.07); }
+.qp { font-family:'Nunito',Arial; font-size:13px; font-weight:800; padding:7px 13px; border-radius:18px; border:2.5px solid #EEE; background:white; color:var(--text2); cursor:pointer; transition:all 0.15s cubic-bezier(.34,1.56,.64,1); box-shadow:0 2px 0 rgba(0,0,0,0.07); }
 .qp:nth-child(1):hover{border-color:var(--purple);color:var(--purple);transform:scale(1.05);}
 .qp:nth-child(2):hover{border-color:var(--teal);color:var(--teal);transform:scale(1.05);}
 .qp:nth-child(3):hover{border-color:var(--orange);color:var(--orange);transform:scale(1.05);}
@@ -251,8 +254,8 @@ body {
   box-shadow: 0 4px 0 rgba(0,0,0,0.07); border: 2px solid #F0F0FF;
 }
 .grade-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; box-shadow: 0 4px 0 rgba(0,0,0,0.12); }
-.grade-title { font-family: 'Baloo 2', cursive; font-size: 24px; color: var(--text1); line-height: 1.1; }
-.grade-desc { font-size: 13px; color: var(--text2); font-weight: 600; margin-top: 3px; }
+.grade-title { font-family: 'Baloo 2', cursive; font-size: 25px; color: var(--text1); line-height: 1.1; }
+.grade-desc { font-size: 14.5px; color: var(--text2); font-weight: 600; margin-top: 3px; }
 
 /* ACTION BUTTONS ROW */
 .grade-action-row {
@@ -282,8 +285,8 @@ body {
   font-family: 'Baloo 2', cursive; font-size: 17px; color: var(--purple);
   display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
 }
-.overview-desc { font-size: 14px; color: var(--text2); line-height: 1.75; font-weight: 600; margin-bottom: 14px; }
-.topics-list-title { font-size: 11px; font-weight: 900; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+.overview-desc { font-size: 15.5px; color: var(--text2); line-height: 1.75; font-weight: 600; margin-bottom: 14px; }
+.topics-list-title { font-size: 12.5px; font-weight: 900; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
 .topics-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .topic-pill {
   background: linear-gradient(135deg, #F5F0FF, #EEF4FF);
@@ -339,8 +342,8 @@ body {
 .practice-title { font-family: 'Baloo 2', cursive; font-size: 20px; color: var(--text1); }
 .practice-type-row { display: flex; gap: 10px; }
 .practice-type-btn {
-  flex: 1; padding: 10px 14px; border: 2.5px solid #E8E8FF; border-radius: 12px;
-  background: white; cursor: pointer; font-family: 'Nunito', Arial; font-size: 12px; font-weight: 800;
+  flex: 1; padding: 12px 14px; border: 2.5px solid #E8E8FF; border-radius: 12px;
+  background: white; cursor: pointer; font-family: 'Nunito', Arial; font-size: 14.5px; font-weight: 800;
   color: var(--text2); text-align: center; transition: all 0.15s;
 }
 .practice-type-btn.active, .practice-type-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
@@ -439,6 +442,7 @@ body {
 /* Empty state */
 .empty-state { display:flex; flex-direction:column; align-items:center; gap:10px; padding:36px 20px; color:var(--text3); font-weight:700; font-size:14px; text-align:center; }
 .empty-state .empty-icon { font-size:40px; }
+.empty-mascot { height:118px; width:auto; margin-bottom:2px; filter: drop-shadow(0 10px 18px rgba(18,49,74,.14)); }
 
 .kt-action-row { display: none; gap: 10px; flex-wrap: wrap; align-items: center; }
 .kt-action-row.visible { display: flex !important; }
@@ -499,9 +503,9 @@ body {
 .subtopic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; }
 .subtopic-card { background: white; border-radius: 18px; padding: 16px 10px 12px; cursor: pointer; text-align: center; border: 3px solid #F0F0FF; box-shadow: 0 4px 0 rgba(0,0,0,0.07); transition: all 0.2s cubic-bezier(.34,1.56,.64,1); display: flex; flex-direction: column; align-items: center; gap: 7px; }
 .subtopic-card:hover { transform: translateY(-5px) scale(1.04); box-shadow: 0 9px 0 rgba(0,0,0,0.09); }
-.sc-img { font-size: 36px; line-height: 1; }
-.sc-name { font-size: 12px; font-weight: 900; color: var(--text1); line-height: 1.3; }
-.sc-desc { font-size: 10px; font-weight: 600; color: var(--text3); line-height: 1.4; }
+.sc-img { font-size: 42px; line-height: 1; }
+.sc-name { font-size: 15px; font-weight: 900; color: var(--text1); line-height: 1.3; }
+.sc-desc { font-size: 12.5px; font-weight: 600; color: var(--text3); line-height: 1.4; }
 
 /* ═══ VIRTUAL CLASSROOM ═══ */
 .cl-group-card {
@@ -583,9 +587,9 @@ body {
   background: linear-gradient(135deg,#FF6B35,#FF6B6B);
   padding: 12px 20px; display: flex; align-items: center; gap: 14px;
   transform: translateY(100%); transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
-  box-shadow: 0 -4px 20px rgba(255,71,87,0.35);
+  visibility: hidden;   /* ẩn hẳn khi chưa show — tránh bóng hồng rỉ lên đáy */
 }
-.frustration-bar.show { transform: translateY(0); }
+.frustration-bar.show { transform: translateY(0); visibility: visible; box-shadow: 0 -4px 20px rgba(255,71,87,0.35); }
 .frust-icon { font-size: 28px; flex-shrink:0; }
 .frust-text { flex:1; }
 .frust-title { font-size:14px; font-weight:900; color:white; margin-bottom:2px; }
@@ -1747,7 +1751,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <span></span><span></span><span></span>
   </button>
   <!-- Smart Buddy Mascot Logo -->
-  <div class="logo" style="gap:8px;cursor:pointer;" onclick="goToBuddy()">
+  <div class="logo" style="gap:8px;cursor:pointer;" onclick="goHome()" title="Về trang chủ">
     <div style="width:46px;height:46px;flex-shrink:0;background:white;border-radius:13px;overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;">
       <img src="/images/taodang1.png" alt="SmartBuddy" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'">
     </div>
@@ -1758,9 +1762,6 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
   </div>
   <span class="badge-pill" style="display:none;" id="grade-badge">Lớp 5</span>
   <div class="header-right">
-    <div class="score-pill" id="score-pill">
-      ⭐ <span id="score-val">0</span> <span class="score-unit">điểm</span>
-    </div>
     <!-- Mascot mood indicator -->
     <div id="mascot-mood" style="background:rgba(255,255,255,.18);border-radius:12px;padding:4px 10px;font-size:12px;font-weight:800;color:white;cursor:pointer;display:none;" onclick="goToBuddy()" title="Buddy đang chờ bạn!">
       🤖 <span id="mascot-msg">Buddy đây!</span>
@@ -1859,7 +1860,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         </button>
 
         <div style="text-align:center;font-size:12px;color:var(--text2);font-weight:600;">
-          Chưa có tài khoản? <a href="#" onclick="switchAuthTab('register');return false;" style="color:var(--teal);font-weight:800;">Đăng ký ngay</a>
+          <a href="#" onclick="openForgotModal();return false;" style="color:var(--teal);font-weight:800;">Quên mật khẩu?</a>
+          &nbsp;·&nbsp; Chưa có tài khoản? <a href="#" onclick="switchAuthTab('register');return false;" style="color:var(--teal);font-weight:800;">Đăng ký ngay</a>
         </div>
 
         <!-- Demo mode fallback -->
@@ -1949,82 +1951,60 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
   <!-- SIDEBAR -->
   <aside class="sidebar">
 
-    <!-- ── Mascot banner ── -->
-    <div id="sb-mascot-banner" style="background:linear-gradient(135deg,#1FCBA6,#13B392);padding:14px 12px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0;" onclick="goToBuddy()">
-      <!-- 3D Sprite mascot -->
-      <img id="buddy-sprite-sidebar" src="/images/taodang3.png" alt="SmartBuddy" style="width:52px;height:56px;object-fit:contain;flex-shrink:0;border-radius:12px;background-color:white;animation:mascotBob 2.5s ease-in-out infinite;" onerror="this.style.display='none'">
-      <div style="flex:1;overflow:hidden;">
-        <div style="font-family:'Baloo 2',cursive;font-size:14px;color:white;font-weight:800;line-height:1.2;">SmartBuddy</div>
-        <div id="sb-banner-msg" style="font-size:10px;color:rgba(255,255,255,.85);font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Xin chào! Hôm nay học gì? 🌟</div>
-      </div>
-      <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:3px 7px;font-size:10px;color:white;font-weight:800;border:1px solid rgba(255,255,255,.3);">Hỏi</div>
-    </div>
-
     <!-- ══ KHU HỌC SINH (ẩn khi đăng nhập phụ huynh) ══ -->
-    <div id="student-sidebar-section">
-    <!-- ── Progress strip ── -->
-    <div style="padding:8px 12px;background:rgba(46,196,160,.07);border-bottom:1px solid rgba(46,196,160,.12);flex-shrink:0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-        <span style="font-size:10px;font-weight:900;color:var(--teal-d);">⭐ TIẾN TRÌNH HÔM NAY</span>
-        <span style="font-size:11px;font-weight:900;color:var(--teal-d);" id="done-count">0/10</span>
-      </div>
-      <div class="prog-track" style="height:6px;"><div class="prog-fill" id="prog-fill"></div></div>
-      <div class="stars-row" id="stars-row" style="margin-top:5px;gap:3px;">
-        <span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span>
-        <span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span>
-      </div>
-    </div>
+    <div id="student-sidebar-section" style="display:flex;flex-direction:column;flex:1;min-height:0;padding-top:6px;">
 
-    <!-- ── AI Tutor ── -->
-    <div class="sidebar-label">🤖 Gia sư AI</div>
-    <button class="topic-btn" data-color="buddy" data-topic="buddy" onclick="selectTopic(this)">
-      <span>🤖</span> Hỏi đáp với Buddy
+    <!-- ══ ĐIỀU HƯỚNG (giao diện mới — tone mint đồng nhất) ══ -->
+    <button class="topic-btn nav-new" data-nav="home" onclick="goHome();setNavActive(this)">
+      <span class="nav-ic-em">🏠</span> Trang chủ
     </button>
-    <button class="topic-btn" data-color="buddy" data-topic="prompt-playground" onclick="selectTopic(this)">
-      <span>💭</span> Tư duy đặt câu hỏi
+    <button class="topic-btn nav-new" data-color="buddy" data-topic="buddy" onclick="selectTopic(this)">
+      <span class="nav-ic-em">💬</span> Hỏi đáp với Buddy
     </button>
-
-    <!-- ── Toán học (1 tab → mở panel hub có thẻ) ── -->
-    <button class="topic-btn nav-group-header" data-color="blue" data-topic="math_hub" onclick="selectTopic(this)" style="color:#1065B5;">
-      <span>📐</span> Toán học
+    <button class="topic-btn nav-new nav-group-header" data-color="blue" data-topic="math_hub" onclick="selectTopic(this)">
+      <span class="nav-ic-em">📐</span> Toán học
     </button>
-
-    <!-- ── Tiếng Anh (1 tab → mở panel hub có thẻ) ── -->
-    <button class="topic-btn nav-group-header" data-color="green" data-topic="english_hub" onclick="selectTopic(this)" style="color:#1A8A50;">
-      <img src="/images/tienganh.jpg" alt="Tiếng Anh" style="width:26px;height:26px;object-fit:contain;border-radius:6px;background:#fff;flex-shrink:0;vertical-align:middle;" onerror="this.outerHTML='🌏'"> Tiếng Anh
+    <button class="topic-btn nav-new nav-group-header" data-color="green" data-topic="english_hub" onclick="selectTopic(this)">
+      <span class="nav-ic-em">🌏</span> Tiếng Anh
     </button>
-
-    <!-- ── Kỹ năng sống (1 tab → mở panel có thẻ, bỏ danh sách con) ── -->
-    <button class="topic-btn nav-group-header" data-color="orange" id="life-skills-nav-btn" data-topic="life_skills" onclick="selectTopic(this)" style="color:#C06000;">
-      <span>🌟</span> Kỹ năng sống
+    <button class="topic-btn nav-new nav-group-header" data-color="orange" id="life-skills-nav-btn" data-topic="life_skills" onclick="selectTopic(this)">
+      <span class="nav-ic-em">🌟</span> Kỹ năng sống
     </button>
     <div class="subtopic-list" id="navgrp-life">
-      <button class="topic-btn sub-btn" data-color="orange" onclick="openLifeSkillNav('Ra quyết định','🤔','Học cách suy nghĩ và ra quyết định đúng đắn.')" style="color:#C06000;">
+      <button class="topic-btn sub-btn" onclick="openLifeSkillNav('Ra quyết định','🤔','Học cách suy nghĩ và ra quyết định đúng đắn.')">
         <span>🤔</span> Ra quyết định
       </button>
-      <button class="topic-btn sub-btn" data-color="orange" onclick="openLifeSkillNav('Giao tiếp tốt','🗣️','Học cách nói chuyện và lắng nghe.')" style="color:#C06000;">
+      <button class="topic-btn sub-btn" onclick="openLifeSkillNav('Giao tiếp tốt','🗣️','Học cách nói chuyện và lắng nghe.')">
         <span>🗣️</span> Giao tiếp
       </button>
-      <button class="topic-btn sub-btn" data-color="orange" onclick="openLifeSkillNav('Quản lý thời gian','⏰','Sắp xếp thời gian học và chơi cân bằng.')" style="color:#C06000;">
+      <button class="topic-btn sub-btn" onclick="openLifeSkillNav('Quản lý thời gian','⏰','Sắp xếp thời gian học và chơi cân bằng.')">
         <span>⏰</span> Quản lý thời gian
       </button>
-      <button class="topic-btn sub-btn" data-color="orange" onclick="openLifeSkillNav('Kiểm soát cảm xúc','❤️','Nhận biết và kiểm soát cảm xúc lành mạnh.')" style="color:#C06000;">
+      <button class="topic-btn sub-btn" onclick="openLifeSkillNav('Kiểm soát cảm xúc','❤️','Nhận biết và kiểm soát cảm xúc lành mạnh.')">
         <span>❤️</span> Quản lý cảm xúc
       </button>
-      <button class="topic-btn sub-btn" data-color="orange" onclick="openLifeSkillNav('','','')" style="color:#C06000;">
+      <button class="topic-btn sub-btn" onclick="openLifeSkillNav('','','')">
         <span>🌈</span> Xem tất cả kỹ năng
       </button>
     </div>
-
-    <!-- ── Tiến trình ── -->
-    <div class="sidebar-label">📊 Tiến trình</div>
-    <button class="topic-btn" data-color="buddy" data-topic="score_history" onclick="selectTopic(this)">
-      <span>📈</span> Lịch sử điểm số
+    <button class="topic-btn nav-new" data-color="buddy" data-topic="score_history" onclick="selectTopic(this)">
+      <span class="nav-ic-em">🕐</span> Lịch sử học tập
+    </button>
+    <button class="topic-btn nav-new" data-nav="achievements" onclick="openAchievements();setNavActive(this)">
+      <span class="nav-ic-em">🏆</span> Thành tích
+    </button>
+    <button class="topic-btn nav-new" data-nav="profile" onclick="openProfile();setNavActive(this)">
+      <span class="nav-ic-em">👤</span> Hồ sơ cá nhân
+    </button>
+    <button class="topic-btn nav-new" data-nav="settings" onclick="openSettings();setNavActive(this)">
+      <span class="nav-ic-em">⚙️</span> Cài đặt
     </button>
 
-    <div style="margin:12px 10px 0;padding:14px 15px;background:rgba(46,196,160,.12);border-radius:14px;border:2px solid rgba(46,196,160,.28);">
-      <div style="font-size:14px;font-weight:900;color:var(--teal-d);margin-bottom:6px;">💡 SmartBuddy không làm bài thay em</div>
-      <div style="font-size:12.5px;color:var(--text2);font-weight:700;line-height:1.6;">Buddy hướng dẫn em tự suy nghĩ và tìm ra đáp án! 💪</div>
+    <!-- Đã bỏ thẻ "Cố lên Buddy" theo yêu cầu — giữ ID tiến độ ở dạng ẩn để JS không lỗi -->
+    <div style="display:none;">
+      <span id="done-count">0/10</span>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="stars-row" id="stars-row"><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span><span class="star-item">⭐</span></div>
     </div>
     </div><!-- /student-sidebar-section -->
 
@@ -2438,8 +2418,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <div class="messages" id="messages" style="padding-top:44px;">
           <div class="welcome-wrap" id="welcome-screen">
             <div class="welcome-box">
-              <div class="robot-face">🤖</div>
-              <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span> 👋</div>
+              <img class="welcome-mascot" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.outerHTML='&lt;div class=\'robot-face\'&gt;🤖&lt;/div&gt;'">
+              <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span></div>
               <p class="welcome-sub">Hôm nay em muốn Buddy giúp gì nào? 😊<br>Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <strong>nhập câu hỏi của em</strong> bên dưới — Buddy sẽ hướng dẫn em <strong>tự nghĩ ra đáp án</strong> nhé! 🚀</p>
             </div>
           </div>
@@ -2614,8 +2594,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <div style="background:linear-gradient(135deg,#1E90FF,#2ED573);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(30,144,255,.3);display:flex;align-items:center;gap:16px;">
           <img src="/images/taodang1.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
           <div>
-            <div style="font-family:'Baloo 2',cursive;font-size:22px;margin-bottom:4px;">📐 Toán học</div>
-            <div style="font-size:13px;opacity:.92;font-weight:600;line-height:1.6;">Học cùng gia sư AI — Buddy dẫn em tư duy từng bước, không giải hộ!</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">📐 Toán học</div>
+            <div style="font-size:15px;opacity:.92;font-weight:600;line-height:1.6;">Học cùng gia sư AI — Buddy dẫn em tư duy từng bước, không giải hộ!</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
@@ -2635,8 +2615,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <div style="background:linear-gradient(135deg,#1A8A50,#2ED573);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(26,138,80,.3);display:flex;align-items:center;gap:16px;">
           <img src="/images/taodang3.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
           <div>
-            <div style="font-family:'Baloo 2',cursive;font-size:22px;margin-bottom:4px;">🌏 Tiếng Anh</div>
-            <div style="font-size:13px;opacity:.92;font-weight:600;line-height:1.6;">Học từ vựng, luyện hội thoại và làm bài tập cùng SmartBuddy AI!</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">🌏 Tiếng Anh</div>
+            <div style="font-size:15px;opacity:.92;font-weight:600;line-height:1.6;">Học từ vựng, luyện hội thoại và làm bài tập cùng SmartBuddy AI!</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
@@ -2659,8 +2639,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <div style="background:linear-gradient(135deg,#FF6B35,#FFCB45);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(255,107,53,.3);display:flex;align-items:center;gap:16px;">
           <img src="/images/taodang2.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
           <div>
-            <div style="font-family:'Baloo 2',cursive;font-size:22px;margin-bottom:4px;">🌟 Kỹ năng sống</div>
-            <div style="font-size:13px;opacity:.9;font-weight:600;line-height:1.6;">SmartBuddy giúp em phát triển những kỹ năng quan trọng trong cuộc sống!</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">🌟 Kỹ năng sống</div>
+            <div style="font-size:15px;opacity:.9;font-weight:600;line-height:1.6;">SmartBuddy giúp em phát triển những kỹ năng quan trọng trong cuộc sống!</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
@@ -2709,8 +2689,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <div class="topic-content-panel" id="panel-score_history" style="overflow-y:auto;">
       <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
         <div style="background:linear-gradient(135deg,#3742FA,#A55EEA);border-radius:20px;padding:20px 24px;color:white;box-shadow:0 6px 0 rgba(55,66,250,.3);">
-          <div style="font-family:'Baloo 2',cursive;font-size:22px;margin-bottom:6px;">📊 Lịch sử học tập</div>
-          <div style="font-size:13px;opacity:.9;font-weight:600;line-height:1.6;">Theo dõi hành trình học tập của em theo từng môn và thời gian!</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:6px;">📊 Lịch sử học tập</div>
+          <div style="font-size:15px;opacity:.9;font-weight:600;line-height:1.6;">Theo dõi hành trình học tập của em theo từng môn và thời gian!</div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;" id="score-hist-filters">
           <button class="practice-type-btn active" onclick="loadScoreHistory('');setHistFilter(this)">Tất cả</button>
@@ -3156,6 +3136,70 @@ const CL_API = (function() {
   }
   return 'http://localhost:8000';
 })();
+
+// ── Bảo hiểm nạp bảng giá ─────────────────────────────────────────────────
+// Nếu <script src="/config/plans.js"> không vào được (mở file://, khác origin,
+// hoặc server chưa restart nên route 404) → lấy gói qua API rồi khôi phục Infinity
+// cho các field "không giới hạn" (API trả null thay cho ∞).
+(function ensurePlans(){
+  if (window.SB_PLANS) return;
+  fetch(CL_API + '/api/plans')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(p){
+      if (!p || !p.plans) return;
+      Object.keys(p.plans).forEach(function(id){
+        var L = p.plans[id].limits || {};
+        ['mathQuestionsPerDay','imageSolvesPerDay'].forEach(function(k){ if (L[k] === null) L[k] = Infinity; });
+      });
+      window.SB_PLANS = p;
+    })
+    .catch(function(){ /* offline / server cũ — UI sẽ hiện 'đang tải' */ });
+})();
+
+// ── Tự động tiêm LỚP + TOKEN vào mọi lệnh gọi AI (/v1/messages) ──
+// • grade: để AI điều chỉnh độ khó/từ ngữ theo lớp (backend đọc field `grade`).
+// • Authorization: để học sinh đã đăng nhập nhận hạn mức rate-limit rộng hơn & được nhận diện.
+(function(){
+  const _origFetch = window.fetch.bind(window);
+  const AI_PATHS = ['/v1/messages', '/chat/image', '/chat/stream', '/chat'];
+  const _isAi = u => AI_PATHS.some(p => u.endsWith(p));
+  window.fetch = async function(url, opts){
+    try{
+      const u = (typeof url === 'string') ? url : (url && url.url) || '';
+      if (u.endsWith('/v1/messages') && opts){
+        if (typeof opts.body === 'string'){
+          const su = JSON.parse(localStorage.getItem('sb_user') || 'null');
+          const g  = su && Number(su.grade);
+          if (g >= 1 && g <= 12){
+            const b = JSON.parse(opts.body);
+            if (b && b.grade == null){ b.grade = g; opts = Object.assign({}, opts, { body: JSON.stringify(b) }); }
+          }
+        }
+        const tok = localStorage.getItem('sb_token');
+        if (tok){
+          const headers = Object.assign({}, opts.headers);
+          if (!headers['Authorization'] && !headers['authorization']){
+            headers['Authorization'] = 'Bearer ' + tok;
+            opts = Object.assign({}, opts, { headers });
+          }
+        }
+      }
+    }catch(e){ /* không chặn request nếu lỗi */ }
+    const res = await _origFetch(url, opts);
+    // Bắt lỗi chạm giới hạn gói (429 quota / 403 khoá môn) → popup thân thiện trẻ em (BƯỚC 5)
+    try{
+      const u = (typeof url === 'string') ? url : (url && url.url) || '';
+      if (_isAi(u) && (res.status === 429 || res.status === 403)){
+        const body = await res.clone().json();
+        const d = body && body.detail;
+        if (d && typeof d === 'object' && (d.error === 'quota_exceeded' || d.error === 'feature_locked')){
+          if (typeof showLimitPopup === 'function') showLimitPopup(d);
+        }
+      }
+    }catch(e){ /* body không phải JSON gói — bỏ qua */ }
+    return res;
+  };
+})();
 const GRADE_COLOR = {
   toan3: 'linear-gradient(135deg,#FF6EB4,#A55EEA)',
   toan4: 'linear-gradient(135deg,#A55EEA,#3742FA)',
@@ -3316,6 +3360,8 @@ let timerInterval = null;
 
 // ── NAVIGATION ──
 function selectTopic(btn) {
+  // Gỡ mọi lớp phủ trang chủ / trang phụ để tránh chồng lấn (nút luôn bấm được)
+  ['intro-welcome-screen','app-generic-panel'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove();});
   document.querySelectorAll('.topic-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.topic-content-panel, .grade-panel').forEach(p=>p.classList.remove('active'));
@@ -4336,7 +4382,7 @@ Trả về JSON (không thêm text ngoài JSON):
     const exList = info.exercises||[];
 
     // Store correct answers for grading
-    window['kiemtraAnswers_'+grade] = exList.map(ex=>({dap_an: ex.dap_an, loi_giai: ex.loi_giai}));
+    window['kiemtraAnswers_'+grade] = exList.map(ex=>({cau_hoi: ex.cau_hoi, loai: ex.loai, dap_an: ex.dap_an, loi_giai: ex.loi_giai}));
 
     const diffColor = diff==='trungbinh'?'#2ED573':diff==='kho'?'#FF6B35':'#A55EEA';
     const diffBadge = `<span style="background:${diffColor};color:white;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;margin-right:6px;">${diffLabel}</span>`;
@@ -4394,7 +4440,16 @@ Trả về JSON (không thêm text ngoài JSON):
     try { const m=raw.match(/\{[\s\S]*\}/); grading=JSON.parse(m?m[0]:raw); } catch(e){ throw new Error('parse'); }
 
     let correctCount = 0;
+    const details = [];                                 // kết quả TỪNG CÂU để lưu backend
     (grading.results||[]).forEach((r,i)=>{
+      details.push({
+        no: i + 1,
+        q: String(answers[i]?.cau_hoi || '').slice(0, 180),
+        loai: answers[i]?.loai || '',
+        chosen: studentAnswers[i] || '(bỏ trống)',
+        answer: answers[i]?.dap_an || '',
+        correct: !!r.dung,
+      });
       const inp = document.getElementById(`kt-ans-${grade}-${i}`);
       const solEl = document.getElementById(`kt-sol-${grade}-${i}`);
       const itemEl = document.getElementById(`kt-item-${grade}-${i}`);
@@ -4431,7 +4486,7 @@ Trả về JSON (không thêm text ngoài JSON):
 
     // Record score to backend
     const gradeNum = grade.replace('toan','');
-    await recordScore('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, '', `${emoji} ${msg} (${correctCount}/${total} câu - ${pct}%)`);
+    await recordScore('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, JSON.stringify(details), `${emoji} ${msg} (${correctCount}/${total} câu - ${pct}%)`);
     notifyAchievement('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, pct);
   } catch(e) {
     alert('Không thể kết nối AI để chấm bài. Vui lòng thử lại!');
@@ -4450,7 +4505,7 @@ let done = 0;
 let busy = false;
 
 function getSystem() {
-  return `Bạn là MathBuddy — gia sư toán AI thân thiện, kiên nhẫn và vui vẻ dành cho học sinh tiểu học & THCS (lớp 3,4,5,6,7) Việt Nam theo chương trình Bộ GD&ĐT.
+  return `Bạn là Smart Buddy — gia sư toán AI thân thiện, kiên nhẫn và vui vẻ dành cho học sinh tiểu học & THCS (lớp 3–9) Việt Nam theo chương trình Bộ GD&ĐT.
 
 ══════════════════════════════════════════
  QUY TẮC SỐ 1 — BẮT BUỘC MỌI LƯỢT TRẢ LỜI
@@ -4458,6 +4513,7 @@ function getSystem() {
 ⚡ LUẬT VÀNG: Mỗi lượt trả lời CỦA BUDDY PHẢI KẾT THÚC BẰNG ÍT NHẤT 1 CÂU HỎI PHẢN BIỆN hoặc CÂU HỎI DẪN DẮT. Không có ngoại lệ.
 ⚡ TUYỆT ĐỐI KHÔNG được viết câu trả lời mà không có câu hỏi ở cuối.
 ⚡ Câu hỏi phải cụ thể, liên quan trực tiếp đến bước tiếp theo hoặc kiểm tra hiểu biết của học sinh.
+⚡ XÁC MINH TRƯỚC KHI KHEN ĐÚNG: Chỉ nói "Chính xác/Đúng rồi" SAU KHI Buddy đã tự nhẩm lại phép tính và chắc chắn 100%. Nếu chưa chắc, hãy hỏi em kiểm tra lại thay vì khẳng định — TUYỆT ĐỐI không khen đúng một kết quả sai.
 
 ══════════════════════════════════════════
  NGÂN HÀNG CÂU HỎI PHẢN BIỆN — DÙNG XOAY VÒNG
@@ -4709,13 +4765,13 @@ function fmtInline(text) {
 
 function updateProgress(){
   done=Math.min(done+1,10); score+=10;
-  document.getElementById('done-count').textContent=done+'/10';
-  document.getElementById('score-val').textContent=score;
-  document.getElementById('prog-fill').style.width=(done*10)+'%';
+  const dc=document.getElementById('done-count'); if(dc) dc.textContent=done+'/10';
+  const sv=document.getElementById('score-val'); if(sv) sv.textContent=score;   // ô điểm ở header đã bỏ — guard null
+  const pf=document.getElementById('prog-fill'); if(pf) pf.style.width=(done*10)+'%';
   const stars=document.querySelectorAll('.star-item');
-  if(done<=stars.length) stars[done-1].classList.add('lit');
+  if(done<=stars.length && stars[done-1]) stars[done-1].classList.add('lit');
   const pill=document.getElementById('score-pill');
-  pill.classList.remove('pop'); void pill.offsetWidth; pill.classList.add('pop');
+  if(pill){ pill.classList.remove('pop'); void pill.offsetWidth; pill.classList.add('pop'); }
   if(done%3===0) confetti();
 }
 
@@ -4876,15 +4932,15 @@ function newChat() {
   hintRevealedCount=0;
   document.getElementById('hint-content').innerHTML = '<span style="color:var(--text3);font-weight:600;">Bấm "Lấy gợi ý!" để Buddy đưa ra gợi ý phù hợp với bài em đang làm 🎯</span>';
   document.querySelectorAll('#hint-dots .hint-dot').forEach(d=>d.classList.remove('revealed'));
-  document.getElementById('score-val').textContent='0';
+  const _sv=document.getElementById('score-val'); if(_sv) _sv.textContent='0';
   document.getElementById('done-count').textContent='0/10';
   document.getElementById('prog-fill').style.width='0%';
   document.querySelectorAll('.star-item').forEach(s=>s.classList.remove('lit'));
   const wrap=document.getElementById('messages');
   wrap.innerHTML=`<div class="welcome-wrap" id="welcome-screen" style="padding-top:44px;">
     <div class="welcome-box">
-      <div class="robot-face">🤖</div>
-      <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span> 👋</div>
+      <img class="welcome-mascot" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.style.display='none'">
+      <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span></div>
       <p class="welcome-sub">Hôm nay em muốn Buddy giúp gì nào? 😊<br>Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <strong>nhập câu hỏi của em</strong> bên dưới — Buddy sẽ hướng dẫn em <strong>tự nghĩ ra đáp án</strong> nhé! 🚀</p>
     </div>
   </div>`;
@@ -4894,8 +4950,10 @@ function newChat() {
 
 // ── INIT: Hiển thị màn hình giới thiệu MathBuddy khi load ──
 // KHÔNG chọn sẵn topic nào — người dùng tự chọn
-(function initMathBuddy() {
-  // Đảm bảo không có panel nào active lúc đầu
+function showHomeScreen() {
+  // Xoá màn home/panel cũ nếu có (khi bấm logo quay lại)
+  ['intro-welcome-screen', 'app-generic-panel'].forEach(id => { const e = document.getElementById(id); if (e) e.remove(); });
+  // Đảm bảo không có panel nào active
   document.querySelectorAll('.topic-content-panel, .grade-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
 
@@ -4904,38 +4962,706 @@ function newChat() {
   const introPanel = document.createElement('div');
   introPanel.id = 'intro-welcome-screen';
   introPanel.style.cssText = `
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 100%; padding: 32px 24px; overflow-y: auto; background: var(--bg);
-    animation: slideIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: absolute; inset: 0; z-index: 5;
+    display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+    padding: 16px 24px; overflow-y: auto; background: var(--bg);
+    animation: fadeInUp 0.28s ease;
   `;
+  const _done  = (typeof done  === 'number') ? done  : 0;
+  const _score = (typeof score === 'number') ? score : 0;
+  const _pct   = Math.max(0, Math.min(100, Math.round(_done / 10 * 100)));
+  const _C     = 2 * Math.PI * 52;
   introPanel.innerHTML = `
-    <div style="max-width: 600px; width: 100%; text-align: center;">
-      <!-- Logo & Title -->
-      <div id="buddy-sprite-welcome" class="buddy-sprite pose-4" style="width:110px;height:120px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#1FCBA6,#13B392);box-shadow:0 12px 0 rgba(27,184,147,.3);animation:mascotBob 2.5s ease-in-out infinite;"></div>
-      <div style="font-family:'Baloo 2',cursive;font-size:34px;color:var(--text1);margin-bottom:8px;">
-        Xin chào! Mình là <span style="color:var(--teal);">SmartBuddy</span>! ⭐
+    <style>@media(max-width:900px){.home-grid{grid-template-columns:1fr !important;} .home-cats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}</style>
+    <div id="home-fit-wrap" style="width:100%;margin:0 auto;">
+      <!-- Lời chào -->
+      <div style="margin:0 4px 10px;">
+        <div style="font-family:'Baloo 2',cursive;font-size:29px;color:var(--text1);">Xin chào, Buddy! 👋</div>
+        <div style="font-size:17.5px;color:var(--text2);font-weight:600;margin-top:2px;">Hôm nay bạn muốn chinh phục thử thách nào?</div>
       </div>
-      <div style="font-size:15px;color:var(--text2);font-weight:600;line-height:1.75;margin-bottom:28px;">
-        Mình là <strong style="color:var(--purple);">gia sư AI thân thiện</strong> dành cho các em từ lớp 3 đến lớp 9.<br>
-        Mình sẽ <strong style="color:var(--orange);">không làm bài thay</strong> — mình dạy em cách <strong style="color:var(--teal);">TỰ TƯ DUY</strong> và giải được bài! 🚀
+      <div class="home-grid" style="display:grid;grid-template-columns:1.85fr 1fr;gap:16px;align-items:stretch;">
+        <!-- LEFT — hero + danh mục GỘP CHUNG 1 khung (giống mẫu) -->
+        <div style="display:flex;flex-direction:column;">
+          <div style="background:#fff;border:1px solid #E7F1EE;border-radius:22px;box-shadow:0 14px 34px rgba(18,49,74,.12);overflow:hidden;flex:1;display:flex;flex-direction:column;">
+            <!-- Hero banner (đầu khung) — phóng nhẹ + cắt viền bo tròn có sẵn của ảnh để nền mint liền mạch với khung -->
+            <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#DEF2EC,#EAF5FF);">
+              <img src="/images/anhtrangchu.png" alt="SmartBuddy" style="width:100%;height:auto;margin:-32px 0;display:block;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.background='linear-gradient(120deg,#E9F9F3,#F2FBFF)';this.parentNode.style.minHeight='130px';this.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
+              <button onclick="quickStartBuddy()" style="position:absolute;left:16px;bottom:14px;padding:9px 16px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;font-size:13px;box-shadow:0 6px 14px rgba(27,184,147,.35);transition:.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💬 Hỏi ngay với Buddy</button>
+            </div>
+            <!-- Phần chọn danh mục — cùng khung, nền hơi mint để 4 nút trắng nổi khối rõ -->
+            <div style="padding:18px 18px 22px;flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#F4FBF9,#FFFFFF 60%);">
+              <div style="font-size:20.5px;font-weight:900;color:var(--text1);margin:2px 2px 15px;">📚 Chọn danh mục học tập</div>
+              <div class="home-cats" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:13px;flex:1;">
+                ${homeCard('math_hub','/images/mascot/pencil.png','📐','Toán học','Học chủ đề + kiểm tra','#1E90FF')}
+                ${homeCard('english_hub','/images/tienganh.jpg','🌏','Tiếng Anh','Từ vựng · hội thoại','#2ED573')}
+                ${homeCard('life_skills','/images/mascot/idea.png','🌟','Kỹ năng sống','Tư duy &amp; cảm xúc','#FF6B35')}
+                ${homeCard('prompt-playground','/images/mascot/thinking.png','💭','Tư duy đặt câu hỏi','Học cách hỏi hay','#A55EEA')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;padding:20px 22px;box-shadow:0 14px 32px rgba(18,49,74,.12);flex:1;display:flex;flex-direction:column;justify-content:center;">
+            <div style="font-size:19.5px;font-weight:900;color:var(--text1);margin-bottom:14px;">📊 Tiến độ học tập</div>
+            <div style="display:flex;align-items:center;gap:18px;">
+              <div id="home-prog-ring" style="width:112px;height:112px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:conic-gradient(#1FCBA6 0deg ${_pct*3.6}deg, #E6F4EF ${_pct*3.6}deg 360deg);">
+                <div style="width:84px;height:84px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;">
+                  <span id="home-pct-text" style="font-size:28px;font-weight:900;color:#12314A;font-family:'Baloo 2',cursive;line-height:1;">${_pct}%</span>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:16.5px;font-weight:800;color:var(--text1);">Tiến độ hôm nay</div>
+                <div style="font-size:15.5px;color:var(--text2);font-weight:600;margin:5px 0 13px;line-height:1.35;">Bạn đã hoàn thành <strong id="home-done-strong" style="color:var(--teal-d);">${_done}/10</strong> bài tập</div>
+                <button onclick="openAchievements()" style="padding:10px 20px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;border:none;border-radius:11px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;font-size:15px;box-shadow:0 6px 14px rgba(27,184,147,.32);transition:.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Xem chi tiết</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;padding:22px;box-shadow:0 14px 32px rgba(18,49,74,.12);flex:1;display:flex;flex-direction:column;justify-content:center;">
+            <div style="font-size:18.5px;font-weight:900;color:var(--text1);margin-bottom:14px;">🏆 Thành tích nổi bật</div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              ${achRow('⭐','#FFF7DC','Điểm số', _score, 'home-ach-score')}
+              ${achRow('🎯','#EAF3FF','Bài đã làm hôm nay', _done + '/10', 'home-ach-done')}
+              ${achRow('🔥','#FFF1E8','Tinh thần học tập', 'Cố lên!')}
+            </div>
+          </div>
+          <div onclick="quickStartBuddy()" title="Cùng học với Buddy nào!" style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;box-shadow:0 14px 32px rgba(18,49,74,.12);padding:14px 20px;flex-shrink:0;cursor:pointer;transition:transform .18s,box-shadow .18s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 20px 40px rgba(18,49,74,.18)'" onmouseout="this.style.transform='';this.style.boxShadow='0 14px 32px rgba(18,49,74,.12)'">
+            <img src="/images/anhthaythe-nobg.png" alt="Mỗi ngày một chút, bạn sẽ tiến bộ mỗi ngày!" style="display:block;width:100%;height:auto;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
+          </div>
+        </div>
       </div>
 
-      <!-- Quick chat -->
-      <button onclick="quickStartBuddy()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:white;border:none;border-radius:16px;cursor:pointer;font-family:'Nunito',Arial;font-size:15px;font-weight:900;box-shadow:0 6px 0 rgba(27,184,147,.35);transition:all 0.18s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;justify-content:center;gap:10px;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div class="buddy-sprite pose-1" style="width:32px;height:35px;border-radius:8px;flex-shrink:0;"></div>
-        Hỏi ngay với SmartBuddy!
-      </button>
-
-      <div style="font-size:11px;color:var(--text3);margin-top:16px;font-weight:600;line-height:1.6;">
-        📌 SmartBuddy dành cho học sinh từ lớp 3 đến lớp 9 &nbsp;•&nbsp; Chương trình Bộ GD&ĐT Việt Nam<br>
-        💪 Cam kết: Buddy sẽ hướng dẫn em TỰ GIẢI — không làm bài thay!
-      </div>
+      <div style="text-align:center;font-size:18.5px;color:var(--teal-d);font-weight:800;margin-top:14px;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
     </div>
   `;
 
   // Chèn intro panel vào đầu main-area
   mainArea.insertBefore(introPanel, mainArea.firstChild);
-})();
+  refreshHomeStats();   // đổ số liệu THẬT (từ /scores) vào 2 bảng Tiến độ + Thành tích
+  // Nút "Trang chủ" sáng teal khi đang ở home (giống mockup)
+  const _homeBtn = document.querySelector('.topic-btn[data-nav="home"]');
+  if (_homeBtn && typeof setNavActive === 'function') setNavActive(_homeBtn);
+  // Tự co giãn cho vừa khít khung — KHÔNG bao giờ phải cuộn, không thừa nền
+  fitHomeContent();
+  requestAnimationFrame(fitHomeContent);
+  setTimeout(fitHomeContent, 120);
+  setTimeout(fitHomeContent, 400);
+  setTimeout(fitHomeContent, 800);
+}
+
+// Đổ số liệu THẬT vào 2 bảng trang chủ (Tiến độ hôm nay + Thành tích nổi bật).
+// Nguồn: /scores/history của chính học sinh. Khách chưa đăng nhập → giữ 0.
+//   • "Bài đã làm hôm nay" = số bài có created_at là hôm nay (mục tiêu ngày /10).
+//   • "Điểm số" = tổng số câu đúng tích luỹ (cộng dồn r.score mọi bài).
+async function refreshHomeStats(){
+  const tok = localStorage.getItem('sb_token');
+  if (!tok) return;                       // khách: giữ 0, không gọi API
+  try {
+    const res = await fetch(`${CL_API}/scores/history?limit=200`, { headers: { Authorization: 'Bearer ' + tok } });
+    if (!res.ok) return;
+    const recs = await res.json();
+    if (!Array.isArray(recs)) return;
+    const today = new Date().toISOString().slice(0, 10);   // YYYY-MM-DD, khớp cách lưu created_at
+    let doneToday = 0, totalScore = 0;
+    recs.forEach(r => {
+      totalScore += Number(r.score) || 0;
+      if ((r.created_at || '').slice(0, 10) === today) doneToday++;
+    });
+    const pct = Math.max(0, Math.min(100, Math.round(doneToday / 10 * 100)));
+    const _set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+    _set('home-done-strong', doneToday + '/10');
+    _set('home-ach-done',    doneToday + '/10');
+    _set('home-ach-score',   totalScore);
+    _set('home-pct-text',    pct + '%');
+    const ring = document.getElementById('home-prog-ring');
+    if (ring) ring.style.background = `conic-gradient(#1FCBA6 0deg ${pct * 3.6}deg, #E6F4EF ${pct * 3.6}deg 360deg)`;
+    if (typeof fitHomeContent === 'function') fitHomeContent();
+  } catch (e) { /* im lặng — giữ số 0 mặc định */ }
+}
+
+// Auto-fit: scale nội dung trang chủ vừa đúng vùng hiển thị (cả cao lẫn rộng),
+// đảm bảo luôn vừa 1 màn hình, không có thanh cuộn, không hở nền thừa.
+function fitHomeContent() {
+  const wrap = document.getElementById('home-fit-wrap');
+  const host = document.getElementById('intro-welcome-screen');
+  if (!wrap || !host) return;
+  wrap.style.width = '100%';   // luôn reset (tránh phóng to lỗi)
+  wrap.style.zoom = '1';
+  const cs = getComputedStyle(host);
+  const availW = host.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const availH = host.clientHeight - parseFloat(cs.paddingTop)  - parseFloat(cs.paddingBottom);
+  const needW = wrap.scrollWidth;
+  const needH = wrap.scrollHeight;
+  if (!needW || !needH) return;
+  let scale = Math.min(availW / needW, availH / needH);
+  scale = Math.max(0.4, Math.min(scale, 1.0));
+  wrap.style.zoom = String(Math.round(scale * 1000) / 1000);
+  // Tự sửa: hỏi thẳng trình duyệt còn tràn không, giảm dần tới khi vừa khít
+  let guard = 0;
+  while (host.scrollHeight > host.clientHeight + 1 && scale > 0.4 && guard < 14) {
+    scale = Math.round(scale * 0.97 * 1000) / 1000;
+    wrap.style.zoom = String(scale);
+    guard++;
+  }
+}
+// Co giãn lại khi đổi kích thước cửa sổ
+let _fitTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_fitTimer);
+  _fitTimer = setTimeout(fitHomeContent, 120);
+});
+window.addEventListener('load', () => setTimeout(fitHomeContent, 60));
+
+// Bấm logo (góc trên bên trái) → quay lại trang chủ
+function goHome() {
+  showHomeScreen();
+  if (typeof toggleSidebar === 'function') toggleSidebar(false); // đóng menu trên mobile
+}
+
+// Hiển thị trang chủ khi tải trang
+showHomeScreen();
+
+// ── Trang chủ (home): thẻ tính năng + điều hướng ──
+function homeCard(topic, img, emoji, title, sub, color) {
+  return `<div onclick="homeOpen('${topic}')" style="background:#fff;border-radius:18px;padding:20px 12px 18px;cursor:pointer;border:1px solid #EAF1EE;box-shadow:0 12px 26px rgba(18,49,74,.12);transition:transform .18s,box-shadow .18s,border-color .18s;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;"
+      onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 18px 34px rgba(18,49,74,.20)';this.style.borderColor='${color}'" onmouseout="this.style.transform='';this.style.boxShadow='0 12px 26px rgba(18,49,74,.12)';this.style.borderColor='#EAF1EE'">
+      <img src="${img}" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.replaceWith(document.createTextNode('${emoji}'));typeof fitHomeContent==='function'&&fitHomeContent()" style="width:auto;height:118px;max-width:100%;object-fit:contain;border-radius:14px;">
+      <div style="font-weight:900;font-size:22px;color:var(--text1);margin-top:12px;line-height:1.2;">${title}</div>
+      <div style="font-size:16px;color:var(--text3);font-weight:600;margin-top:5px;">${sub}</div>
+    </div>`;
+}
+function exploreCard(topic, emoji, title, sub, bg) {
+  return `<div onclick="homeOpen('${topic}')" style="background:${bg};border-radius:14px;padding:14px;cursor:pointer;transition:transform .15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+    <div style="font-size:24px;">${emoji}</div>
+    <div style="font-weight:900;font-size:13.5px;color:var(--text1);margin-top:6px;">${title}</div>
+    <div style="font-size:11px;color:var(--text3);font-weight:600;">${sub}</div>
+  </div>`;
+}
+function exploreCardPremium() {
+  return `<div onclick="openPremium()" style="background:linear-gradient(120deg,#12314A,#1a4670);border-radius:14px;padding:14px;cursor:pointer;color:#fff;transition:transform .15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+    <div style="font-size:24px;">✨</div>
+    <div style="font-weight:900;font-size:13.5px;margin-top:6px;">Nâng cấp gói học</div>
+    <div style="font-size:11px;opacity:.82;font-weight:600;">Học không giới hạn cùng Buddy</div>
+  </div>`;
+}
+function achRow(icon, bg, label, value, valId) {
+  return `<div style="display:flex;align-items:center;gap:14px;">
+    <div style="width:48px;height:48px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${icon}</div>
+    <div${valId?` id="${valId}"`:''} style="font-size:25px;font-weight:900;color:var(--text1);font-family:'Baloo 2',cursive;line-height:1;white-space:nowrap;">${value}</div>
+    <div style="flex:1;min-width:0;font-size:16px;color:var(--text3);font-weight:700;">${label}</div>
+  </div>`;
+}
+function homeOpen(topic) {
+  const intro = document.getElementById('intro-welcome-screen');
+  if (intro) intro.remove();
+  const btn = document.querySelector('.topic-btn[data-topic="' + topic + '"]');
+  if (btn) { btn.click(); return; }
+  if (topic === 'buddy' && typeof quickStartBuddy === 'function') { quickStartBuddy(); return; }
+  // Không có nút trên sidebar (vd 'prompt-playground' – Tư duy đặt câu hỏi):
+  // mở panel trực tiếp qua nút ảo, đưa về màn hình đầu (qc-home) cho sạch.
+  if (typeof hubOpen === 'function') {
+    hubOpen(topic);
+    if (topic === 'prompt-playground' && typeof qcGoTo === 'function') { try { qcGoTo(0); } catch (e) {} }
+  }
+}
+
+// ════════ ĐIỀU HƯỚNG + TRANG MỚI (Thành tích · Hồ sơ · Cài đặt) ════════
+function setNavActive(btn) {
+  document.querySelectorAll('.sidebar .topic-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function _appPanel(html) {
+  ['intro-welcome-screen', 'app-generic-panel'].forEach(id => { const e = document.getElementById(id); if (e) e.remove(); });
+  document.querySelectorAll('.topic-content-panel, .grade-panel').forEach(p => p.classList.remove('active'));
+  const mainArea = document.getElementById('main-area');
+  const p = document.createElement('div');
+  p.id = 'app-generic-panel';
+  p.style.cssText = 'position:absolute;inset:0;z-index:5;overflow-y:auto;padding:22px 26px;background:var(--bg);animation:fadeInUp .28s ease;';
+  p.innerHTML = '<div style="max-width:1040px;margin:0 auto;width:100%;">' + html + '</div>';
+  mainArea.insertBefore(p, mainArea.firstChild);
+  if (typeof toggleSidebar === 'function') toggleSidebar(false);
+}
+function _statCard(icon, label, val, bg) {
+  return `<div style="background:#fff;border:1px solid #EDF3F1;border-radius:16px;padding:18px;box-shadow:0 6px 16px rgba(18,49,74,.05);display:flex;align-items:center;gap:14px;">
+    <div style="width:48px;height:48px;border-radius:13px;background:${bg};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${icon}</div>
+    <div><div style="font-size:28px;font-weight:900;color:var(--text1);font-family:'Baloo 2',cursive;">${val}</div><div style="font-size:14.5px;color:var(--text3);font-weight:700;">${label}</div></div>
+  </div>`;
+}
+function openAchievements() {
+  const s = (typeof score === 'number') ? score : 0;
+  const badges = Math.floor(s / 50);
+  _appPanel(`
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Baloo 2',cursive;font-size:26px;color:var(--text1);margin-bottom:4px;">🏆 Thành tích của em</div>
+        <div style="font-size:14px;color:var(--text2);font-weight:600;">Cùng xem em đã tiến bộ thế nào nhé!</div>
+      </div>
+      <img src="/images/mascot/celebrate.png" alt="" style="height:96px;width:auto;flex-shrink:0;filter:drop-shadow(0 10px 18px rgba(18,49,74,.14));" onerror="this.style.display='none'">
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px;">
+      ${_statCard('⭐','Điểm tổng', s, '#FFF7DC')}
+      ${_statCard('🔥','Chuỗi ngày học', '1', '#FFF1E8')}
+      ${_statCard('🎖️','Huy hiệu', badges, '#EAF3FF')}
+    </div>
+    <div style="font-size:17px;font-weight:900;color:var(--text1);margin-bottom:12px;">🏅 Bảng thành tích gần đây</div>
+    <div id="ach-list" style="display:flex;flex-direction:column;gap:10px;"><div style="color:var(--text3);font-size:13px;">Đang tải...</div></div>
+  `);
+  const el = () => document.getElementById('ach-list');
+  if (_sbToken) {
+    fetch(`${CL_API}/scores/history`, { headers: { Authorization: 'Bearer ' + _sbToken } }).then(r => r.json()).then(recs => {
+      if (!el()) return;
+      if (!recs.length) { el().innerHTML = '<div class="empty-state"><img class="empty-mascot" src="/images/mascot/trophy.png" alt="" onerror="this.style.display=\'none\'">Chưa có bài nào. Hãy làm bài để nhận huy hiệu nhé! 🏅</div>'; return; }
+      el().innerHTML = recs.slice(0, 12).map(r => { const pct = r.pct || 0; const c = pct >= 80 ? '#2ED573' : pct >= 60 ? '#FF6B35' : '#FF6B6B'; const em = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
+        return `<div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EDF3F1;border-radius:14px;padding:12px 16px;">
+          <div style="font-size:24px;">${em}</div>
+          <div style="flex:1;min-width:0;"><div style="font-weight:900;font-size:14px;color:var(--text1);">${_esc(r.subject)} · ${_esc(r.topic || 'Tổng hợp')}</div><div style="font-size:12px;color:var(--text3);font-weight:600;">${new Date(r.created_at).toLocaleDateString('vi-VN')}</div></div>
+          <div style="font-weight:900;font-size:16px;color:${c};">${pct}%</div>
+        </div>`; }).join('');
+    }).catch(() => { if (el()) el().innerHTML = '<div style="color:var(--text3);font-size:13px;">Không tải được lịch sử.</div>'; });
+  } else { setTimeout(() => { if (el()) el().innerHTML = '<div style="color:var(--text3);font-size:13px;">🔒 Đăng nhập để lưu và xem thành tích của em!</div>'; }, 50); }
+}
+function _profileRow(label, val) {
+  return `<div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #F0F5F3;"><span style="font-size:14.5px;color:var(--text3);font-weight:700;">${label}</span><span style="font-size:16px;color:var(--text1);font-weight:800;text-align:right;">${val}</span></div>`;
+}
+function _profPlan(id) {
+  const P=_sbp(); if(!P) return '';
+  const plan=P.plans[id]; if(!plan) return '';
+  const cur=_sbCurrentPlanId(); const color=_sbPlanColor(id); const hot=(id==='standard');
+  const isCur=id===cur;
+  const btn = isCur
+    ? '<button disabled style="width:100%;padding:9px;border:2px solid #E4EEEB;border-radius:10px;background:#F2F7F5;color:var(--text3);font-family:\'Nunito\',Arial;font-weight:900;font-size:12.5px;cursor:default;">Đang dùng</button>'
+    : '<button onclick="sbChoosePlan(\''+id+'\')" style="width:100%;padding:9px;border:none;border-radius:10px;cursor:pointer;font-family:\'Nunito\',Arial;font-weight:900;font-size:12.5px;'+(id===P.defaultPlan?'background:#EEF3F1;color:var(--text2);':'background:linear-gradient(135deg,'+color+',#13B392);color:#fff;')+'">'+(id===P.defaultPlan?P.ui.cta.free:P.ui.cta.paid)+'</button>';
+  return '<div style="flex:1;min-width:150px;background:#fff;border:2px solid '+(hot?color:'#EDF3F1')+';border-radius:14px;padding:14px;position:relative;">'
+    + (hot?'<div style="position:absolute;top:-9px;left:14px;background:'+color+';color:#fff;font-size:10.5px;font-weight:900;padding:2px 9px;border-radius:20px;">PHỔ BIẾN</div>':'')
+    + '<div style="font-family:\'Baloo 2\',cursive;font-size:17.5px;color:var(--text1);">'+plan.name+'</div>'
+    + '<div style="margin:3px 0 9px;"><span style="font-size:23px;font-weight:900;color:'+color+';font-family:\'Baloo 2\',cursive;">'+_sbFmtPrice(plan)+'</span><span style="font-size:12px;color:var(--text3);font-weight:700;">'+_sbPriceSuffix(plan)+'</span></div>'
+    + '<ul style="list-style:none;margin:0 0 11px;padding:0;display:flex;flex-direction:column;gap:6px;">'+_sbHighlights(id).map(f=>'<li style="font-size:13px;color:var(--text2);font-weight:600;"><span style="color:'+color+';font-weight:900;">✓</span> '+f+'</li>').join('')+'</ul>'
+    + btn
+    + '</div>';
+}
+function openProfile() {
+  let u = (typeof authCurrentUser !== 'undefined' && authCurrentUser) ? authCurrentUser : null;
+  if (!u) { try { u = JSON.parse(localStorage.getItem('sb_user') || 'null'); } catch(e){} }
+  u = u || {};
+  const loggedIn = !!(u.username || u.email);
+  const name = u.username || u.name || 'Khách';
+  const email = u.email || (loggedIn ? '—' : '(chưa đăng nhập)');
+  const role = u.role === 'parent' ? 'Phụ huynh' : u.role === 'admin' ? 'Quản trị' : 'Học sinh';
+  const grade = (u.role === 'student' || !u.role) ? ('Lớp ' + (u.grade || 5)) : role;
+  _appPanel(`
+    <div style="font-family:'Baloo 2',cursive;font-size:24px;color:var(--text1);margin-bottom:16px;">👤 Hồ sơ cá nhân</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start;">
+      <div style="background:#fff;border:1px solid #EDF3F1;border-radius:18px;padding:20px;box-shadow:0 6px 16px rgba(18,49,74,.05);">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;flex-shrink:0;">${(name[0]||'?').toUpperCase()}</div>
+          <div style="min-width:0;"><div style="font-size:21px;font-weight:900;color:var(--text1);">${_esc(name)}</div><div style="font-size:14.5px;color:var(--text3);font-weight:600;">${_esc(grade)}</div></div>
+        </div>
+        ${_profileRow('Email', _esc(email))}
+        ${_profileRow('Vai trò', role)}
+        ${_profileRow('Gói hiện tại', '<b style="color:var(--teal-d);">' + (((_sbp()||{}).plans||{})[_sbCurrentPlanId()]||{name:'Miễn phí'}).name + '</b>')}
+        ${loggedIn ? `<div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+          <button onclick="openForgotModal()" style="padding:10px 16px;border:2px solid #E0E8F0;border-radius:12px;background:#fff;cursor:pointer;font-family:'Nunito',Arial;font-weight:800;color:var(--text2);">🔒 Đổi mật khẩu</button>
+          <button onclick="logoutUser()" style="padding:10px 16px;border:none;border-radius:12px;background:#FFF0F0;cursor:pointer;font-family:'Nunito',Arial;font-weight:800;color:var(--red);">🚪 Đăng xuất</button>
+        </div>` : `<button onclick="openAuthModal('login')" style="margin-top:16px;width:100%;padding:11px;border:none;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;">Đăng nhập / Đăng ký</button>`}
+      </div>
+      <div style="background:#fff;border:1px solid #EDF3F1;border-radius:18px;padding:20px;box-shadow:0 6px 16px rgba(18,49,74,.05);">
+        <div style="font-size:17px;font-weight:900;color:var(--text1);margin-bottom:2px;">✨ Nâng cấp gói học</div>
+        <div style="font-size:14px;color:var(--text3);font-weight:600;margin-bottom:16px;">Chat với AI thông minh hơn, học không giới hạn.</div>
+        <div style="display:flex;gap:11px;flex-wrap:wrap;">
+          ${_sbp()
+            ? (_profPlan('free') + _profPlan('standard') + _profPlan('premium'))
+            : '<div style="font-size:13px;color:var(--text3);font-weight:600;padding:6px 0;">Đang tải bảng giá… <a href="#" onclick="openProfile();return false;" style="color:var(--teal-d);font-weight:800;">Tải lại</a></div>'}
+        </div>
+      </div>
+    </div>
+  `);
+}
+function _settingRow(icon, title, sub, control) {
+  return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F0F5F3;">
+    <div style="font-size:22px;">${icon}</div>
+    <div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15.5px;color:var(--text1);">${title}</div><div style="font-size:13.5px;color:var(--text3);font-weight:600;">${sub}</div></div>
+    ${control}
+  </div>`;
+}
+function _flipSetting(id, el) {
+  const on = el.dataset.on !== '1';
+  el.dataset.on = on ? '1' : '0';
+  el.style.background = on ? '#1FCBA6' : '#D6E0DC';
+  el.firstElementChild.style.left = on ? '23px' : '3px';
+  if (id === 'notif') localStorage.setItem('sb_notif_off', on ? '0' : '1');
+  if (id === 'sound') localStorage.setItem('sb_sound_off', on ? '0' : '1');
+  const msg = { notif: on ? '🔔 Đã bật thông báo' : '🔕 Đã tắt thông báo', sound: on ? '🔊 Đã bật âm thanh' : '🔇 Đã tắt âm thanh' };
+  if (typeof showAuthToast === 'function') showAuthToast(msg[id] || 'Đã lưu', 'var(--teal)');
+}
+function _switch(id, on) {
+  return `<div onclick="_flipSetting('${id}',this)" data-on="${on?'1':'0'}" style="width:46px;height:26px;border-radius:20px;background:${on?'#1FCBA6':'#D6E0DC'};position:relative;cursor:pointer;transition:.2s;flex-shrink:0;">
+    <div style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:${on?'23px':'3px'};transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25);"></div></div>`;
+}
+function clearChatHistory() {
+  if (confirm('Xóa toàn bộ lịch sử chat với Buddy?')) { try { localStorage.removeItem('sb_chat'); } catch(e){} if (typeof showAuthToast === 'function') showAuthToast('🗑️ Đã xóa lịch sử chat', 'var(--teal)'); }
+}
+function openSettings() {
+  const notifOn = localStorage.getItem('sb_notif_off') !== '1';
+  const soundOn = localStorage.getItem('sb_sound_off') !== '1';
+  _appPanel(`
+    <div style="font-family:'Baloo 2',cursive;font-size:24px;color:var(--text1);margin-bottom:16px;">⚙️ Cài đặt</div>
+    <div style="background:#fff;border:1px solid #EDF3F1;border-radius:18px;padding:8px 20px;box-shadow:0 6px 16px rgba(18,49,74,.05);max-width:620px;">
+      ${_settingRow('🔔','Thông báo','Nhận thông báo trong ứng dụng', _switch('notif', notifOn))}
+      ${_settingRow('🔊','Âm thanh','Hiệu ứng âm thanh khi học', _switch('sound', soundOn))}
+      ${_settingRow('🎨','Giao diện','Tông màu Mint (mặc định)', '<span style="font-size:12px;color:#0E9E86;font-weight:800;">Mint 🌿</span>')}
+      ${_settingRow('🌐','Ngôn ngữ','Tiếng Việt', '<span style="font-size:12px;color:var(--text3);font-weight:700;">Tiếng Việt</span>')}
+      ${_settingRow('🗑️','Xóa lịch sử chat','Xóa toàn bộ hội thoại với Buddy', '<button onclick="clearChatHistory()" style="padding:7px 14px;border:1.5px solid #F0D0D0;border-radius:10px;background:#FFF6F6;color:var(--red);font-weight:800;font-size:12px;cursor:pointer;">Xóa</button>')}
+    </div>
+    <button onclick="logoutUser()" style="margin-top:16px;padding:12px 22px;border:none;border-radius:12px;background:#FFF0F0;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;color:var(--red);">🚪 Đăng xuất</button>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  GÓI ĐĂNG KÝ — mọi số liệu/nhãn đọc TỪ window.SB_PLANS (/config/plans.js).
+//  KHÔNG hardcode: sửa gói ở app/plans.py là toàn bộ giao diện tự đồng bộ.
+// ═══════════════════════════════════════════════════════════════════════════
+function _sbp(){ return window.SB_PLANS || null; }
+function _sbPlanColor(id){ return id==='premium' ? '#A55EEA' : id==='standard' ? '#1FCBA6' : '#5A6890'; }
+function _sbFmtPrice(plan){
+  const P=_sbp();
+  if (!plan || !plan.price) return (P && P.ui.priceFreeLabel) || '0đ';
+  return Number(plan.price).toLocaleString('vi-VN') + 'đ';
+}
+function _sbPriceSuffix(plan){
+  const P=_sbp();
+  return (plan && plan.billingCycle) ? ((P && P.ui.priceSuffixMonthly) || '/tháng') : '';
+}
+function _sbCurrentPlanId(){
+  let u = (typeof authCurrentUser!=='undefined' && authCurrentUser) ? authCurrentUser : null;
+  if (!u){ try{ u = JSON.parse(localStorage.getItem('sb_user')||'null'); }catch(e){} }
+  const P=_sbp(); const p = u && u.plan;
+  return (P && P.plans && P.plans[p]) ? p : (P ? P.defaultPlan : 'free');
+}
+// Điểm nổi bật của gói — suy ra TỪ limits (không viết tay số liệu)
+function _sbHighlights(id){
+  const P=_sbp(); if(!P) return [];
+  const L=P.plans[id].limits, out=[];
+  out.push(L.mathQuestionsPerDay===Infinity ? 'Hỏi Toán không giới hạn' : (L.mathQuestionsPerDay+' câu hỏi Toán mỗi ngày'));
+  out.push(L.imageSolvesPerDay===Infinity ? 'Giải bài bằng ảnh không giới hạn' : (L.imageSolvesPerDay+' ảnh giải bài mỗi ngày'));
+  if (L.englishEnabled) out.push('Mở khoá môn Tiếng Anh');
+  if (L.lifeSkillsEnabled) out.push('Mở khoá môn Kỹ năng sống');
+  const rep = {weekly:'Báo cáo email hàng tuần', per_lesson:'Báo cáo sau mỗi bài học'}[L.emailReportFrequency];
+  if (rep) out.push(rep);
+  return out;
+}
+// 1 ô so sánh ✓/✗ theo loại dòng (count/bool/enum) trong featureRows
+function _sbCell(row, plan){
+  const P=_sbp(); const v = plan.limits[row.key];
+  const YES='<span style="color:#13B392;font-weight:900;font-size:17px;">✓</span>';
+  const NO ='<span style="color:#CBD6D1;font-weight:900;font-size:17px;">✗</span>';
+  if (row.type==='bool') return v ? YES : NO;
+  if (row.type==='count'){
+    if (v===Infinity || v===null) return YES+'<div style="font-size:11px;color:var(--text3);font-weight:700;">'+P.ui.unlimitedLabel+'</div>';
+    if (!v) return NO;
+    return '<b style="color:var(--text1);font-size:15px;">'+v+'</b><div style="font-size:10.5px;color:var(--text3);font-weight:700;">'+(row.unit||'')+'</div>';
+  }
+  if (row.type==='enum'){
+    const labels=row.enumLabels||{}; const key=(v==null)?'none':v; const lbl=labels[key]||labels['none']||'—';
+    return key==='none' ? NO : '<span style="font-size:12px;color:var(--text1);font-weight:800;">'+lbl+'</span>';
+  }
+  return '—';
+}
+// Nút hành động cho 1 gói: đang dùng / Bắt đầu miễn phí / Nâng cấp ngay
+function _sbCtaBtn(id){
+  const P=_sbp(); const cur=_sbCurrentPlanId(); const color=_sbPlanColor(id);
+  if (id===cur) return '<button disabled style="width:100%;padding:10px;border:2px solid #E4EEEB;border-radius:11px;background:#F2F7F5;color:var(--text3);font-family:\'Nunito\',Arial;font-weight:900;font-size:12.5px;cursor:default;">Đang dùng</button>';
+  const label = id===P.defaultPlan ? P.ui.cta.free : P.ui.cta.paid;
+  const bg = id===P.defaultPlan ? 'background:#EEF3F1;color:var(--text2);' : ('background:linear-gradient(135deg,'+color+',#13B392);color:#fff;box-shadow:0 5px 14px '+color+'44;');
+  return '<button onclick="sbChoosePlan(\''+id+'\')" style="width:100%;padding:10px;border:none;border-radius:11px;cursor:pointer;font-family:\'Nunito\',Arial;font-weight:900;font-size:12.5px;'+bg+'">'+label+'</button>';
+}
+
+// Bảng giá + so sánh tính năng ✓/✗ (BƯỚC 4) — dựng hoàn toàn từ SB_PLANS
+function openPremium(){
+  const P=_sbp();
+  let m = document.getElementById('premium-modal');
+  if (!m){ m=document.createElement('div'); m.id='premium-modal';
+    m.style.cssText='position:fixed;inset:0;z-index:1200;background:rgba(18,49,74,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px;overflow:auto;';
+    m.onclick = e => { if (e.target === m) closePremium(); };
+    document.body.appendChild(m);
+  }
+  if (!P){
+    m.innerHTML = '<div style="background:#fff;border-radius:20px;padding:28px;max-width:340px;text-align:center;font-family:\'Nunito\',Arial;"><div style="font-size:34px;">⏳</div><div style="font-weight:800;color:var(--text1);margin-top:8px;">Đang tải bảng giá…</div><button onclick="closePremium()" style="margin-top:14px;padding:9px 18px;border:none;border-radius:10px;background:#EEF3F1;font-weight:800;cursor:pointer;">Đóng</button></div>';
+    m.style.display='flex'; return;
+  }
+  const cols = P.order;
+  const headCells = cols.map(id=>{
+    const plan=P.plans[id]; const color=_sbPlanColor(id); const hot=(id==='standard');
+    return '<th style="padding:16px 10px 12px;text-align:center;vertical-align:top;border-bottom:2px solid #EDF3F1;position:relative;min-width:118px;background:'+(hot?'#F3FFFB':'transparent')+';">'
+      + (hot?'<div style="position:absolute;top:0;left:50%;transform:translate(-50%,-50%);background:'+color+';color:#fff;font-size:9.5px;font-weight:900;letter-spacing:.04em;padding:2px 9px;border-radius:20px;white-space:nowrap;">PHỔ BIẾN</div>':'')
+      + '<div style="font-family:\'Baloo 2\',cursive;font-size:17px;color:var(--text1);">'+plan.name+'</div>'
+      + '<div style="margin-top:2px;"><span style="font-size:19px;font-weight:900;color:'+color+';font-family:\'Baloo 2\',cursive;">'+_sbFmtPrice(plan)+'</span><span style="font-size:11px;color:var(--text3);font-weight:700;">'+_sbPriceSuffix(plan)+'</span></div>'
+      + '</th>';
+  }).join('');
+  const rows = P.featureRows.map(row=>{
+    const cells = cols.map(id=>'<td style="padding:11px 10px;text-align:center;border-bottom:1px solid #F0F5F3;background:'+(id==='standard'?'#F7FFFD':'transparent')+';">'+_sbCell(row, P.plans[id])+'</td>').join('');
+    return '<tr><td style="padding:11px 12px;font-size:12.5px;color:var(--text2);font-weight:800;border-bottom:1px solid #F0F5F3;white-space:nowrap;">'+row.label+'</td>'+cells+'</tr>';
+  }).join('');
+  const ctaCells = cols.map(id=>'<td style="padding:12px 10px;text-align:center;background:'+(id==='standard'?'#F7FFFD':'transparent')+';">'+_sbCtaBtn(id)+'</td>').join('');
+
+  m.innerHTML =
+    '<div style="background:var(--bg);border-radius:22px;max-width:720px;width:100%;padding:22px;box-shadow:0 30px 70px rgba(0,0,0,.3);position:relative;">'
+    + '<button onclick="closePremium()" aria-label="Đóng" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-size:16px;font-weight:900;cursor:pointer;z-index:2;">✕</button>'
+    + '<div style="text-align:center;margin-bottom:14px;">'
+    +   '<div style="font-family:\'Baloo 2\',cursive;font-size:24px;color:var(--text1);">'+P.ui.pricingTitle+'</div>'
+    +   '<div style="font-size:13px;color:var(--text2);font-weight:600;margin-top:3px;">'+P.ui.pricingSubtitle+'</div>'
+    + '</div>'
+    + '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'
+    +   '<table style="border-collapse:collapse;width:100%;min-width:520px;">'
+    +     '<thead><tr><th style="border-bottom:2px solid #EDF3F1;"></th>'+headCells+'</tr></thead>'
+    +     '<tbody>'+rows+'</tbody>'
+    +     '<tfoot><tr><td></td>'+ctaCells+'</tr></tfoot>'
+    +   '</table>'
+    + '</div>'
+    + '<div style="text-align:center;font-size:11px;color:var(--text3);font-weight:600;margin-top:12px;">Thanh toán theo tháng · hết hạn tự về gói Miễn phí, không tự trừ tiền.</div>'
+    + '</div>';
+  m.style.display='flex';
+}
+function closePremium(){ const m=document.getElementById('premium-modal'); if(m) m.style.display='none'; }
+function sbChoosePlan(id){
+  const P=_sbp(); if(!P) return;
+  closePremium();
+  if (id===P.defaultPlan){ if (typeof showAuthToast==='function') showAuthToast('Chúc em học thật vui cùng Buddy nhé! 🌟','var(--teal)'); return; }
+  openCheckout(id);
+}
+
+// ── Popup CHẠM GIỚI HẠN (Free) — thân thiện trẻ em, có linh vật (BƯỚC 5) ──
+function showLimitPopup(detail){
+  detail = detail || {};
+  const title = detail.title || 'Hôm nay em đã dùng hết lượt miễn phí rồi! 🌟';
+  const msg   = detail.message || 'Nâng cấp để học cùng Buddy không giới hạn nhé!';
+  const cta   = detail.cta || 'Xem các gói';
+  let m = document.getElementById('limit-popup');
+  if (!m){ m=document.createElement('div'); m.id='limit-popup';
+    m.style.cssText='position:fixed;inset:0;z-index:1400;background:rgba(18,49,74,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:18px;';
+    m.onclick = e => { if (e.target === m) closeLimitPopup(); };
+    document.body.appendChild(m);
+  }
+  m.innerHTML =
+    '<div style="background:#fff;border-radius:24px;max-width:340px;width:100%;padding:26px 22px 22px;box-shadow:0 26px 60px rgba(0,0,0,.28);text-align:center;position:relative;animation:slideIn .25s ease;">'
+    + '<div style="width:96px;height:96px;margin:0 auto 8px;border-radius:50%;background:linear-gradient(135deg,#E9FBF5,#D6F5EC);display:flex;align-items:center;justify-content:center;">'
+    +   '<img src="/images/mascot/idea.png" alt="Buddy" style="width:78px;height:78px;object-fit:contain;" onerror="this.outerHTML=\'<div style=&quot;font-size:44px&quot;>🤖</div>\'">'
+    + '</div>'
+    + '<div style="font-family:\'Baloo 2\',cursive;font-size:19px;color:var(--text1);line-height:1.35;margin-bottom:6px;">'+title+'</div>'
+    + '<div style="font-size:13.5px;color:var(--text2);font-weight:600;line-height:1.55;margin-bottom:18px;">'+msg+'</div>'
+    + '<button onclick="closeLimitPopup();openPremium();" style="width:100%;padding:13px;border:none;border-radius:14px;cursor:pointer;font-family:\'Nunito\',Arial;font-weight:900;font-size:14.5px;color:#fff;background:linear-gradient(135deg,#1FCBA6,#13B392);box-shadow:0 6px 16px rgba(27,184,147,.32);">✨ '+cta+'</button>'
+    + '<button onclick="closeLimitPopup()" style="width:100%;margin-top:9px;padding:10px;border:none;border-radius:12px;cursor:pointer;font-family:\'Nunito\',Arial;font-weight:800;font-size:13px;color:var(--text3);background:transparent;">Để lúc khác</button>'
+    + '</div>';
+  m.style.display='flex';
+}
+function closeLimitPopup(){ const m=document.getElementById('limit-popup'); if(m) m.style.display='none'; }
+
+// ── Trang thanh toán (MoMo) ──
+let _payMethod = 'momo';
+const PAY_METHODS = {
+  momo: { label: 'Ví MoMo',            desc: 'Ví MoMo · QR code',                 icon: 'M',  c: '#A50064', bg: '#FDF2F9' },
+  bank: { label: 'Ngân hàng / Thẻ ATM', desc: 'Internet Banking · thẻ ATM nội địa', icon: '🏦', c: '#1E7CD6', bg: '#EAF3FF' },
+  card: { label: 'Thẻ quốc tế',        desc: 'Visa · Mastercard · JCB',           icon: '💳', c: '#5A4FD0', bg: '#F1EFFF' },
+};
+function _payRow(key) {
+  const m = PAY_METHODS[key], on = (key === _payMethod);
+  return `<div onclick="selectPayMethod('${key}')" style="display:flex;align-items:center;gap:11px;border:2px solid ${on?m.c:'#E4EEEB'};border-radius:12px;padding:11px 13px;cursor:pointer;background:${on?m.bg:'#fff'};transition:.15s;">
+    <div style="width:34px;height:34px;border-radius:9px;background:${on?m.c:'#EEF3F1'};color:${on?'#fff':m.c};font-weight:900;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">${m.icon}</div>
+    <div style="flex:1;min-width:0;"><div style="font-weight:900;font-size:13.5px;color:${on?m.c:'var(--text1)'};">${m.label}</div><div style="font-size:11px;color:var(--text3);font-weight:600;">${m.desc}</div></div>
+    <div style="width:18px;height:18px;border-radius:50%;border:2px solid ${on?m.c:'#CBD8D3'};background:${on?m.c:'#fff'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;">${on?'✓':''}</div>
+  </div>`;
+}
+function _payMethodsHtml() { return ['momo', 'bank', 'card'].map(_payRow).join(''); }
+function selectPayMethod(key) {
+  _payMethod = key;
+  const box = document.getElementById('pay-methods'); if (box) box.innerHTML = _payMethodsHtml();
+  const btn = document.getElementById('pay-btn');
+  if (btn) {
+    const m = PAY_METHODS[key];
+    btn.style.background = m.c; btn.style.boxShadow = '0 5px 14px ' + m.c + '55';
+    btn.textContent = key === 'momo' ? 'Thanh toán qua MoMo' : key === 'bank' ? 'Thanh toán qua Ngân hàng' : 'Thanh toán bằng thẻ';
+  }
+}
+async function confirmPay() {
+  const planId = window._coPlan;
+  const tok = localStorage.getItem('sb_token');
+  if (!tok) {
+    closeCheckout();
+    if (typeof showAuthToast === 'function') showAuthToast('Em đăng nhập để nâng cấp gói nhé! 😊', 'var(--teal)');
+    if (typeof openAuthModal === 'function') openAuthModal('login');
+    return;
+  }
+  if (!planId) { closeCheckout(); return; }
+  try {
+    const res = await fetch(`${CL_API}/billing/mock-upgrade`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
+      body: JSON.stringify({ plan: planId, months: 1 })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error((data && data.detail) || 'Lỗi nâng cấp');
+    // Đồng bộ gói vào phiên local để giao diện cập nhật ngay
+    try {
+      const u = JSON.parse(localStorage.getItem('sb_user') || '{}');
+      u.plan = data.user.plan; u.plan_expires_at = data.user.plan_expires_at;
+      localStorage.setItem('sb_user', JSON.stringify(u));
+      if (typeof authCurrentUser !== 'undefined' && authCurrentUser) {
+        authCurrentUser.plan = data.user.plan; authCurrentUser.plan_expires_at = data.user.plan_expires_at;
+      }
+    } catch (e) {}
+    closeCheckout();
+    if (typeof confetti === 'function') confetti();
+    if (typeof showAuthToast === 'function') showAuthToast('🎉 ' + (data.message || 'Nâng cấp thành công!'), 'var(--teal)');
+    if (typeof pushNotification === 'function') pushNotification('system', 'Nâng cấp gói thành công', data.message || '', {});
+  } catch (e) {
+    if (typeof showAuthToast === 'function') showAuthToast('😅 Chưa nâng cấp được, em thử lại nhé!', 'var(--red)');
+  }
+}
+function openCheckout(planId) {
+  const _P = _sbp();
+  const _plan = (_P && _P.plans && _P.plans[planId]) ? _P.plans[planId] : null;
+  const name  = _plan ? _plan.name : (planId || '');
+  const price = _plan ? (_sbFmtPrice(_plan) + _sbPriceSuffix(_plan)) : '';
+  _payMethod = 'momo'; window._coPlan = planId; window._coName = name; window._coPrice = price;
+  let m = document.getElementById('checkout-modal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'checkout-modal';
+    m.style.cssText = 'position:fixed;inset:0;z-index:1300;background:rgba(18,49,74,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px;';
+    m.onclick = e => { if (e.target === m) closeCheckout(); };
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `
+    <div style="background:#fff;border-radius:20px;max-width:400px;width:100%;padding:24px;box-shadow:0 30px 70px rgba(0,0,0,.3);position:relative;">
+      <button onclick="closeCheckout()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-weight:900;cursor:pointer;">✕</button>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:21px;color:var(--text1);margin-bottom:14px;">Thanh toán gói ${name}</div>
+      <div style="background:#F6FBF9;border:1px solid #E1F0EB;border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text2);font-weight:700;"><span>Gói ${name} · 1 tháng</span><span style="color:var(--text1);font-weight:900;">${price}</span></div>
+        <div style="border-top:1px dashed #D6E7E1;margin:10px 0;"></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:900;color:var(--text1);"><span>Tổng cộng</span><span style="color:var(--teal-d);">${price}</span></div>
+      </div>
+      <div style="font-size:12px;font-weight:800;color:var(--text2);margin-bottom:8px;">Chọn phương thức thanh toán</div>
+      <div id="pay-methods" style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">${_payMethodsHtml()}</div>
+      <button id="pay-btn" onclick="payNow()" style="width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;color:#fff;background:#A50064;box-shadow:0 5px 14px #A5006455;">Thanh toán qua MoMo</button>
+      <div style="text-align:center;margin-top:10px;"><a href="#" onclick="closeCheckout();openPremium();return false;" style="font-size:12px;color:var(--text3);font-weight:700;">← Chọn gói khác</a></div>
+    </div>`;
+  m.style.display = 'flex';
+}
+function closeCheckout() { const m = document.getElementById('checkout-modal'); if (m) m.style.display = 'none'; }
+function _pickBank(el) {
+  el.parentNode.querySelectorAll('button').forEach(b => { b.style.borderColor = '#E4EEEB'; b.style.background = '#fff'; });
+  el.style.borderColor = '#1E7CD6'; el.style.background = '#EAF3FF';
+}
+function payNow() {
+  const m = document.getElementById('checkout-modal'); if (!m) return;
+  const name = window._coName || '', price = window._coPrice || '';
+  const meta = PAY_METHODS[_payMethod] || PAY_METHODS.momo;
+  let inner;
+  if (_payMethod === 'momo') {
+    inner = `<div style="width:168px;height:168px;margin:0 auto;border:2px dashed #A50064;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#FDF2F9;color:#A50064;font-weight:800;text-align:center;font-size:13px;padding:12px;line-height:1.5;">Mã QR MoMo<br>sẽ hiện ở đây</div>`;
+  } else if (_payMethod === 'bank') {
+    const banks = ['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV', 'VPBank', 'ACB', 'Agribank', 'Sacombank', 'TPBank'];
+    inner = `<div style="font-size:12px;font-weight:800;color:var(--text2);margin-bottom:8px;text-align:left;">Chọn ngân hàng liên kết</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${banks.map(b => `<button onclick="_pickBank(this)" style="border:1.5px solid #E4EEEB;border-radius:10px;padding:11px 4px;font-size:11px;font-weight:800;color:#1E7CD6;background:#fff;cursor:pointer;font-family:'Nunito',Arial;">${b}</button>`).join('')}</div>`;
+  } else {
+    inner = `<div style="text-align:left;">
+      <div style="font-size:12px;font-weight:800;color:var(--text2);margin-bottom:8px;">Thông tin thẻ (Visa · Mastercard · JCB)</div>
+      <input placeholder="Số thẻ  ••••  ••••  ••••  ••••" style="width:100%;padding:12px 14px;border:2px solid #E4EEEB;border-radius:11px;font-size:14px;margin-bottom:9px;font-family:'Nunito',Arial;outline:none;box-sizing:border-box;">
+      <div style="display:flex;gap:9px;">
+        <input placeholder="MM/YY" style="flex:1;padding:12px 14px;border:2px solid #E4EEEB;border-radius:11px;font-size:14px;font-family:'Nunito',Arial;outline:none;box-sizing:border-box;">
+        <input placeholder="CVV" style="width:104px;padding:12px 14px;border:2px solid #E4EEEB;border-radius:11px;font-size:14px;font-family:'Nunito',Arial;outline:none;box-sizing:border-box;">
+      </div>
+    </div>`;
+  }
+  const box = m.querySelector('div');
+  box.innerHTML = `
+    <button onclick="closeCheckout()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-weight:900;cursor:pointer;">✕</button>
+    <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:20px;color:${meta.c};margin-bottom:2px;">${meta.label}</div>
+    <div style="text-align:center;font-size:13px;color:var(--text2);font-weight:600;margin-bottom:16px;">Gói <b>${name}</b> · <b>${price}</b></div>
+    ${inner}
+    <div style="background:#FFF7E6;border:1px solid #FFE0A3;border-radius:12px;padding:11px;font-size:11.5px;color:#8A5A08;font-weight:600;line-height:1.5;margin-top:14px;text-align:left;">⚙️ Xem trước luồng. Cổng thật (MoMo · ngân hàng · thẻ) sẽ xử lý khi bạn cung cấp merchant key — mình cắm vào là trừ tiền được ngay.</div>
+    <button onclick="confirmPay()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:12px;cursor:pointer;font-weight:900;color:#fff;background:${meta.c};box-shadow:0 5px 14px ${meta.c}55;font-family:'Nunito',Arial;">Xác nhận thanh toán</button>
+    <div style="text-align:center;margin-top:9px;"><a href="#" onclick="openCheckout(window._coPlan);return false;" style="font-size:12px;color:var(--text3);font-weight:700;">← Chọn phương thức khác</a></div>`;
+}
+
+// ── Quên mật khẩu (trong modal của app) ──
+function _fgmMsg(id, msg, show) { const e = document.getElementById(id); if (e) { e.textContent = msg || ''; e.style.display = (show && msg) ? 'block' : 'none'; } }
+function openForgotModal() {
+  if (typeof closeAuthModal === 'function') closeAuthModal();
+  let m = document.getElementById('forgot-modal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'forgot-modal';
+    m.style.cssText = 'position:fixed;inset:0;z-index:1300;background:rgba(18,49,74,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px;';
+    m.onclick = e => { if (e.target === m) closeForgotModal(); };
+    m.innerHTML = `
+      <div style="background:#fff;border-radius:20px;max-width:380px;width:100%;padding:24px;box-shadow:0 30px 70px rgba(0,0,0,.3);position:relative;">
+        <button onclick="closeForgotModal()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#E4EEEB;color:var(--text2);font-weight:900;cursor:pointer;">✕</button>
+        <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:21px;color:var(--text1);margin-bottom:4px;">🔐 Quên mật khẩu</div>
+        <div id="fgm-err" style="display:none;background:#FFF0F0;color:var(--red);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700;margin:10px 0;"></div>
+        <div id="fgm-ok" style="display:none;background:#F0FFF8;color:#1A7A40;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700;margin:10px 0;"></div>
+        <div id="fgm-step1">
+          <p style="font-size:13px;color:var(--text2);font-weight:600;text-align:center;margin:10px 0 12px;">Nhập email đã đăng ký — Buddy gửi <b>mã 6 số</b> về hộp thư của bạn.</p>
+          <input class="auth-input" id="fgm-email" type="email" placeholder="email@example.com" style="width:100%;margin-bottom:12px;">
+          <button id="fgm-send" onclick="doModalForgotSend()" style="width:100%;padding:12px;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;color:#fff;background:linear-gradient(135deg,#1FCBA6,#13B392);">✉️ Gửi mã xác minh</button>
+        </div>
+        <div id="fgm-step2" style="display:none;">
+          <p style="font-size:13px;color:var(--text2);font-weight:600;text-align:center;margin:10px 0 12px;">Nhập mã và mật khẩu mới.</p>
+          <input class="auth-input" id="fgm-code" inputmode="numeric" maxlength="6" placeholder="Mã 6 số" style="width:100%;margin-bottom:10px;text-align:center;letter-spacing:6px;font-weight:900;">
+          <input class="auth-input" id="fgm-newpass" type="password" placeholder="Mật khẩu mới (≥ 6 ký tự)" style="width:100%;margin-bottom:12px;">
+          <button id="fgm-reset" onclick="doModalReset()" style="width:100%;padding:12px;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;color:#fff;background:linear-gradient(135deg,#1FCBA6,#13B392);">🔓 Đặt lại mật khẩu</button>
+        </div>
+        <div style="text-align:center;margin-top:12px;"><a href="#" onclick="closeForgotModal();return false;" style="font-size:12px;color:var(--text3);font-weight:700;">← Quay lại</a></div>
+      </div>`;
+    document.body.appendChild(m);
+  }
+  m.querySelector('#fgm-step1').style.display = '';
+  m.querySelector('#fgm-step2').style.display = 'none';
+  _fgmMsg('fgm-err', '', 0); _fgmMsg('fgm-ok', '', 0);
+  const le = (document.getElementById('auth-login-email') || {}).value;
+  if (le) m.querySelector('#fgm-email').value = le;
+  m.style.display = 'flex';
+}
+function closeForgotModal() { const m = document.getElementById('forgot-modal'); if (m) m.style.display = 'none'; }
+async function doModalForgotSend() {
+  const email = (document.getElementById('fgm-email') || {}).value?.trim();
+  if (!email) { _fgmMsg('fgm-err', 'Vui lòng nhập email đã đăng ký.', 1); return; }
+  _fgmMsg('fgm-err', '', 0); _fgmMsg('fgm-ok', '', 0);
+  const btn = document.getElementById('fgm-send'); const old = btn.textContent; btn.disabled = true; btn.textContent = 'Đang gửi...';
+  try {
+    const res = await fetch(`${CL_API}/auth/forgot-password`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
+    const data = await res.json();
+    if (!res.ok) { _fgmMsg('fgm-err', data.detail || 'Không gửi được mã.', 1); }
+    else {
+      document.getElementById('fgm-step1').style.display = 'none';
+      document.getElementById('fgm-step2').style.display = '';
+      let msg = data.message || 'Đã gửi mã! Kiểm tra email (cả mục Spam) nhé.';
+      if (data.dev_code) { document.getElementById('fgm-code').value = data.dev_code; msg = '(DEV) Mã của bạn: ' + data.dev_code; }
+      _fgmMsg('fgm-ok', msg, 1); document.getElementById('fgm-code').focus();
+    }
+  } catch (e) { _fgmMsg('fgm-err', 'Không kết nối được server.', 1); }
+  btn.disabled = false; btn.textContent = old;
+}
+async function doModalReset() {
+  const email = (document.getElementById('fgm-email') || {}).value?.trim();
+  const code  = (document.getElementById('fgm-code') || {}).value?.trim();
+  const np    = (document.getElementById('fgm-newpass') || {}).value?.trim();
+  if (!code || !np) { _fgmMsg('fgm-err', 'Nhập mã và mật khẩu mới.', 1); return; }
+  if (np.length < 6) { _fgmMsg('fgm-err', 'Mật khẩu mới phải ≥ 6 ký tự.', 1); return; }
+  _fgmMsg('fgm-err', '', 0);
+  const btn = document.getElementById('fgm-reset'); const old = btn.textContent; btn.disabled = true; btn.textContent = 'Đang đặt lại...';
+  try {
+    const res = await fetch(`${CL_API}/auth/reset-password`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email, code, new_password: np }) });
+    const data = await res.json();
+    if (!res.ok) { _fgmMsg('fgm-err', data.detail || 'Đặt lại thất bại.', 1); }
+    else {
+      _fgmMsg('fgm-ok', data.message || 'Đặt lại mật khẩu thành công! Mời đăng nhập.', 1);
+      setTimeout(() => { closeForgotModal(); if (typeof openAuthModal === 'function') openAuthModal('login'); const le = document.getElementById('auth-login-email'); if (le) le.value = email; }, 1500);
+    }
+  } catch (e) { _fgmMsg('fgm-err', 'Không kết nối được server.', 1); }
+  btn.disabled = false; btn.textContent = old;
+}
 
 // Hàm quick start từ màn hình intro
 function quickStartGrade(grade) {
@@ -6989,8 +7715,9 @@ let _modalRole = 'student';
 let _modalGrade = 5;
 
 function openAuthModal(tab) {
-  const o = document.getElementById('auth-modal-overlay');
-  if (o) { o.style.display = 'flex'; switchAuthTab(tab || 'login'); }
+  // Thống nhất 1 giao diện auth: chuyển sang trang đăng nhập/đăng ký mới (login.html)
+  // thay vì mở modal cũ. '/' = màn đăng nhập, '/#register' = mở thẳng thẻ đăng ký.
+  window.location.href = (tab === 'register') ? '/#register' : '/';
 }
 function closeAuthModal() { const o = document.getElementById('auth-modal-overlay'); if(o) o.style.display='none'; }
 function closeAuthOnOverlay(e) {
@@ -8380,21 +9107,17 @@ function toggleNotifPanel(forceClose) {
   panel.style.display = willOpen ? 'block' : 'none';
   if (willOpen) {
     renderNotifList();
-    // Xem xong 1.2s thì tự đánh dấu đã đọc (giữ panel để không nhấp nháy)
-    clearTimeout(window._notifReadTimer);
-    window._notifReadTimer = setTimeout(() => markAllNotifRead(true), 1200);
   }
 }
 
-function markAllNotifRead(keepList) {
+// "Đọc hết" — luôn đánh dấu tất cả đã đọc + vẽ lại (xoá badge & highlight ngay)
+function markAllNotifRead() {
   const list = _loadNotifs();
-  let changed = false;
-  list.forEach(n => { if (!n.read) { n.read = true; changed = true; } });
-  if (changed) {
-    _saveNotifs(list);
-    renderNotifBadge();
-    if (!keepList) renderNotifList();
-  }
+  list.forEach(n => { n.read = true; });
+  _saveNotifs(list);
+  renderNotifBadge();
+  renderNotifList();
+  if (typeof showAuthToast === 'function') showAuthToast('✓ Đã đọc tất cả thông báo', 'var(--teal)');
 }
 
 function clearAllNotif() {
@@ -8567,7 +9290,7 @@ async function loadScoreHistory(subject='') {
     });
     const recs = await res.json();
     if (!recs.length) {
-      el.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div>Chưa có bài nào. Hãy bắt đầu học nào!</div>';
+      el.innerHTML = '<div class="empty-state"><img class="empty-mascot" src="/images/mascot/search.png" alt="" onerror="this.outerHTML=\'&lt;div class=&quot;empty-icon&quot;&gt;📊&lt;/div&gt;\'">Chưa có bài nào. Hãy bắt đầu học nào! 🚀</div>';
       return;
     }
     el.innerHTML = recs.map(r => {
@@ -8658,7 +9381,7 @@ async function startEnglishLesson(topic, topicVi) {
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:800, system: getEnglishVocabSystem(topic), messages: englishVocabHistory })
+      body: JSON.stringify({ subject:'english', max_tokens:800, system: getEnglishVocabSystem(topic), messages: englishVocabHistory })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || 'Xin lỗi, mình gặp lỗi rồi!';
@@ -8684,7 +9407,7 @@ async function sendEnglishVocab() {
   try {
     const res  = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:700, system, messages: englishVocabHistory.slice(-10) })
+      body: JSON.stringify({ subject:'english', max_tokens:700, system, messages: englishVocabHistory.slice(-10) })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || '';
@@ -8712,7 +9435,7 @@ async function startEnglishConversation(topic, topicVi) {
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:600, system: getEnglishSpeakSystem(topic), messages: englishSpeakHistory })
+      body: JSON.stringify({ subject:'english', max_tokens:600, system: getEnglishSpeakSystem(topic), messages: englishSpeakHistory })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || '';
@@ -8735,7 +9458,7 @@ async function sendEnglishSpeak() {
   try {
     const res  = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:600, system, messages: englishSpeakHistory.slice(-12) })
+      body: JSON.stringify({ subject:'english', max_tokens:600, system, messages: englishSpeakHistory.slice(-12) })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || '';
@@ -8759,7 +9482,7 @@ Trả về JSON (không thêm text ngoài JSON):
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:1200,
+      body: JSON.stringify({ subject:'english', max_tokens:1200,
         messages:[{ role:'user', content: prompt }]
       })
     });
@@ -8769,6 +9492,7 @@ Trả về JSON (không thêm text ngoài JSON):
     const parsed = JSON.parse(m?m[0]:raw);
     const exs = parsed.exercises || [];
     window._engTestAnswers = exs.map(e => e.dap_an);
+    window._engTestData    = exs;                     // giữ full câu hỏi để ghi nhận xét từng câu
     window._engTestType    = typeLabels[type];
 
     el.innerHTML = '<button type="button" onclick="exitEnglishTest()" style="margin-bottom:10px;padding:8px 14px;border:2px solid #E0E8F0;border-radius:12px;background:white;color:var(--text2);font-family:\'Nunito\',Arial;font-size:13px;font-weight:900;cursor:pointer;">← Quay lại</button>'
@@ -8804,6 +9528,8 @@ function exitEnglishTest() {
 async function submitEnglishTest(total, testType) {
   let correct = 0;
   const answers = window._engTestAnswers || [];
+  const engData = window._engTestData || [];
+  const details = [];                                  // kết quả TỪNG CÂU để lưu backend
   for (let i = 0; i < total; i++) {
     const selected = document.querySelector(`input[name="eng-q-${i}"]:checked`);
     const solEl    = document.getElementById('eng-sol-'+i);
@@ -8813,6 +9539,14 @@ async function submitEnglishTest(total, testType) {
 
     const isCorrect = selected && selected.value === answers[i];
     if (isCorrect) correct++;
+    details.push({
+      no: i + 1,
+      q: String(engData[i]?.cau_hoi || '').slice(0, 180),
+      chosen: selected ? selected.value : '(bỏ trống)',
+      answer: answers[i],
+      explain: String(engData[i]?.giai_thich || '').slice(0, 180),
+      correct: !!isCorrect,
+    });
 
     // Khóa lựa chọn + tô màu từng đáp án: đúng = xanh, chọn sai = đỏ
     document.getElementsByName('eng-q-'+i).forEach(r => {
@@ -8842,8 +9576,8 @@ async function submitEnglishTest(total, testType) {
   // Show encouragement in a nice bubble
   addEnglishEncouragement(feedback);
 
-  // Record score
-  await recordScore('Tiếng Anh', testType, correct, total, '', feedback);
+  // Record score (kèm kết quả từng câu để phụ huynh xem nhận xét chi tiết)
+  await recordScore('Tiếng Anh', testType, correct, total, JSON.stringify(details), feedback);
   notifyAchievement('Tiếng Anh', testType, correct, total, pct);
 }
 
@@ -8895,7 +9629,7 @@ async function startLifeSkill(skill, icon, desc) {
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:600, system: getLifeSkillsSystem(skill), messages: lifeSkillsHistory })
+      body: JSON.stringify({ subject:'life_skills', max_tokens:600, system: getLifeSkillsSystem(skill), messages: lifeSkillsHistory })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || '';
@@ -8918,7 +9652,7 @@ async function sendLifeSkills() {
   try {
     const res  = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:600, system, messages: lifeSkillsHistory.slice(-12) })
+      body: JSON.stringify({ subject:'life_skills', max_tokens:600, system, messages: lifeSkillsHistory.slice(-12) })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || '';
@@ -9037,9 +9771,113 @@ if (document.readyState === 'loading') {
   initBuddySprites();
 }
 
+// ── Bỏ header trên cùng: logo vào sidebar + user/chuông/điểm sang góc phải nội dung ──
+(function relocateHeader() {
+  try {
+    const header = document.querySelector('header.header');
+    const sidebar = document.querySelector('.sidebar');
+    const mainArea = document.getElementById('main-area');
+    if (!header || !sidebar || !mainArea || document.querySelector('.sb-side-logo')) return;
+    // 1) Logo lên đầu sidebar
+    const logo = document.createElement('div');
+    logo.className = 'sb-side-logo';
+    logo.title = 'Về trang chủ';
+    logo.onclick = function () { if (typeof goHome === 'function') goHome(); };
+    logo.innerHTML = '<img src="/images/logogiaodienmoi.jpg" alt="SmartBuddy" onerror="this.style.display=\'none\'">';
+    sidebar.insertBefore(logo, sidebar.firstChild);
+    // 2) Controls sang góc phải vùng nội dung
+    const bar = document.createElement('div');
+    bar.id = 'content-topbar';
+    const mt = header.querySelector('.menu-toggle');
+    if (mt) { mt.querySelectorAll('span').forEach(s => s.style.background = 'var(--ink)'); bar.appendChild(mt); }
+    const hr = header.querySelector('.header-right');
+    if (hr) bar.appendChild(hr);
+    mainArea.appendChild(bar);
+    // 3) Ẩn thanh header cũ
+    header.style.display = 'none';
+  } catch (e) { console.warn('relocateHeader failed:', e); }
+})();
+
 </script>
 
 <!-- Floating mascot đã được gỡ bỏ theo yêu cầu -->
+
+<!-- ═══════════ THEME MINT ĐỒNG NHẤT (giao diện mới, đặt cuối để ghi đè) ═══════════ -->
+<style id="sb-theme-mint">
+:root{ --ink:#14303C; --mint:#1FCBA6; --mint-d:#0E9E86; }
+/* Nền dịu, đồng nhất mint */
+body{ background:linear-gradient(165deg,#EAF7F4 0%,#F4FBFA 50%,#EEF6FF 100%) !important; }
+.bubble-shape{ opacity:.08 !important; }
+/* Header mint (bỏ cầu vồng) */
+.header{ background:linear-gradient(120deg,#1FCBA6 0%,#14B39A 60%,#12A88F 100%) !important; background-size:auto !important; animation:none !important; box-shadow:0 6px 20px rgba(17,120,105,.22) !important; }
+/* Sidebar trắng-mint sạch */
+.sidebar{ background:linear-gradient(180deg,#FFFFFF,#F5FBFA) !important; border-right:1px solid rgba(31,203,166,.14) !important; }
+.sidebar-label, .sidebar-label:nth-of-type(odd), .sidebar-label:nth-of-type(even){ background:rgba(31,203,166,.10) !important; color:var(--mint-d) !important; box-shadow:none !important; }
+/* Nút điều hướng mới — bo tròn, chữ navy, active mint */
+/* Nav phẳng, KHÔNG viền/khung, đều nhau — chỉ nút chọn có nền teal (giống mockup) */
+body:not(.role-parent) .topic-btn.nav-new{
+  background:transparent !important; border:none !important; border-left:none !important; box-shadow:none !important;
+  border-radius:12px !important; margin:2px auto !important; width:calc(100% - 24px) !important; align-self:center !important; padding:9px 16px !important;
+  color:#44586B !important; font-size:14.5px !important; font-weight:700 !important;
+  display:flex !important; align-items:center !important; gap:11px !important; min-height:40px; box-sizing:border-box !important;
+}
+/* Ẩn thanh cuộn sidebar (không muốn nhìn thấy thanh kéo) */
+body:not(.role-parent) .sidebar{ scrollbar-width:none !important; }
+body:not(.role-parent) .sidebar::-webkit-scrollbar{ width:0 !important; height:0 !important; }
+.topic-btn.nav-new .nav-ic-em{ font-size:19px; width:24px; text-align:center; flex-shrink:0; line-height:1; }
+body:not(.role-parent) .topic-btn.nav-new:hover{ background:rgba(31,203,166,.10) !important; color:var(--ink) !important; }
+body:not(.role-parent) .topic-btn.nav-new.active{ background:linear-gradient(135deg,#1FCBA6,#13B392) !important; color:#fff !important; box-shadow:0 6px 14px rgba(31,203,166,.28) !important; }
+/* Ẩn mũi tên/khung nhóm cũ nếu có */
+.topic-btn.nav-new .expand-arrow{ display:none !important; }
+/* Tab con Kỹ năng sống — tone mint đồng nhất */
+.subtopic-list .sub-btn{ color:var(--ink) !important; }
+.subtopic-list .sub-btn:hover, .subtopic-list .sub-btn.active{ background:rgba(31,203,166,.12) !important; color:var(--mint-d) !important; }
+/* Đồng bộ header các trang môn học (bỏ xanh/cam/tím) về MINT */
+.topic-content-panel div[style*="linear-gradient"][style*="0 6px 0 rgba"]{ background:linear-gradient(135deg,#1FCBA6,#14B39A 55%,#12A88F) !important; box-shadow:0 8px 20px rgba(17,120,105,.20) !important; }
+.pp-mode-header, .pp-mode-header.mode1, .pp-mode-header.mode2{ background:linear-gradient(135deg,#1FCBA6,#13B392) !important; box-shadow:0 6px 0 rgba(17,120,105,.18) !important; }
+/* Nút lọc/hub đang chọn → mint (đồng bộ) */
+.practice-type-btn.active, .diff-btn.active, .hist-filter-btn.active{ background:linear-gradient(135deg,#1FCBA6,#13B392) !important; border-color:#1FCBA6 !important; color:#fff !important; }
+/* Bỏ header: đưa logo vào sidebar, controls sang góc phải nội dung (nền sáng) */
+.sb-side-logo{ padding:10px 14px 8px; text-align:center; cursor:pointer; border-bottom:1px solid rgba(31,203,166,.12); }
+.sb-side-logo img{ max-width:138px; width:80%; height:auto; }
+/* Topbar (điểm/chuông/tài khoản) = một HÀNG in-flow ở đỉnh vùng nội dung,
+   nhờ order:-1 nên các panel (banner môn học...) tự nằm bên DƯỚI — không còn bị đè,
+   và cụm nút "chạy theo" trang khi đổi tab. */
+#content-topbar{ order:-1; position:relative; width:100%; box-sizing:border-box; z-index:200; display:flex; align-items:center; justify-content:flex-end; gap:10px; padding:12px 22px 4px; pointer-events:none; flex-shrink:0; }
+#content-topbar > *{ pointer-events:auto; }
+/* Trang overlay (Thành tích/Hồ sơ/Cài đặt) bắt đầu dưới hàng topbar cho gọn */
+#app-generic-panel{ padding-top:60px !important; }
+/* ── Chuyển động mượt & ổn định ── */
+@keyframes fadeInUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+.topic-btn{ transition:background .16s ease, color .16s ease, box-shadow .16s ease, transform .12s ease !important; }
+.notif-bell, .user-avatar-pill, .auth-header-btn, .score-pill, .send-btn, .attach-btn, .qp{ transition:all .16s cubic-bezier(.34,1.56,.64,1); }
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+#content-topbar .score-pill{ box-shadow:0 4px 10px rgba(200,154,0,.28) !important; }
+#content-topbar .notif-bell{ background:#fff !important; color:var(--ink) !important; border:1.5px solid #DDEBE6 !important; box-shadow:0 3px 10px rgba(18,49,74,.08) !important; }
+#content-topbar .auth-header-btn{ background:#fff !important; color:var(--mint-d) !important; border:1.5px solid #DDEBE6 !important; box-shadow:0 3px 10px rgba(18,49,74,.08) !important; }
+#content-topbar .user-avatar-pill{ background:#fff !important; color:var(--ink) !important; border:1.5px solid #DDEBE6 !important; box-shadow:0 3px 10px rgba(18,49,74,.08) !important; }
+#content-topbar #user-avatar-letter{ background:linear-gradient(135deg,#1FCBA6,#13B392) !important; color:#fff !important; }
+#content-topbar .user-dropdown{ color:var(--ink); }
+@media(max-width:760px){ #content-topbar{ padding:10px 12px 4px; } }
+/* ── Nền teal xanh: đậm ở TRÊN, nhạt dần xuống DƯỚI thành TRẮNG (giống mẫu) ── */
+body:not(.role-parent){ background:linear-gradient(180deg,#22AD93 0%,#33BFA3 18%,#6FD4BF 42%,#ACE5D9 64%,#DCF3ED 84%,#FFFFFF 100%) !important; background-attachment:fixed !important; }
+body:not(.role-parent) .bubbles{ display:none !important; }
+body:not(.role-parent) .layout{ padding:10px 10px 0 10px !important; gap:11px !important; background:transparent !important; }
+/* Sidebar = thẻ trắng, bo góc TRÊN, kéo thẳng xuống đáy (không bo góc dưới) */
+body:not(.role-parent) .sidebar{
+  background:#FFFFFF !important; border:none !important; border-radius:24px 24px 0 0 !important;
+  box-shadow:0 16px 38px rgba(7,72,58,.22) !important;
+}
+/* Vùng nội dung = nền XANH MINT trên nhạt dần xuống TRẮNG; bo góc TRÊN, kéo thẳng xuống đáy */
+body:not(.role-parent) .main-area{
+  background:linear-gradient(180deg,#D6F1E8 0%,#E7F6F1 20%,#F4FBF9 50%,#FFFFFF 100%) !important;
+  border-radius:24px 24px 0 0 !important; overflow:hidden !important;
+  box-shadow:0 16px 38px rgba(7,72,58,.22) !important;
+}
+/* Trang chủ trong suốt để lộ nền mint→trắng; auto-fit đảm bảo vừa khít nên ẩn cuộn */
+body:not(.role-parent) #intro-welcome-screen{ background:transparent !important; overflow:hidden !important; scrollbar-width:none !important; }
+body:not(.role-parent) #intro-welcome-screen::-webkit-scrollbar{ width:0 !important; height:0 !important; }
+</style>
 
 </body>
 </html>

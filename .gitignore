@@ -30,3 +30,6 @@ FE - Copy/
 Thumbs.db
 .idea/
 .vscode/
+
+# Claude Code local config (đường dẫn máy cá nhân)
+.claude/
