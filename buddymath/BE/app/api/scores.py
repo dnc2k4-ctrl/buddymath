@@ -6,7 +6,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
@@ -14,7 +14,7 @@ from app.core.database import get_db
 from app.models.score import ScoreRecord
 from app.models.user import User
 from app.schemas.scores import ScoreReq
-from app.services.email_service import notify_parents
+from app.services.email_service import notify_parents_bg
 
 router = APIRouter(prefix="/scores", tags=["scores"])
 
@@ -22,6 +22,7 @@ router = APIRouter(prefix="/scores", tags=["scores"])
 @router.post("/record")
 async def record_score(
     req: ScoreReq,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -38,7 +39,9 @@ async def record_score(
     db.commit()
     db.refresh(rec)
 
-    notify_parents(current_user, rec, db)
+    # Tự động gửi email báo cáo (kèm đánh giá chi tiết) tới phụ huynh đã liên kết.
+    # Chạy Ở NỀN → không làm chậm phản hồi cho học sinh dù email gửi lâu hay lỗi.
+    background_tasks.add_task(notify_parents_bg, current_user.id, rec.id)
     return {"success": True, "id": rec.id}
 
 

@@ -3,6 +3,7 @@ email_service.py – Gửi email báo cáo cho phụ huynh (SMTP) + template HTM
 """
 from __future__ import annotations
 
+import json
 import logging
 import re
 import smtplib
@@ -110,17 +111,114 @@ def send_otp_email(to: str, code: str, purpose: str = "reset") -> None:
 
 
 def notify_parents(student: User, rec: ScoreRecord, db: Session) -> None:
-    """Gửi email thông báo điểm tới tất cả phụ huynh đã liên kết."""
-    if not SMTP_USER:
+    """Gửi email báo cáo (kèm đánh giá chi tiết) tới MỌI phụ huynh đã liên kết với con."""
+    # Trước đây chặn theo SMTP_USER → khi cấu hình email bằng Brevo (production) thì
+    # SMTP_USER rỗng nên tính năng tự động bị TẮT âm thầm. Dùng smtp_configured() để
+    # hoạt động với cả 2 kênh (Brevo HTTP API hoặc SMTP).
+    if not smtp_configured():
+        logger.info("Bỏ qua báo cáo phụ huynh: chưa cấu hình email (BREVO_API_KEY hoặc SMTP_USER/PASS).")
         return
     links = db.query(ParentChildLink).filter(ParentChildLink.child_id == student.id).all()
+    if not links:
+        return  # con chưa liên kết phụ huynh nào → không có ai để gửi
     for link in links:
         parent = db.query(User).filter(User.id == link.parent_id).first()
         if parent and parent.email:
             try:
                 _send_score_email(parent.email, parent.username, student, rec)
+                logger.info(f"✅ Đã tự động gửi báo cáo tới phụ huynh {parent.email} (bài {rec.subject}).")
             except Exception as e:
-                logger.warning(f"Failed to email parent {parent.email}: {e}")
+                logger.warning(f"Không gửi được email tới phụ huynh {parent.email}: {e}")
+
+
+def notify_parents_bg(student_id: str, rec_id: str) -> None:
+    """
+    Bản chạy Ở NỀN (FastAPI BackgroundTask): tự mở session DB riêng vì session của request
+    đã đóng sau khi trả lời học sinh. Nhờ vậy việc gửi email (có thể chậm/timeout) KHÔNG
+    làm chậm hay chặn luồng ghi điểm của con.
+    """
+    if not smtp_configured():
+        return
+    from app.core.database import SessionLocal
+    db = SessionLocal()
+    try:
+        student = db.query(User).filter(User.id == student_id).first()
+        rec = db.query(ScoreRecord).filter(ScoreRecord.id == rec_id).first()
+        if student and rec:
+            notify_parents(student, rec, db)
+    except Exception as e:
+        logger.warning(f"notify_parents_bg lỗi: {e}")
+    finally:
+        db.close()
+
+
+def _record_assessment_html(rec: ScoreRecord) -> str:
+    """
+    Đánh giá CHI TIẾT một bài làm, dựng từ dữ liệu TỪNG CÂU đã lưu (rec.details) — không cần
+    gọi LLM nên nhanh & ổn định để chạy tự động. Bài cũ không có 'details' thì chỉ hiện tổng quan.
+    """
+    total   = rec.total or 0
+    correct = rec.score or 0
+    pct     = round(correct / total * 100) if total else 0
+
+    questions: list[dict] = []
+    try:
+        parsed = json.loads(rec.details) if rec.details else []
+        if isinstance(parsed, list):
+            questions = [q for q in parsed if isinstance(q, dict)]
+    except Exception:
+        questions = []
+    wrong_qs = [q for q in questions if not q.get("correct")]
+
+    if pct >= 80:
+        verdict = "Con nắm bài rất tốt 🏆"
+        tip = "Có thể cho con thử vài bài nâng cao hơn để giữ hứng thú học tập."
+    elif pct >= 60:
+        verdict = "Con đã hiểu phần lớn nội dung 👍"
+        tip = "Cùng con xem lại các câu sai ở trên, mỗi ngày 15–20 phút con sẽ tiến bộ nhanh."
+    else:
+        verdict = "Con cần được đồng hành ôn thêm phần này 💪"
+        tip = "Hãy cùng con ôn lại phần kiến thức trên, chia nhỏ bài và tránh tạo áp lực cho con."
+
+    parts = [
+        f'<p style="margin:0 0 8px;color:#444;font-size:13.5px;">'
+        f'<b>Nhận định:</b> {verdict} — đúng {correct:.0f}/{total:.0f} câu ({pct}%).</p>'
+    ]
+
+    if wrong_qs:
+        rows = ""
+        for q in wrong_qs[:8]:   # giới hạn 8 câu để email không quá dài
+            no      = q.get("no", "?")
+            qt      = str(q.get("q", "")).strip()
+            chosen  = str(q.get("chosen", "")).strip() or "(bỏ trống)"
+            answer  = str(q.get("answer", "")).strip()
+            explain = str(q.get("explain", "")).strip()
+            loai    = str(q.get("loai", "")).strip()
+            tag = f' <span style="color:#999;">· {loai}</span>' if loai else ""
+            exp = (f'<div style="color:#777;font-size:12px;margin-top:3px;">💡 {explain}</div>'
+                   if explain else "")
+            rows += f"""
+            <div style="padding:8px 0;border-bottom:1px solid #f1f1f1;">
+              <div style="font-size:13px;color:#333;"><b>Câu {no}</b>{tag}: {qt}</div>
+              <div style="font-size:12.5px;margin-top:2px;">
+                <span style="color:#FF4757;">Con chọn: {chosen}</span> ·
+                <span style="color:#2ED573;">Đáp án đúng: <b>{answer}</b></span>
+              </div>{exp}
+            </div>"""
+        weak = list(dict.fromkeys(q.get("loai") for q in wrong_qs if q.get("loai")))
+        weak_line = (f'<p style="margin:10px 0 0;color:#444;font-size:13px;">'
+                     f'<b>Phần con còn yếu:</b> {", ".join(weak[:3])}.</p>' if weak else "")
+        parts.append(
+            f'<div style="font-weight:800;color:#1A2340;margin:8px 0 2px;font-size:13.5px;">'
+            f'❌ Các câu con làm chưa đúng:</div>{rows}{weak_line}'
+        )
+    elif questions:
+        parts.append('<p style="margin:6px 0 0;color:#2ED573;font-size:13.5px;">'
+                     '<b>Tuyệt vời!</b> Con làm đúng toàn bộ các câu. 🎉</p>')
+
+    parts.append(f'<p style="margin:10px 0 0;color:#444;font-size:13px;">'
+                 f'<b>Gợi ý ôn ở nhà:</b> {tip}</p>')
+    return "".join(parts)
 
 
 def _send_score_email(to: str, parent_name: str, student: User, rec: ScoreRecord) -> None:
@@ -132,6 +230,7 @@ def _send_score_email(to: str, parent_name: str, student: User, rec: ScoreRecord
         else "Khá tốt! Cố gắng thêm một chút là hoàn hảo rồi!" if pct >= 60
         else "Chưa sao, lần sau cố gắng hơn nhé! SmartBuddy luôn ở đây hỗ trợ em!"
     )
+    assessment_html = _record_assessment_html(rec)
     html = f"""
     <div style="font-family:Arial,sans-serif;max-width:540px;margin:auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
       <div style="background:linear-gradient(135deg,#2EC4A0,#1E90FF);padding:24px;text-align:center;">
@@ -150,6 +249,10 @@ def _send_score_email(to: str, parent_name: str, student: User, rec: ScoreRecord
         <div style="background:#e8f5e9;border-radius:12px;padding:14px;border-left:4px solid #2ED573;">
           <strong>💬 SmartBuddy nhận xét:</strong><br>
           <span style="color:#444;">{rec.feedback or msg_text}</span>
+        </div>
+        <div style="background:#fff8f0;border-radius:12px;padding:14px;border-left:4px solid #FF6B35;margin-top:12px;">
+          <strong>📋 Đánh giá chi tiết bài làm:</strong>
+          <div style="margin-top:8px;">{assessment_html}</div>
         </div>
         <p style="margin-top:16px;color:#888;font-size:12px;">
           Email này được gửi tự động từ hệ thống SmartBuddy. Đăng nhập tại
