@@ -214,17 +214,11 @@ body{
         <div class="error-msg" id="login-err"></div>
         <div class="success-msg" id="login-ok"></div>
 
-        <div class="demo-box">
-          <div class="demo-title">⚡ Tài khoản thử nhanh</div>
-          <div class="demo-row" onclick="fillDemo('student@demo.vn','demo123')">🎒 Học sinh: <strong>student@demo.vn</strong> / demo123</div>
-          <div class="demo-row" onclick="fillDemo('parent@demo.vn','demo123')">👨‍👩‍👧 Phụ huynh: <strong>parent@demo.vn</strong> / demo123</div>
-        </div>
-
         <div class="field">
-          <label>Email hoặc số điện thoại</label>
+          <label>Email</label>
           <div class="input-wrap">
             <span class="ic">📧</span>
-            <input class="inp" id="login-email" type="text" placeholder="Nhập email hoặc SĐT" autocomplete="username">
+            <input class="inp" id="login-email" type="email" placeholder="Nhập email của bạn" autocomplete="email">
           </div>
         </div>
         <div class="field">
@@ -326,12 +320,7 @@ body{
             <button class="eye" type="button" onclick="togglePass('reg-pass2',this)">👁️</button></div>
         </div>
 
-        <div class="field">
-          <label>Số điện thoại <span style="color:var(--text3);font-weight:600;">(tùy chọn — dùng để đăng nhập thay email)</span></label>
-          <div class="input-wrap"><span class="ic">📱</span>
-            <input class="inp" id="reg-phone" type="tel" inputmode="numeric" placeholder="Nhập số điện thoại"></div>
-        </div>
-        <div class="field" id="grade-group">
+        <div class="field span2" id="grade-group">
           <label>Lớp đang học</label>
           <div class="grade-pills" id="grade-pills">
             <div class="grade-pill" onclick="setGrade(3)">Lớp 3</div>
@@ -474,13 +463,7 @@ function setGrade(g){
   document.querySelectorAll('.grade-pill').forEach(p => p.classList.toggle('active', p.textContent.trim() === `Lớp ${g}`));
 }
 
-// ── Điền nhanh tài khoản demo ──
-function fillDemo(email, pass){
-  document.getElementById('login-email').value = email;
-  document.getElementById('login-pass').value  = pass;
-}
-
-// ── Đăng nhập (email HOẶC số điện thoại) ──
+// ── Đăng nhập (chỉ bằng email) ──
 async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-pass').value.trim();
@@ -548,7 +531,6 @@ async function sendRegisterOtp(isResend){
 
 async function doRegister(){
   const v = _validateReg(); if (!v) return;
-  const phone = document.getElementById('reg-phone').value.trim();
   const code  = document.getElementById('reg-code').value.trim();
   if (!code){ showErr('reg-err','Vui lòng nhập mã xác minh đã gửi tới email.'); return; }
   const btn = document.getElementById('reg-btn'); const old = btn.innerHTML;
@@ -556,7 +538,7 @@ async function doRegister(){
   hideMsg('reg-err'); hideMsg('reg-ok');
   try{
     const res = await fetch(`${API}/auth/register`, {method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ email:v.email, username:v.name, password:v.pass, role:selectedRole, grade:selectedGrade, phone:phone||null, code })});
+      body:JSON.stringify({ email:v.email, username:v.name, password:v.pass, role:selectedRole, grade:selectedGrade, code })});
     const data = await res.json();
     if (!res.ok){ showErr('reg-err', data.detail || 'Đăng ký thất bại'); btn.disabled=false; btn.innerHTML=old; return; }
     localStorage.setItem('sb_token', data.token);

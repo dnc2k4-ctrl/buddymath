@@ -12,12 +12,11 @@ class RegisterReq(BaseModel):
     password: str
     role:     str = "student"
     grade:    Optional[int] = 5   # cho phép null (vd phụ huynh không có lớp)
-    phone:    Optional[str] = None
     code:     Optional[str] = None   # mã OTP xác minh email (nếu FE gửi)
 
 
 class LoginReq(BaseModel):
-    email:    str   # thực chất là "định danh": email HOẶC số điện thoại
+    email:    str   # email đăng nhập
     password: str
 
 

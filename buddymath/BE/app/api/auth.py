@@ -64,9 +64,6 @@ async def register(req: RegisterReq, db: Session = Depends(get_db)):
         raise HTTPException(400, "Email này đã được đăng ký rồi")
     if len(req.password) < 6:
         raise HTTPException(400, "Mật khẩu phải có ít nhất 6 ký tự")
-    phone = (req.phone or "").strip() or None
-    if phone and db.query(User).filter(User.phone == phone).first():
-        raise HTTPException(400, "Số điện thoại này đã được đăng ký rồi")
     # BẮT BUỘC xác minh email bằng OTP trước khi tạo tài khoản (chống đăng ký chui/bot).
     # Tài khoản demo được seed sẵn ở server lúc khởi động nên không đi qua đây.
     code = (req.code or "").strip()
@@ -79,7 +76,6 @@ async def register(req: RegisterReq, db: Session = Depends(get_db)):
     role = req.role if req.role in ("student", "parent") else "student"
     user = User(
         email=email,
-        phone=phone,
         username=req.username.strip(),
         password_hash=hash_password(req.password),
         role=role,
@@ -94,12 +90,10 @@ async def register(req: RegisterReq, db: Session = Depends(get_db)):
 @router.post("/auth/login", dependencies=[Depends(rate_limit_auth)])
 async def login(req: LoginReq, db: Session = Depends(get_db)):
     ident = (req.email or "").strip()
-    # Cho phép đăng nhập bằng EMAIL hoặc SỐ ĐIỆN THOẠI
+    # Đăng nhập chỉ bằng EMAIL (Gmail).
     user = db.query(User).filter(User.email == ident.lower()).first()
-    if not user and ident:
-        user = db.query(User).filter(User.phone == ident).first()
     if not user or not verify_password(req.password, user.password_hash):
-        raise HTTPException(401, "Email/SĐT hoặc mật khẩu không đúng")
+        raise HTTPException(401, "Email hoặc mật khẩu không đúng")
     if not user.is_active:
         raise HTTPException(403, "Tài khoản đã bị khóa")
     return {"token": make_token(user.id, user.role), "user": user.to_dict()}
