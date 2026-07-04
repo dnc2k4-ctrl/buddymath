@@ -14,6 +14,7 @@ button,a,label,input,select,textarea{touch-action:manipulation;}
 </style>
 <meta name="theme-color" content="#1FCBA6">
 <title>SmartBuddy — Gia sư AI Toán & Tiếng Anh cho học sinh lớp 3–9</title>
+<link rel="icon" href="/images/logogiaodienmoi.jpg" type="image/jpeg">
 <meta name="description" content="SmartBuddy: gia sư AI thân thiện dạy Toán, Tiếng Anh và kỹ năng sống cho học sinh lớp 3–9 theo chương trình Bộ GD&ĐT Việt Nam. Hướng dẫn tư duy từng bước, không làm bài thay.">
 <meta name="robots" content="index, follow">
 <meta name="format-detection" content="telephone=no">
@@ -1761,7 +1762,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
   <!-- Smart Buddy Mascot Logo -->
   <div class="logo" style="gap:8px;cursor:pointer;" onclick="goHome()" title="Về trang chủ">
     <div style="width:46px;height:46px;flex-shrink:0;background:white;border-radius:13px;overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;">
-      <img src="/images/taodang1.png" alt="SmartBuddy" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'">
+      <img loading="lazy"src="/images/taodang1.png" alt="SmartBuddy" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'">
     </div>
     <div style="line-height:1.1;">
       <div style="font-size:18px;font-weight:800;letter-spacing:.3px;">SmartBuddy</div>
@@ -2426,7 +2427,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
         <div class="messages" id="messages" style="padding-top:44px;">
           <div class="welcome-wrap" id="welcome-screen">
             <div class="welcome-box">
-              <img class="welcome-mascot" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.outerHTML='&lt;div class=\'robot-face\'&gt;🤖&lt;/div&gt;'">
+              <img loading="lazy"class="welcome-mascot" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.outerHTML='&lt;div class=\'robot-face\'&gt;🤖&lt;/div&gt;'">
               <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span></div>
               <p class="welcome-sub">Hôm nay em muốn Buddy giúp gì nào? 😊<br>Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <strong>nhập câu hỏi của em</strong> bên dưới — Buddy sẽ hướng dẫn em <strong>tự nghĩ ra đáp án</strong> nhé! 🚀</p>
             </div>
@@ -2470,7 +2471,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
             style="display:none" onchange="onImageSelected(event)">
           <!-- Preview bar — hiện khi có ảnh được chọn -->
           <div class="img-preview-bar" id="img-preview-bar">
-            <img class="img-preview-thumb" id="img-preview-thumb" src="" alt="preview">
+            <img loading="lazy"class="img-preview-thumb" id="img-preview-thumb" src="" alt="preview">
             <span class="img-preview-label" id="img-preview-label">📸 Ảnh đã chọn</span>
             <button class="img-preview-remove" title="Xóa ảnh" onclick="removeImage()">✕</button>
           </div>
@@ -2498,7 +2499,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
               <video id="camera-video" autoplay playsinline style="width:100%;border-radius:14px;background:#000;display:block;max-height:300px;object-fit:cover;"></video>
               <canvas id="camera-canvas" style="display:none;"></canvas>
               <div id="camera-preview-wrap" style="display:none;margin-top:10px;">
-                <img id="camera-preview-img" style="width:100%;border-radius:14px;border:3px solid #1FCBA6;" alt="preview">
+                <img loading="lazy"id="camera-preview-img" style="width:100%;border-radius:14px;border:3px solid #1FCBA6;" alt="preview">
               </div>
               <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
                 <button id="cam-snap-btn" onclick="snapCamera()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1FCBA6,#1E90FF);color:white;border:none;border-radius:14px;font-family:'Nunito',Arial;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 rgba(46,196,160,.3);">📸 Chụp ảnh</button>
@@ -2600,7 +2601,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <div class="topic-content-panel" id="panel-math_hub" style="overflow-y:auto;">
       <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
         <div style="background:linear-gradient(135deg,#1E90FF,#2ED573);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(30,144,255,.3);display:flex;align-items:center;gap:16px;">
-          <img src="/images/taodang1.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
+          <img loading="lazy"src="/images/taodang1.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
           <div>
             <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">📐 Toán học</div>
             <div style="font-size:15px;opacity:.92;font-weight:600;line-height:1.6;">Học cùng gia sư AI — Buddy dẫn em tư duy từng bước, không giải hộ!</div>
@@ -2621,7 +2622,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <div class="topic-content-panel" id="panel-english_hub" style="overflow-y:auto;">
       <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
         <div style="background:linear-gradient(135deg,#1A8A50,#2ED573);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(26,138,80,.3);display:flex;align-items:center;gap:16px;">
-          <img src="/images/taodang3.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
+          <img loading="lazy"src="/images/taodang3.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
           <div>
             <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">🌏 Tiếng Anh</div>
             <div style="font-size:15px;opacity:.92;font-weight:600;line-height:1.6;">Học từ vựng, luyện hội thoại và làm bài tập cùng SmartBuddy AI!</div>
@@ -2645,7 +2646,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <div class="topic-content-panel" id="panel-life_skills" style="overflow-y:auto;">
       <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
         <div style="background:linear-gradient(135deg,#FF6B35,#FFCB45);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(255,107,53,.3);display:flex;align-items:center;gap:16px;">
-          <img src="/images/taodang2.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
+          <img loading="lazy"src="/images/taodang2.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
           <div>
             <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">🌟 Kỹ năng sống</div>
             <div style="font-size:15px;opacity:.9;font-weight:600;line-height:1.6;">SmartBuddy giúp em phát triển những kỹ năng quan trọng trong cuộc sống!</div>
@@ -4684,6 +4685,13 @@ function autoH(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollH
 function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
 function removeWelcome() { const w=document.getElementById('welcome-screen'); if(w) w.style.display='none'; }
 
+// Chống XSS: escape ký tự HTML trước khi đưa nội dung (người dùng/AI) vào innerHTML.
+function escapeHtml(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function addMsg(role,html){
   removeWelcome();
   const wrap=document.getElementById('messages');
@@ -4732,6 +4740,10 @@ function fmt(text) {
     blocks.push(m);
     return '\x00BLOCK' + (blocks.length - 1) + '\x00';
   });
+
+  // Chống XSS: escape HTML của phần văn bản TRƯỚC khi thêm thẻ định dạng tin cậy
+  // (LaTeX đã tách ra placeholder ở trên nên không bị ảnh hưởng).
+  text = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
   const lines = text.split('\n');
   const html  = [];
@@ -4846,8 +4858,8 @@ async function send(){
     // Hiện ảnh trong chat
     const thumbSrc = document.getElementById('img-preview-thumb').src;
     addMsg('user',
-      `<img src="${thumbSrc}" style="max-width:180px;max-height:160px;border-radius:12px;display:block;margin-bottom:6px;">` +
-      `<span>${userTxt}</span>`
+      `<img loading="lazy"src="${thumbSrc}" style="max-width:180px;max-height:160px;border-radius:12px;display:block;margin-bottom:6px;">` +
+      `<span>${escapeHtml(userTxt)}</span>`
     );
 
     const b64  = pendingImageBase64;
@@ -4900,7 +4912,7 @@ async function send(){
   const inp=document.getElementById('user-input');
   const txt=inp.value.trim(); if(!txt) return;
   inp.value=''; inp.style.height='auto';
-  addMsg('user',txt);
+  addMsg('user',escapeHtml(txt));
   chatHistory.push({role:'user',content:txt});
   _setInputBusy(true);
   showTyping();
@@ -4947,7 +4959,7 @@ function newChat() {
   const wrap=document.getElementById('messages');
   wrap.innerHTML=`<div class="welcome-wrap" id="welcome-screen" style="padding-top:44px;">
     <div class="welcome-box">
-      <img class="welcome-mascot" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.style.display='none'">
+      <img loading="lazy"class="welcome-mascot" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.style.display='none'">
       <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span></div>
       <p class="welcome-sub">Hôm nay em muốn Buddy giúp gì nào? 😊<br>Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <strong>nhập câu hỏi của em</strong> bên dưới — Buddy sẽ hướng dẫn em <strong>tự nghĩ ra đáp án</strong> nhé! 🚀</p>
     </div>
@@ -4993,7 +5005,7 @@ function showHomeScreen() {
           <div style="background:#fff;border:1px solid #E7F1EE;border-radius:22px;box-shadow:0 14px 34px rgba(18,49,74,.12);overflow:hidden;flex:1;display:flex;flex-direction:column;">
             <!-- Hero banner (đầu khung) — phóng nhẹ + cắt viền bo tròn có sẵn của ảnh để nền mint liền mạch với khung -->
             <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#DEF2EC,#EAF5FF);">
-              <img src="/images/anhtrangchu.png" alt="SmartBuddy" style="width:100%;height:auto;margin:-32px 0;display:block;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.background='linear-gradient(120deg,#E9F9F3,#F2FBFF)';this.parentNode.style.minHeight='130px';this.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
+              <img loading="lazy"src="/images/anhtrangchu.png" alt="SmartBuddy" style="width:100%;height:auto;margin:-32px 0;display:block;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.background='linear-gradient(120deg,#E9F9F3,#F2FBFF)';this.parentNode.style.minHeight='130px';this.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
               <button onclick="quickStartBuddy()" style="position:absolute;left:16px;bottom:14px;padding:9px 16px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;font-size:13px;box-shadow:0 6px 14px rgba(27,184,147,.35);transition:.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💬 Hỏi ngay với Buddy</button>
             </div>
             <!-- Phần chọn danh mục — cùng khung, nền hơi mint để 4 nút trắng nổi khối rõ -->
@@ -5036,7 +5048,7 @@ function showHomeScreen() {
             </div>
           </div>
           <div onclick="quickStartBuddy()" title="Cùng học với Buddy nào!" style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;box-shadow:0 14px 32px rgba(18,49,74,.12);padding:14px 20px;flex-shrink:0;cursor:pointer;transition:transform .18s,box-shadow .18s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 20px 40px rgba(18,49,74,.18)'" onmouseout="this.style.transform='';this.style.boxShadow='0 14px 32px rgba(18,49,74,.12)'">
-            <img src="/images/anhthaythe-nobg.png" alt="Mỗi ngày một chút, bạn sẽ tiến bộ mỗi ngày!" style="display:block;width:100%;height:auto;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
+            <img loading="lazy"src="/images/anhthaythe-nobg.png" alt="Mỗi ngày một chút, bạn sẽ tiến bộ mỗi ngày!" style="display:block;width:100%;height:auto;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
           </div>
         </div>
       </div>
@@ -5135,7 +5147,7 @@ showHomeScreen();
 function homeCard(topic, img, emoji, title, sub, color) {
   return `<div onclick="homeOpen('${topic}')" style="background:#fff;border-radius:18px;padding:20px 12px 18px;cursor:pointer;border:1px solid #EAF1EE;box-shadow:0 12px 26px rgba(18,49,74,.12);transition:transform .18s,box-shadow .18s,border-color .18s;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;"
       onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 18px 34px rgba(18,49,74,.20)';this.style.borderColor='${color}'" onmouseout="this.style.transform='';this.style.boxShadow='0 12px 26px rgba(18,49,74,.12)';this.style.borderColor='#EAF1EE'">
-      <img src="${img}" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.replaceWith(document.createTextNode('${emoji}'));typeof fitHomeContent==='function'&&fitHomeContent()" style="width:auto;height:118px;max-width:100%;object-fit:contain;border-radius:14px;">
+      <img loading="lazy"src="${img}" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.replaceWith(document.createTextNode('${emoji}'));typeof fitHomeContent==='function'&&fitHomeContent()" style="width:auto;height:118px;max-width:100%;object-fit:contain;border-radius:14px;">
       <div style="font-weight:900;font-size:22px;color:var(--text1);margin-top:12px;line-height:1.2;">${title}</div>
       <div style="font-size:16px;color:var(--text3);font-weight:600;margin-top:5px;">${sub}</div>
     </div>`;
@@ -5206,7 +5218,7 @@ function openAchievements() {
         <div style="font-family:'Baloo 2',cursive;font-size:26px;color:var(--text1);margin-bottom:4px;">🏆 Thành tích của em</div>
         <div style="font-size:14px;color:var(--text2);font-weight:600;">Cùng xem em đã tiến bộ thế nào nhé!</div>
       </div>
-      <img src="/images/mascot/celebrate.png" alt="" style="height:96px;width:auto;flex-shrink:0;filter:drop-shadow(0 10px 18px rgba(18,49,74,.14));" onerror="this.style.display='none'">
+      <img loading="lazy"src="/images/mascot/celebrate.png" alt="" style="height:96px;width:auto;flex-shrink:0;filter:drop-shadow(0 10px 18px rgba(18,49,74,.14));" onerror="this.style.display='none'">
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px;">
       ${_statCard('⭐','Điểm tổng', s, '#FFF7DC')}
@@ -5220,7 +5232,7 @@ function openAchievements() {
   if (_sbToken) {
     fetch(`${CL_API}/scores/history`, { headers: { Authorization: 'Bearer ' + _sbToken } }).then(r => r.json()).then(recs => {
       if (!el()) return;
-      if (!recs.length) { el().innerHTML = '<div class="empty-state"><img class="empty-mascot" src="/images/mascot/trophy.png" alt="" onerror="this.style.display=\'none\'">Chưa có bài nào. Hãy làm bài để nhận huy hiệu nhé! 🏅</div>'; return; }
+      if (!recs.length) { el().innerHTML = '<div class="empty-state"><img loading="lazy"class="empty-mascot" src="/images/mascot/trophy.png" alt="" onerror="this.style.display=\'none\'">Chưa có bài nào. Hãy làm bài để nhận huy hiệu nhé! 🏅</div>'; return; }
       el().innerHTML = recs.slice(0, 12).map(r => { const pct = r.pct || 0; const c = pct >= 80 ? '#2ED573' : pct >= 60 ? '#FF6B35' : '#FF6B6B'; const em = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
         return `<div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EDF3F1;border-radius:14px;padding:12px 16px;">
           <div style="font-size:24px;">${em}</div>
@@ -5454,7 +5466,7 @@ function showLimitPopup(detail){
   m.innerHTML =
     '<div style="background:#fff;border-radius:24px;max-width:340px;width:100%;padding:26px 22px 22px;box-shadow:0 26px 60px rgba(0,0,0,.28);text-align:center;position:relative;animation:slideIn .25s ease;">'
     + '<div style="width:96px;height:96px;margin:0 auto 8px;border-radius:50%;background:linear-gradient(135deg,#E9FBF5,#D6F5EC);display:flex;align-items:center;justify-content:center;">'
-    +   '<img src="/images/mascot/idea.png" alt="Buddy" style="width:78px;height:78px;object-fit:contain;" onerror="this.outerHTML=\'<div style=&quot;font-size:44px&quot;>🤖</div>\'">'
+    +   '<img loading="lazy"src="/images/mascot/idea.png" alt="Buddy" style="width:78px;height:78px;object-fit:contain;" onerror="this.outerHTML=\'<div style=&quot;font-size:44px&quot;>🤖</div>\'">'
     + '</div>'
     + '<div style="font-family:\'Baloo 2\',cursive;font-size:19px;color:var(--text1);line-height:1.35;margin-bottom:6px;">'+title+'</div>'
     + '<div style="font-size:13.5px;color:var(--text2);font-weight:600;line-height:1.55;margin-bottom:18px;">'+msg+'</div>'
@@ -5585,7 +5597,7 @@ function _renderQrCheckout(data) {
       <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:20px;color:var(--text1);margin-bottom:2px;">Quét mã để thanh toán</div>
       <div style="text-align:center;font-size:13px;color:var(--text2);font-weight:600;margin-bottom:12px;">Gói <b>${name}</b> · <b>${_fmtVnd(amount)}</b>/tháng</div>
       <div style="text-align:center;">
-        <img src="${data.qr_url}" alt="VietQR" style="width:210px;height:210px;object-fit:contain;border-radius:14px;border:1px solid #E1F0EB;background:#fff;" onerror="this.style.opacity=.3">
+        <img loading="lazy"src="${data.qr_url}" alt="VietQR" style="width:210px;height:210px;object-fit:contain;border-radius:14px;border:1px solid #E1F0EB;background:#fff;" onerror="this.style.opacity=.3">
       </div>
       <div style="background:#F6FBF9;border:1px solid #E1F0EB;border-radius:14px;padding:12px 14px;margin:14px 0;font-size:13px;color:var(--text2);font-weight:600;line-height:1.9;">
         <div style="display:flex;justify-content:space-between;"><span>Ngân hàng</span><b style="color:var(--text1);">${bank.bank_code || ''}</b></div>
@@ -6460,7 +6472,7 @@ async function sendInlineTutor(containerId, forcedMsg) {
   if (!text && !hasImg) return;
   if (inputEl && forcedMsg == null) { inputEl.value=''; inputEl.style.height='auto'; }
 
-  const userHtml = (hasImg ? `<img src="data:${st.mime};base64,${st.img}" style="max-width:170px;border-radius:10px;display:block;margin-bottom:6px;">` : '') + (text ? `<span>${text}</span>` : '');
+  const userHtml = (hasImg ? `<img loading="lazy"src="data:${st.mime};base64,${st.img}" style="max-width:170px;border-radius:10px;display:block;margin-bottom:6px;">` : '') + (text ? `<span>${text}</span>` : '');
   addMsgToEl(msgsEl, 'user', userHtml || '📷 (ảnh)');
 
   const b64 = st.img, mime = st.mime;
@@ -7654,7 +7666,7 @@ async function enhancedSend() {
   }
 
   inp.value = ''; inp.style.height = 'auto';
-  addMsg('user', txt);
+  addMsg('user', escapeHtml(txt));
   chatHistory.push({ role: 'user', content: txt });
   _setInputBusy(true);
   showTyping();
@@ -9348,7 +9360,7 @@ async function loadScoreHistory(subject='') {
     });
     const recs = await res.json();
     if (!recs.length) {
-      el.innerHTML = '<div class="empty-state"><img class="empty-mascot" src="/images/mascot/search.png" alt="" onerror="this.outerHTML=\'&lt;div class=&quot;empty-icon&quot;&gt;📊&lt;/div&gt;\'">Chưa có bài nào. Hãy bắt đầu học nào! 🚀</div>';
+      el.innerHTML = '<div class="empty-state"><img loading="lazy"class="empty-mascot" src="/images/mascot/search.png" alt="" onerror="this.outerHTML=\'&lt;div class=&quot;empty-icon&quot;&gt;📊&lt;/div&gt;\'">Chưa có bài nào. Hãy bắt đầu học nào! 🚀</div>';
       return;
     }
     el.innerHTML = recs.map(r => {
@@ -9841,7 +9853,7 @@ if (document.readyState === 'loading') {
     logo.className = 'sb-side-logo';
     logo.title = 'Về trang chủ';
     logo.onclick = function () { if (typeof goHome === 'function') goHome(); };
-    logo.innerHTML = '<img src="/images/logogiaodienmoi.jpg" alt="SmartBuddy" onerror="this.style.display=\'none\'">';
+    logo.innerHTML = '<img loading="lazy"src="/images/logogiaodienmoi.jpg" alt="SmartBuddy" onerror="this.style.display=\'none\'">';
     sidebar.insertBefore(logo, sidebar.firstChild);
     // 2) Controls sang góc phải vùng nội dung
     const bar = document.createElement('div');
