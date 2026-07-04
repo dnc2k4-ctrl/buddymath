@@ -6,6 +6,7 @@ key trong code. Sao chép .env.example → .env và điền giá trị thực.
 """
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 
@@ -31,9 +32,22 @@ MANIFEST_PATH = DATA_ROOT / ".ingested_manifest.json"
 
 
 # ─── Auth / JWT ───────────────────────────────────────────────────────────────
-SECRET_KEY                = os.environ.get("SECRET_KEY") or "smartbuddy-default-secret-key-change-in-production"
+_DEFAULT_SECRET_KEY       = "smartbuddy-default-secret-key-change-in-production"
+SECRET_KEY                = os.environ.get("SECRET_KEY") or _DEFAULT_SECRET_KEY
+if SECRET_KEY == _DEFAULT_SECRET_KEY:
+    logging.getLogger(__name__).warning(
+        "⚠️ SECRET_KEY đang dùng giá trị MẶC ĐỊNH — chỉ an toàn ở local. "
+        "Đặt SECRET_KEY trong môi trường production, nếu không JWT có thể bị giả mạo!"
+    )
 JWT_ALGORITHM             = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = int(os.environ.get("ACCESS_TOKEN_EXPIRE_HOURS", str(24 * 7)))  # 7 ngày
+
+# ─── Seed tài khoản bootstrap (bảo mật) ───────────────────────────────────────
+# Mật khẩu admin LẤY TỪ ENV (không hardcode). Tài khoản demo student/parent chỉ bật ở dev
+# (ENABLE_DEMO_ACCOUNTS=1). Production để trống → KHÔNG seed tài khoản mật khẩu mặc định.
+ADMIN_EMAIL          = os.environ.get("ADMIN_EMAIL", "admin@smartbuddy.vn")
+ADMIN_PASSWORD       = os.environ.get("ADMIN_PASSWORD", "")
+ENABLE_DEMO_ACCOUNTS = os.environ.get("ENABLE_DEMO_ACCOUNTS", "").lower() in ("1", "true", "yes")
 
 DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{(BE_DIR / 'smartbuddy.db').as_posix()}")
 # Render/Heroku cấp Postgres dưới scheme cũ "postgres://" — SQLAlchemy cần "postgresql://"

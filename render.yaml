@@ -46,6 +46,11 @@ services:
         sync: false
       - key: SECRET_KEY
         generateValue: true     # Render tự sinh chuỗi ngẫu nhiên
+      # Mật khẩu admin (admin@smartbuddy.vn) — ĐẶT MẬT KHẨU MẠNH trong Dashboard.
+      # Nếu admin cũ còn dùng 'admin123', đặt biến này rồi deploy lại → tự đổi mật khẩu.
+      - key: ADMIN_PASSWORD
+        sync: false
+      # ⚠ KHÔNG set ENABLE_DEMO_ACCOUNTS ở production → không seed student@demo.vn/parent@demo.vn.
       # Cấu hình mặc định (có thể đổi trong Dashboard)
       - key: GROQ_MODEL
         value: meta-llama/llama-4-scout-17b-16e-instruct
