@@ -20,13 +20,14 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.api import auth, billing, catalog, chat, classroom, pages, parent, scores
-from app.config import IMAGES_DIR
+from app.config import FRONTEND_DIR, IMAGES_DIR
 from app.core.database import init_db
 from app.services import runtime
 from app.services.auth_service import seed_demo_accounts
@@ -123,6 +124,15 @@ def create_app() -> FastAPI:
     # Routers
     for module in (pages, auth, billing, scores, parent, chat, catalog, classroom):
         app.include_router(module.router)
+
+    # 404 thân thiện: trả trang HTML cho trình duyệt, JSON cho lời gọi API.
+    @app.exception_handler(404)
+    async def _not_found(request: Request, exc):
+        if "text/html" in request.headers.get("accept", ""):
+            page = FRONTEND_DIR / "404.html"
+            if page.exists():
+                return FileResponse(page, status_code=404)
+        return JSONResponse({"detail": getattr(exc, "detail", "Not Found")}, status_code=404)
 
     return app
 
