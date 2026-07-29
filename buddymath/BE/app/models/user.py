@@ -61,3 +61,5 @@ class ParentChildLink(Base):
     parent_id  = Column(String, ForeignKey("users.id"), nullable=False)
     child_id   = Column(String, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    # Lần gửi báo cáo THEO LỊCH gần nhất (chống gửi trùng trong 1 kỳ).
+    last_report_at = Column(DateTime, nullable=True)

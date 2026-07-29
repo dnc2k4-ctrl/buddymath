@@ -5,12 +5,14 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
+from sqlalchemy.orm import Session
 
 from app import plans
-from app.config import FRONTEND_DIR, GROQ_TEXT_MODEL, GROQ_VISION_MODEL
-from app.services import runtime
+from app.config import ACTIVE_TEXT_MODEL, ACTIVE_VISION_MODEL, FRONTEND_DIR, LLM_PROVIDER, SCHEDULER_TOKEN
+from app.core.database import get_db
+from app.services import report_scheduler, runtime
 
 router = APIRouter(tags=["pages"])
 
@@ -127,11 +129,25 @@ async def health():
         "status":       "ok",
         "service":      "BuddyMath API",
         "version":      "3.0.0",
-        "llm":          "Groq",
-        "model":        GROQ_TEXT_MODEL,
-        "model_text":   GROQ_TEXT_MODEL,
-        "model_vision": GROQ_VISION_MODEL,
+        "llm":          LLM_PROVIDER,
+        "model":        ACTIVE_TEXT_MODEL,
+        "model_text":   ACTIVE_TEXT_MODEL,
+        "model_vision": ACTIVE_VISION_MODEL,
         "embedder":     "Jina AI",
         "indexed_docs": docs,
         "time":         datetime.utcnow().isoformat(),
     }
+
+
+@router.post("/tasks/run-scheduled-reports")
+async def run_scheduled_reports(request: Request, db: Session = Depends(get_db)):
+    """
+    Gửi email báo cáo THEO LỊCH của gói (Standard = hàng tuần). Idempotent nhờ last_report_at
+    → gọi nhiều lần trong kỳ cũng không gửi trùng. Dành cho cron/hosting gọi mỗi ngày.
+    Bảo vệ bằng SCHEDULER_TOKEN (gửi header 'X-Task-Token' hoặc query '?token=').
+    """
+    if SCHEDULER_TOKEN:
+        tok = request.headers.get("x-task-token") or request.query_params.get("token")
+        if tok != SCHEDULER_TOKEN:
+            raise HTTPException(401, "Unauthorized")
+    return report_scheduler.send_due_reports(db)

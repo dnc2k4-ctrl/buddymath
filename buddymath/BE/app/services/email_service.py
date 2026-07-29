@@ -291,7 +291,8 @@ def _assessment_text(avg: float | None, by_sub: dict[str, list[ScoreRecord]], to
             f"hãy cùng con ôn lại phần còn yếu, chia nhỏ bài học và tránh tạo áp lực.{extra}")
 
 
-def build_report_html(current_user: User, child: User, recs: list[ScoreRecord], period: str) -> str:
+def build_report_html(current_user: User, child: User, recs: list[ScoreRecord], period: str,
+                      ai_activity: dict | None = None) -> str:
     period_label = "tuần" if period == "week" else "tháng"
     by_sub: dict[str, list[ScoreRecord]] = {}
     for r in recs:
@@ -334,6 +335,55 @@ def build_report_html(current_user: User, child: User, recs: list[ScoreRecord], 
 
     assess_title, assess_body = _assessment_text(overall_avg, by_sub, len(recs))
     avg_display = f"{overall_avg:.0f}%" if overall_avg is not None else "—"
+
+    # ── Cách con dùng AI (từ lịch sử trò chuyện) — minh bạch + nhận xét trang trọng ──
+    ai_block = ""
+    if ai_activity:
+        qa = ai_activity.get("questions_asked", 0)
+        ad = ai_activity.get("active_days", 0)
+        bysub = ai_activity.get("by_subject", {}) or {}
+        _SUBJ = {"toan": "Toán", "Toán": "Toán", "english": "Tiếng Anh", "Tiếng Anh": "Tiếng Anh",
+                 "life_skills": "Kỹ năng sống", "Kỹ năng sống": "Kỹ năng sống",
+                 "prompt-playground": "Tư duy đặt câu hỏi", "chat": "Hỏi đáp"}
+        subj_txt = ", ".join(f"{_SUBJ.get(s, s or 'khác')}: {n} câu" for s, n in bysub.items()) or "—"
+        if qa == 0:
+            note = ("Trong kỳ này, con chưa chủ động đặt câu hỏi cho trợ lý AI. Kính mong Quý phụ huynh "
+                    "khuyến khích con mạnh dạn hỏi khi gặp bài khó — đây là một kỹ năng học tập quan trọng.")
+        elif qa >= 15:
+            note = ("Con đặt câu hỏi thường xuyên và chủ động — cho thấy con đang <b>sử dụng AI đúng cách</b>: "
+                    "hỏi để hiểu bài và rèn tư duy, thay vì chép đáp án. Đây là thói quen học tập rất đáng khích lệ.")
+        else:
+            note = ("Con đã bắt đầu biết dùng AI để hỏi bài. Quý phụ huynh có thể khuyến khích con hỏi sâu hơn "
+                    "về <i>“vì sao”</i> và <i>“làm thế nào”</i> để phát triển tư duy phản biện.")
+        ai_block = f"""
+        <div style="background:#f3f0ff;border-radius:12px;padding:16px;border-left:4px solid #8B5CF6;margin-bottom:16px;">
+          <div style="font-weight:900;color:#5B21B6;margin-bottom:6px;">🤖 Cách con sử dụng trợ lý AI</div>
+          <div style="font-size:13.5px;color:#444;line-height:1.6;">
+            Con đã đặt <b>{qa} câu hỏi</b> cho Buddy trong <b>{ad} ngày</b> ({subj_txt}).<br>{note}
+          </div>
+        </div>"""
+
+    # ── Ưu đãi nâng gói (nếu con chưa ở gói Premium) ──
+    offer_block = ""
+    try:
+        cur_plan = child.effective_plan()
+    except Exception:
+        cur_plan = "free"
+    if cur_plan != "premium":
+        if cur_plan == "free":
+            tier, price, benefit = "Standard", "199.000đ/tháng", "học Toán không giới hạn, mở khoá môn Tiếng Anh và nhận báo cáo hàng tuần"
+        else:
+            tier, price, benefit = "Premium", "299.000đ/tháng", "mở thêm môn Kỹ năng sống, giải bài bằng ảnh không giới hạn và nhận báo cáo sau mỗi bài học"
+        offer_block = f"""
+        <div style="background:linear-gradient(135deg,#FFF7E6,#FFFBF0);border-radius:12px;padding:16px;border:1.5px solid #FFE29A;margin-bottom:16px;">
+          <div style="font-weight:900;color:#B45309;margin-bottom:4px;">✨ Ưu đãi dành cho {child.username}</div>
+          <div style="font-size:13.5px;color:#7C4A03;line-height:1.6;">
+            Nâng cấp gói <b>{tier}</b> ({price}) để con {benefit}.
+            <div style="margin-top:10px;">
+              <a href="{PUBLIC_BASE_URL}/app" style="display:inline-block;background:linear-gradient(135deg,#F39C12,#FF8A3D);color:#fff;text-decoration:none;font-weight:900;padding:9px 18px;border-radius:10px;font-size:13px;">Xem các gói →</a>
+            </div>
+          </div>
+        </div>"""
 
     empty_row = '<tr><td colspan="3" style="padding:16px;text-align:center;color:#888;">Chưa có dữ liệu trong khoảng thời gian này</td></tr>'
     return f"""
@@ -385,6 +435,8 @@ def build_report_html(current_user: User, child: User, recs: list[ScoreRecord], 
         <!-- Chi tiết các bài gần đây -->
         {f'<h3 style="margin:18px 0 0;color:#1A2340;font-size:15px;">📚 Chi tiết bài học gần đây</h3>{detail}' if detail else ''}
 
+        {ai_block}
+        {offer_block}
         <div style="background:#e8f5e9;border-radius:12px;padding:14px;margin-top:16px;border-left:4px solid #2ED573;">
           💡 <strong>Lời khuyên:</strong> Hãy khuyến khích em học đều đặn mỗi ngày 20-30 phút.
           Kiên trì là chìa khóa dẫn đến thành công! 🌟

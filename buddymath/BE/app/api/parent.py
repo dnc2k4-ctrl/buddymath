@@ -17,6 +17,7 @@ from app.llm.client import LLMClient
 from app.models.score import ScoreRecord
 from app.models.user import ParentChildLink, User
 from app.schemas.auth import LinkChildReq, ParentAdvisorReq, SendReportReq
+from app.services import chat_history_service
 from app.services.email_service import build_report_html, smtp_send
 
 logger = logging.getLogger(__name__)
@@ -373,7 +374,8 @@ async def send_report(
         ScoreRecord.created_at >= since,
     ).all()
     period_label = "tuần" if req.period == "week" else "tháng"
-    html = build_report_html(current_user, child, recs, req.period)
+    ai_activity = chat_history_service.activity_summary(db, req.child_id, days=days)
+    html = build_report_html(current_user, child, recs, req.period, ai_activity=ai_activity)
     try:
         smtp_send(current_user.email, f"📊 Báo cáo học tập {period_label} qua của {child.username}", html)
         return {"success": True, "message": f"Đã gửi báo cáo đến {current_user.email}"}

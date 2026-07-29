@@ -59,6 +59,30 @@ async def _background_ingest():
         logger.warning(f"⚠ (nền) Nạp RAG lỗi: {e}")
 
 
+async def _report_scheduler_loop():
+    """Định kỳ gửi báo cáo email theo LỊCH của gói (Standard = hàng tuần).
+
+    Chạy trong tiến trình → hợp hosting always-on. Hosting hay 'ngủ' thì nên đặt thêm
+    một cron ngoài gọi POST /tasks/run-scheduled-reports mỗi ngày (idempotent, không gửi trùng).
+    """
+    from app.core.database import SessionLocal
+    from app.services import report_scheduler
+    while True:
+        try:
+            await asyncio.sleep(6 * 3600)   # kiểm tra mỗi 6 tiếng
+            db = SessionLocal()
+            try:
+                res = await asyncio.to_thread(report_scheduler.send_due_reports, db)
+                if res.get("sent"):
+                    logger.info(f"[SCHEDULE] Đã gửi {res['sent']} báo cáo theo lịch.")
+            finally:
+                db.close()
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            logger.warning(f"[SCHEDULE] Vòng lặp lỗi: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("🚀 Khởi động BuddyMath backend…")
@@ -67,10 +91,12 @@ async def lifespan(app: FastAPI):
 
     # Nạp RAG ở nền → khởi động xong tức thì, health check không còn timeout.
     ingest_task = asyncio.create_task(_background_ingest())
+    scheduler_task = asyncio.create_task(_report_scheduler_loop())   # gửi báo cáo theo lịch của gói
 
     logger.info("✅ BuddyMath sẵn sàng (RAG đang nạp ở nền).")
     yield
     ingest_task.cancel()
+    scheduler_task.cancel()
     logger.info("🛑 Đang tắt BuddyMath backend.")
 
 
