@@ -1970,6 +1970,9 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
     <button class="topic-btn nav-new" data-color="buddy" data-topic="buddy" onclick="selectTopic(this)">
       <span class="nav-ic-em">💬</span> Hỏi đáp với Buddy
     </button>
+    <button class="topic-btn nav-new" data-nav="prompt-playground" onclick="setNavActive(this); homeOpen('prompt-playground');">
+      <span class="nav-ic-em">🧠</span> Tư duy đặt câu hỏi
+    </button>
     <button class="topic-btn nav-new nav-group-header" data-color="blue" data-topic="math_hub" onclick="selectTopic(this)">
       <span class="nav-ic-em">📐</span> Toán học
     </button>
@@ -2701,14 +2704,25 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
           <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:6px;">📊 Lịch sử học tập</div>
           <div style="font-size:15px;opacity:.9;font-weight:600;line-height:1.6;">Theo dõi hành trình học tập của em theo từng môn và thời gian!</div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="score-hist-filters">
-          <button class="practice-type-btn active" onclick="loadScoreHistory('');setHistFilter(this)">Tất cả</button>
-          <button class="practice-type-btn" onclick="loadScoreHistory('Toán');setHistFilter(this)">📐 Toán</button>
-          <button class="practice-type-btn" onclick="loadScoreHistory('Tiếng Anh');setHistFilter(this)">🌏 Tiếng Anh</button>
-          <button class="practice-type-btn" onclick="loadScoreHistory('Kỹ năng sống');setHistFilter(this)">🌟 Kỹ năng sống</button>
+        <div style="display:flex;gap:8px;">
+          <button class="practice-type-btn active" id="hist-tab-scores" onclick="switchHistTab('scores')" style="flex:1;">📊 Bài làm</button>
+          <button class="practice-type-btn" id="hist-tab-chat" onclick="switchHistTab('chat')" style="flex:1;">💬 Trò chuyện với AI</button>
         </div>
-        <div id="score-history-list">
-          <div class="empty-state"><div class="empty-icon">📊</div>Đang tải lịch sử...</div>
+        <div id="hist-scores-section">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;" id="score-hist-filters">
+            <button class="practice-type-btn active" onclick="loadScoreHistory('');setHistFilter(this)">Tất cả</button>
+            <button class="practice-type-btn" onclick="loadScoreHistory('Toán');setHistFilter(this)">📐 Toán</button>
+            <button class="practice-type-btn" onclick="loadScoreHistory('Tiếng Anh');setHistFilter(this)">🌏 Tiếng Anh</button>
+            <button class="practice-type-btn" onclick="loadScoreHistory('Kỹ năng sống');setHistFilter(this)">🌟 Kỹ năng sống</button>
+          </div>
+          <div id="score-history-list">
+            <div class="empty-state"><div class="empty-icon">📊</div>Đang tải lịch sử...</div>
+          </div>
+        </div>
+        <div id="hist-chat-section" style="display:none;">
+          <div id="chat-history-list">
+            <div class="empty-state"><div class="empty-icon">💬</div>Đang tải...</div>
+          </div>
         </div>
       </div>
     </div>
@@ -2852,7 +2866,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
       <div id="qc-home" class="qc-screen" style="padding:24px 20px;">
         <!-- Mascot header banner -->
         <div style="background:linear-gradient(135deg,#1FCBA6,#13B392);border-radius:24px;padding:22px 20px;text-align:center;box-shadow:0 8px 0 rgba(27,184,147,.3);">
-          <div id="buddy-sprite-qc-header" class="buddy-sprite pose-8" style="width:88px;height:96px;border-radius:20px;margin:0 auto 12px;background:rgba(255,255,255,.18);animation:mascotBob 2.5s ease-in-out infinite;"></div>
+          <img src="/images/mascot/thinking.png" alt="Buddy đang suy nghĩ" loading="lazy" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 12px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.18));animation:mascotBob 2.5s ease-in-out infinite;">
           <div style="font-family:'Baloo 2',cursive;font-size:21px;font-weight:900;color:white;line-height:1.25;">Lớp học Đặt Câu Hỏi<br>Thông Minh 💭</div>
           <div style="font-size:12px;color:rgba(255,255,255,.85);font-weight:700;margin-top:7px;">Học cách hỏi đúng — nhận câu trả lời hay hơn gấp 10 lần!</div>
         </div>
@@ -3133,6 +3147,49 @@ function confetti(){
     c.style.cssText=`left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.5}s;animation-duration:${1+Math.random()*1}s;border-radius:${Math.random()>0.5?'50%':'2px'};`;
     document.body.appendChild(c); setTimeout(()=>c.remove(),2000);
   }
+}
+
+// ── THÔNG BÁO CHÚC MỪNG / CHIA BUỒN (mượt, sau khi chấm bài) ──
+function showResultNotice(pct, correct, total){
+  if(!document.getElementById('rn-style')){
+    const st=document.createElement('style'); st.id='rn-style';
+    st.textContent=`
+      #rn-ov{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;
+        background:rgba(18,49,74,.45);backdrop-filter:blur(3px);animation:rnFade .22s ease;}
+      #rn-card{background:#fff;border-radius:26px;max-width:380px;width:100%;padding:28px 26px 22px;text-align:center;
+        box-shadow:0 30px 70px rgba(18,49,74,.35);animation:rnPop .45s cubic-bezier(.18,.9,.32,1.35);}
+      .rn-emoji{font-size:64px;line-height:1;animation:rnBob 1.6s ease-in-out infinite;}
+      .rn-title{font-family:'Baloo 2',cursive;font-size:24px;font-weight:900;color:#12314A;margin:6px 0 4px;}
+      .rn-score{font-size:14.5px;font-weight:800;color:#5A6890;margin-bottom:6px;}
+      .rn-msg{font-size:15px;color:#5A6890;font-weight:600;line-height:1.55;margin-bottom:20px;}
+      .rn-btn{border:none;border-radius:14px;padding:13px 30px;font-family:'Nunito',Arial;font-size:16px;font-weight:900;
+        color:#fff;cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.18);transition:transform .15s;}
+      .rn-btn:hover{transform:translateY(-2px);} .rn-btn:active{transform:translateY(0);}
+      @keyframes rnFade{from{opacity:0;}to{opacity:1;}}
+      @keyframes rnPop{0%{opacity:0;transform:scale(.7) translateY(24px);}100%{opacity:1;transform:none;}}
+      @keyframes rnBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+      @keyframes rnOut{to{opacity:0;transform:scale(.92);}}`;
+    document.head.appendChild(st);
+  }
+  let e,t,m,c;
+  if(pct>=80){ e='🎉'; t='Chúc mừng em!'; m='Em làm quá xuất sắc! Buddy tự hào về em lắm đó — tiếp tục phát huy nhé! 🌟'; c='linear-gradient(135deg,#1FCBA6,#13B392)'; }
+  else if(pct>=60){ e='👏'; t='Giỏi lắm!'; m='Em làm khá tốt rồi đó! Cố thêm chút nữa là hoàn hảo luôn nè!'; c='linear-gradient(135deg,#3F7FD6,#2BB6A6)'; }
+  else if(pct>=40){ e='💪'; t='Cố lên nào!'; m='Em đã cố gắng rồi! Mình cùng xem lại mấy câu chưa đúng là em giỏi lên ngay thôi!'; c='linear-gradient(135deg,#F39C12,#FF8A3D)'; }
+  else { e='🤗'; t='Đừng buồn nhé!'; m='Ai cũng có lúc làm sai mà — quan trọng là em đã dám thử! Mình cùng xem lại lời giải, lần sau em sẽ tiến bộ. Buddy luôn ở đây với em 💛'; c='linear-gradient(135deg,#7C83FD,#5A6CE0)'; }
+  const ov=document.createElement('div'); ov.id='rn-ov';
+  ov.innerHTML=`<div id="rn-card">
+    <div class="rn-emoji">${e}</div>
+    <div class="rn-title">${t}</div>
+    <div class="rn-score">Kết quả: <b>${correct}/${total}</b> câu đúng (${pct}%)</div>
+    <div class="rn-msg">${m}</div>
+    <button class="rn-btn" style="background:${c}" onclick="closeResultNotice()">Tiếp tục →</button>
+  </div>`;
+  ov.addEventListener('click',ev=>{ if(ev.target===ov) closeResultNotice(); });
+  document.body.appendChild(ov);
+}
+function closeResultNotice(){
+  const ov=document.getElementById('rn-ov'); if(!ov) return;
+  ov.style.animation='rnOut .2s ease forwards'; setTimeout(()=>ov.remove(),200);
 }
 
 // ── CONSTANTS ──
@@ -4492,6 +4549,7 @@ Trả về JSON (không thêm text ngoài JSON):
     resultEl.classList.add('show');
     resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
     if(pct>=80) confetti();
+    showResultNotice(pct, correctCount, total);   // thông báo chúc mừng/chia buồn
 
     // Record score to backend
     const gradeNum = grade.replace('toan','');
@@ -8008,12 +8066,16 @@ async function loadAdminUsers() {
 function renderAdminStats(s) {
   const el = document.getElementById('admin-stats');
   if (!el) return;
+  const pc = { free:0, standard:0, premium:0 };
+  (_adminUsers || []).forEach(u => { if (u.role !== 'admin') pc[u.plan] = (pc[u.plan] || 0) + 1; });
   const cards = [
     { label: 'Tổng tài khoản', value: s.total,    color: '#4776E6', icon: '👥' },
     { label: 'Học sinh',       value: s.students, color: '#1E90FF', icon: '🎒' },
     { label: 'Phụ huynh',      value: s.parents,  color: '#A55EEA', icon: '👨‍👩‍👧' },
-    { label: 'Quản trị',       value: s.admins,   color: '#E74C3C', icon: '🛡️' },
     { label: 'Đang khóa',      value: s.locked,   color: '#F39C12', icon: '🔒' },
+    { label: 'Premium 299k',   value: pc.premium, color: '#F39C12', icon: '💎' },
+    { label: 'Standard 199k',  value: pc.standard,color: '#4776E6', icon: '⭐' },
+    { label: 'Miễn phí',       value: pc.free,    color: '#94A3B8', icon: '🆓' },
   ];
   el.innerHTML = cards.map(c => `
     <div style="background:white;border:2px solid #EEF1F6;border-radius:14px;padding:12px 14px;">
@@ -8044,15 +8106,19 @@ function renderAdminUsers() {
     // Liên kết phụ huynh–học sinh (field 'linked' do API /admin/users trả về)
     const _linked = Array.isArray(u.linked) ? u.linked : [];
     let linkHtml = '';
+    const _lk = arr => arr.map(p => `${_esc(p.username)} <span style="color:var(--text3);">(${_esc(p.email)})</span>`).join(', ');
     if (u.role === 'student') {
       linkHtml = _linked.length
-        ? '🔗 Phụ huynh: ' + _linked.map(p => _esc(p.username)).join(', ')
+        ? '🔗 Phụ huynh: ' + _lk(_linked)
         : '<span style="color:#E67E22;">⚠️ Chưa liên kết phụ huynh</span>';
     } else if (u.role === 'parent') {
       linkHtml = _linked.length
-        ? '🔗 Con: ' + _linked.map(c => _esc(c.username)).join(', ')
+        ? '🔗 Con: ' + _lk(_linked)
         : '<span style="color:#E67E22;">⚠️ Chưa liên kết học sinh</span>';
     }
+    const _plan = ({free:{l:'Miễn phí',c:'#94A3B8'},standard:{l:'Standard · 199k',c:'#4776E6'},premium:{l:'Premium · 299k',c:'#F39C12'}})[u.plan] || {l:u.plan,c:'#888'};
+    const _planBadge = u.role !== 'admin' ? ` <span style="display:inline-block;padding:1px 8px;border-radius:20px;font-size:10.5px;font-weight:800;color:#fff;background:${_plan.c};">${_plan.l}</span>` : '';
+    const _planExp = (u.role !== 'admin' && u.plan !== 'free' && u.plan_expires_at) ? ` · <span style="color:#F39C12;font-weight:800;">hết hạn ${_esc(u.plan_expires_at)}</span>` : '';
     return `
     <div style="background:white;border:2px solid ${locked ? '#FFE0C0' : '#EEF1F6'};border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;${locked ? 'opacity:.75;' : ''}">
       <div style="width:42px;height:42px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,${meta.color},${meta.color}99);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:18px;">${_esc((u.username || '?')[0].toUpperCase())}</div>
@@ -8060,14 +8126,15 @@ function renderAdminUsers() {
         <div style="font-weight:800;color:var(--text1);font-size:14px;">${_esc(u.username)} ${isMe ? '<span style="font-size:10px;color:var(--teal);">(bạn)</span>' : ''} ${locked ? '<span style="font-size:10px;color:#E67E22;">🔒 đã khóa</span>' : ''}</div>
         <div style="font-size:12px;color:var(--text2);font-weight:600;word-break:break-all;">${_esc(u.email)}</div>
         <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px;">
-          <span style="color:${meta.color};font-weight:800;">${meta.label}</span>
+          <span style="color:${meta.color};font-weight:800;">${meta.label}</span>${_planBadge}
           ${u.role === 'student' ? ' · Lớp ' + (u.grade || '--') : ''}
-          · ${u.score_count || 0} bài · ${_esc(u.created_at)}
+          · ${u.score_count || 0} bài · ${_esc(u.created_at)}${_planExp}
         </div>
         ${linkHtml ? `<div style="font-size:11px;font-weight:700;margin-top:3px;color:var(--text2);">${linkHtml}</div>` : ''}
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <button onclick="adminEditUser('${u.id}')" title="Sửa" style="padding:7px 11px;border:2px solid #E0E8F0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:var(--text2);">✏️ Sửa</button>
+        ${u.role !== 'admin' ? `<button onclick="adminChangePlan('${u.id}')" title="Đổi gói cước" style="padding:7px 11px;border:2px solid #FFE0B0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:#F39C12;">💳 Gói</button>` : ''}
         <button onclick="adminToggleActive('${u.id}')" title="${locked ? 'Mở khóa' : 'Khóa'}" style="padding:7px 11px;border:2px solid #E0E8F0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:${locked ? '#2ED573' : '#F39C12'};">${locked ? '🔓 Mở' : '🔒 Khóa'}</button>
         <button onclick="adminResetPassword('${u.id}')" title="Đặt lại mật khẩu" style="padding:7px 11px;border:2px solid #E0E8F0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:#4776E6;">🔑</button>
         <button onclick="adminDeleteUser('${u.id}')" title="Xóa" style="padding:7px 11px;border:2px solid #FFD0D0;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:800;color:var(--red);">🗑️</button>
@@ -8108,6 +8175,28 @@ async function adminEditUser(id) {
   try {
     await _adminApiSend(`${CL_API}/admin/users/${id}`, 'PATCH', body);
     showAuthToast && showAuthToast('✅ Đã cập nhật tài khoản.', 'var(--teal)');
+    loadAdminUsers();
+  } catch (e) { showAuthToast && showAuthToast('❌ ' + e.message, 'var(--red)'); }
+}
+
+async function adminChangePlan(id) {
+  const u = _adminFindUser(id);
+  if (!u) return;
+  const plan = prompt(`Đổi GÓI cho "${u.username}"\n\nNhập: free / standard / premium\n(Standard = 199k · Premium = 299k)`, u.plan || 'free');
+  if (plan === null) return;
+  const p = plan.trim().toLowerCase();
+  if (!['free', 'standard', 'premium'].includes(p)) {
+    showAuthToast && showAuthToast('❌ Gói không hợp lệ (free/standard/premium).', 'var(--red)'); return;
+  }
+  const body = { plan: p };
+  if (p !== 'free') {
+    const m = prompt('Số tháng hiệu lực (mặc định 12):', '12');
+    if (m === null) return;
+    body.plan_months = parseInt(m) || 12;
+  }
+  try {
+    await _adminApiSend(`${CL_API}/admin/users/${id}`, 'PATCH', body);
+    showAuthToast && showAuthToast('✅ Đã đổi gói thành "' + p + '".', 'var(--teal)');
     loadAdminUsers();
   } catch (e) { showAuthToast && showAuthToast('❌ ' + e.message, 'var(--red)'); }
 }
@@ -9397,6 +9486,59 @@ async function loadScoreHistory(subject='') {
 function setHistFilter(btn) {
   document.querySelectorAll('#score-hist-filters .practice-type-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+}
+
+// ── Chuyển tab: Bài làm ↔ Trò chuyện với AI ──
+function switchHistTab(tab){
+  const isChat = tab === 'chat';
+  document.getElementById('hist-tab-scores').classList.toggle('active', !isChat);
+  document.getElementById('hist-tab-chat').classList.toggle('active', isChat);
+  document.getElementById('hist-scores-section').style.display = isChat ? 'none' : '';
+  document.getElementById('hist-chat-section').style.display = isChat ? '' : 'none';
+  if (isChat) loadChatHistory();
+}
+
+const _SUBJ_LABEL = { toan:'📐 Toán', 'Toán':'📐 Toán', english:'🌏 Tiếng Anh', 'Tiếng Anh':'🌏 Tiếng Anh',
+  life_skills:'🌟 Kỹ năng sống', 'Kỹ năng sống':'🌟 Kỹ năng sống', 'prompt-playground':'💭 Tư duy đặt câu hỏi', chat:'💬 Hỏi đáp' };
+
+async function loadChatHistory(){
+  const el = document.getElementById('chat-history-list');
+  if (!el) return;
+  if (!_sbToken){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔒</div>Đăng nhập để xem lịch sử!</div>'; return; }
+  el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div>Đang tải...</div>';
+  try{
+    const res = await fetch(`${CL_API}/chat/history?days=30&limit=300`, { headers:{ 'Authorization':'Bearer '+_sbToken } });
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length){
+      el.innerHTML='<div class="empty-state"><img loading="lazy" class="empty-mascot" src="/images/mascot/reading.png" alt="" onerror="this.outerHTML=\'&lt;div class=&quot;empty-icon&quot;&gt;💬&lt;/div&gt;\'">Chưa có cuộc trò chuyện nào. Hãy hỏi Buddy nhé! 💬</div>';
+      return;
+    }
+    const byDay = {};
+    rows.forEach(r=>{
+      const d = new Date(r.created_at);
+      const key = d.toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+      (byDay[key] = byDay[key] || []).push(r);
+    });
+    let html = '';
+    for (const day in byDay){
+      html += `<div style="font-weight:900;color:var(--text2);font-size:13px;margin:14px 0 8px;">📅 ${day}</div>`;
+      byDay[day].forEach(r=>{
+        const t = new Date(r.created_at).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+        const isU = r.role==='user';
+        const subj = _SUBJ_LABEL[r.subject] || (r.subject||'');
+        html += `
+        <div style="display:flex;gap:8px;margin-bottom:8px;${isU?'flex-direction:row-reverse;':''}">
+          <div style="max-width:80%;background:${isU?'#EAF3FF':'#F3FFF9'};border:1.5px solid ${isU?'#CFE4FF':'#CFEFE0'};border-radius:14px;padding:9px 12px;">
+            <div style="font-size:10.5px;color:var(--text3);font-weight:800;margin-bottom:2px;">${isU?'🧒 Em':'🤖 Buddy'} · ${t}${(subj&&isU)?' · '+subj:''}</div>
+            <div style="font-size:13px;color:var(--text1);font-weight:600;line-height:1.5;white-space:pre-wrap;word-break:break-word;">${escapeHtml((r.content||'').slice(0,600))}</div>
+          </div>
+        </div>`;
+      });
+    }
+    el.innerHTML = html;
+  }catch(e){
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div>Không tải được lịch sử trò chuyện</div>';
+  }
 }
 
 function showScoreHistory() {
