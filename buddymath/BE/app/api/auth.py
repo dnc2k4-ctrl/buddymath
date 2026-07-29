@@ -227,6 +227,7 @@ def _admin_user_dict(u: User) -> dict:
         "avatar":      u.avatar,
         "is_active":   u.is_active,
         "plan":        u.effective_plan(),
+        "plan_expires_at": u.plan_expires_at.strftime("%Y-%m-%d") if u.plan_expires_at else None,
         "created_at":  u.created_at.strftime("%Y-%m-%d %H:%M") if u.created_at else "",
         "score_count": len(u.scores),
     }
@@ -367,6 +368,18 @@ async def admin_update_user(
         if user.id == admin.id and not active:
             raise HTTPException(400, "Không thể tự khóa tài khoản của chính mình")
         user.is_active = active
+
+    # Admin đổi GÓI thủ công (vd cấp Premium cho khách đã thanh toán chuyển khoản).
+    if "plan" in body:
+        new_plan = body["plan"]
+        if new_plan not in ("free", "standard", "premium"):
+            raise HTTPException(400, "Gói không hợp lệ (free/standard/premium)")
+        user.plan = new_plan
+        if new_plan == "free":
+            user.plan_expires_at = None
+        else:
+            months = max(1, min(int(body.get("plan_months") or 12), 36))
+            user.plan_expires_at = datetime.utcnow() + timedelta(days=30 * months)
 
     db.commit()
     db.refresh(user)

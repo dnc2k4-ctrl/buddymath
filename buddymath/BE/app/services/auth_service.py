@@ -4,6 +4,7 @@ auth_service.py – Nghiệp vụ tài khoản: seed demo, helper user dict.
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 
 from app.config import ADMIN_EMAIL, ADMIN_PASSWORD, ENABLE_DEMO_ACCOUNTS
 from app.core.database import SessionLocal
@@ -11,6 +12,9 @@ from app.core.security import hash_password, verify_password
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
+
+# Tài khoản demo luôn ở gói Premium "vĩnh viễn" để trình diễn ĐẦY ĐỦ mọi tính năng.
+_DEMO_PREMIUM_EXPIRES = datetime(2099, 1, 1)
 
 # Tài khoản demo student/parent — CHỈ tạo ở dev (ENABLE_DEMO_ACCOUNTS=1). Prod không có.
 DEMO_ACCOUNTS = [
@@ -31,16 +35,23 @@ def seed_demo_accounts() -> None:
     """
     db = SessionLocal()
     try:
-        # 1) Tài khoản demo (chỉ dev) ────────────────────────────────────────────
+        # 1) Tài khoản demo (chỉ dev) — LUÔN Premium để xem demo mọi tính năng ─────
         if ENABLE_DEMO_ACCOUNTS:
             for d in DEMO_ACCOUNTS:
-                if not db.query(User).filter(User.email == d["email"]).first():
-                    db.add(User(
+                u = db.query(User).filter(User.email == d["email"]).first()
+                if not u:
+                    u = User(
                         email=d["email"], username=d["username"],
                         password_hash=hash_password(d["password"]),
                         role=d["role"], grade=d["grade"],
-                    ))
+                    )
+                    db.add(u)
                     logger.info(f"[SEED] Tạo tài khoản demo: {d['email']}")
+                # Mở khoá toàn bộ tính năng: đặt gói Premium hết hạn rất xa.
+                if u.plan != "premium" or not u.plan_expires_at or u.plan_expires_at < _DEMO_PREMIUM_EXPIRES:
+                    u.plan = "premium"
+                    u.plan_expires_at = _DEMO_PREMIUM_EXPIRES
+                    logger.info(f"[SEED] {d['email']} → Premium (demo, mở khoá mọi tính năng).")
 
         # 2) Tài khoản admin (mật khẩu từ ENV) ───────────────────────────────────
         admin_pw = ADMIN_PASSWORD or (_OLD_DEFAULT_ADMIN_PW if ENABLE_DEMO_ACCOUNTS else "")
