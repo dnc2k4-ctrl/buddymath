@@ -10,16 +10,16 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_optional_user
+from app.api.deps import get_current_user, get_optional_user
 from app.api.ratelimit import rate_limit_llm
-from app.config import GROQ_VISION_MODEL, allowed_models
+from app.config import ACTIVE_VISION_MODEL, allowed_models
 from app.core.database import get_db
 from app.llm.client import LLMClient, is_vision_model
 from app.llm.math_verifier import verification_note
 from app.llm.smart_buddy import with_core
 from app.models.user import User
 from app.schemas.chat import ChatRequest, ChatResponse, GroqDirectRequest, ImageChatRequest
-from app.services import quota_service
+from app.services import chat_history_service, quota_service
 from app.services.runtime import get_pipeline
 
 logger = logging.getLogger(__name__)
@@ -75,6 +75,11 @@ async def chat(
             subject=req.subject,
             grade=req.grade,
         )
+        if user:
+            chat_history_service.save_exchange(
+                db, user.id, req.message, result.get("answer", ""),
+                subject=req.subject or "", session_id=req.session_id,
+            )
         return ChatResponse(
             answer=result["answer"],
             sources=result.get("sources", []),
@@ -233,9 +238,9 @@ async def groq_proxy(
     if req.model and req.model in allowed_models():
         model = req.model
     elif req.image_base64 or _has_image(req.messages):
-        model = GROQ_VISION_MODEL
+        model = ACTIVE_VISION_MODEL
     else:
-        model = None  # LLMClient() mặc định = GROQ_TEXT_MODEL
+        model = None  # LLMClient() mặc định = ACTIVE_TEXT_MODEL
     client = LLMClient(model=model) if model else LLMClient()
     # Tầng 1: lõi Smart Buddy + hồ sơ lớp + dữ kiện toán đã kiểm chứng (sympy) cho câu học sinh
     verify = verification_note(_last_user_text(req.messages))
@@ -305,8 +310,31 @@ async def groq_proxy(
         logger.error(f"Groq proxy error: {exc}", exc_info=True)
         raise HTTPException(status_code=502, detail=f"Groq error: {exc}")
 
+    # Lưu lịch sử trò chuyện (chỉ khi đã đăng nhập) — để xem lại + báo cáo phụ huynh.
+    if user:
+        chat_history_service.save_exchange(
+            db, user.id,
+            _last_user_text(req.messages), reply,
+            subject=getattr(req, "subject", "") or "",
+            session_id=getattr(req, "session_id", None),
+        )
+
     return {
         "content": [{"type": "text", "text": reply}],
         "model":   client.model,
         "role":    "assistant",
     }
+
+
+@router.get("/chat/history")
+async def get_chat_history(
+    days: int = 30,
+    limit: int = 400,
+    subject: str | None = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Lịch sử trò chuyện với AI của học sinh (mới nhất trước; FE nhóm theo ngày/giờ)."""
+    return chat_history_service.history_for_user(
+        db, current_user.id, days=days, limit=min(max(limit, 1), 1000), subject=subject,
+    )
