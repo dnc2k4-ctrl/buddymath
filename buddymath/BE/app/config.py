@@ -80,6 +80,41 @@ _BUILTIN_VISION_MODELS: set[str] = {
 }
 
 
+# ─── LLM ĐANG DÙNG (ACTIVE): Groq (mặc định, miễn phí) hoặc Gemini (Google) ────
+# GIỮ NGUYÊN cấu hình Groq ở trên làm DỰ PHÒNG. Chọn "bộ não" qua LLM_PROVIDER:
+#   • groq   → Groq/Llama (mặc định, miễn phí)
+#   • gemini → Google Gemini (thông minh hơn, tiếng Việt tốt) — cần GEMINI_API_KEY
+# Provider lỗi/hết quota? Đổi LLM_PROVIDER=groq là chạy lại Groq y như cũ.
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "groq").strip().lower()
+
+# Gemini dùng endpoint OpenAI-compatible → client hiện tại gọi được luôn (không cần code riêng).
+GEMINI_API_KEY      = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_BASE_URL     = os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
+GEMINI_MODEL        = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+GEMINI_VISION_MODEL = os.environ.get("GEMINI_VISION_MODEL", "gemini-flash-latest")  # Gemini flash đa phương thức (đọc ảnh)
+
+if LLM_PROVIDER == "gemini" and GEMINI_API_KEY:
+    ACTIVE_API_KEY      = GEMINI_API_KEY
+    ACTIVE_BASE_URL     = GEMINI_BASE_URL
+    ACTIVE_TEXT_MODEL   = GEMINI_MODEL
+    ACTIVE_VISION_MODEL = GEMINI_VISION_MODEL
+    logging.getLogger(__name__).warning(
+        "🤖 LLM_PROVIDER=gemini → dùng Google Gemini (%s). Groq vẫn còn để dự phòng.", GEMINI_MODEL
+    )
+else:
+    ACTIVE_API_KEY      = GROQ_API_KEY
+    ACTIVE_BASE_URL     = GROQ_BASE_URL
+    ACTIVE_TEXT_MODEL   = GROQ_TEXT_MODEL
+    ACTIVE_VISION_MODEL = GROQ_VISION_MODEL
+    if LLM_PROVIDER == "gemini":
+        logging.getLogger(__name__).warning(
+            "⚠️ LLM_PROVIDER=gemini nhưng CHƯA đặt GEMINI_API_KEY → app vẫn dùng Groq."
+        )
+
+# Model vision đang dùng phải được nhận diện là 'vision' (cho cả Gemini).
+_BUILTIN_VISION_MODELS.add(ACTIVE_VISION_MODEL)
+
+
 def vision_models() -> set[str]:
     extra = os.environ.get("GROQ_VISION_MODELS", "")
     return _BUILTIN_VISION_MODELS | {m.strip() for m in extra.split(",") if m.strip()}
@@ -100,7 +135,7 @@ _BUILTIN_ALLOWED_MODELS: set[str] = {
 def allowed_models() -> set[str]:
     extra = os.environ.get("GROQ_ALLOWED_MODELS", "")
     return (
-        {GROQ_MODEL, GROQ_TEXT_MODEL, GROQ_VISION_MODEL}
+        {GROQ_MODEL, GROQ_TEXT_MODEL, GROQ_VISION_MODEL, ACTIVE_TEXT_MODEL, ACTIVE_VISION_MODEL}
         | vision_models()
         | _BUILTIN_ALLOWED_MODELS
         | {m.strip() for m in extra.split(",") if m.strip()}
@@ -134,6 +169,10 @@ FROM_EMAIL = os.environ.get("FROM_EMAIL") or SMTP_USER or "SmartBuddy <no-reply@
 
 # URL gốc dùng trong nội dung email
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000")
+
+# Token bảo vệ endpoint tác vụ nền (gửi báo cáo theo lịch). Cron gửi header X-Task-Token.
+# Bỏ trống ở local (endpoint mở); production NÊN đặt để tránh người ngoài gọi.
+SCHEDULER_TOKEN = os.environ.get("SCHEDULER_TOKEN", "")
 
 
 # ─── Thanh toán: VietQR + SePay (đối soát chuyển khoản tự động) ────────────────

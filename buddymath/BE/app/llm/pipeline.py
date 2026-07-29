@@ -9,7 +9,7 @@ import logging
 from collections import defaultdict
 from typing import AsyncIterator, Optional
 
-from app.config import GROQ_VISION_MODEL, HISTORY_WINDOW, RAG_TOP_K
+from app.config import ACTIVE_VISION_MODEL, HISTORY_WINDOW, RAG_TOP_K
 from app.llm.client import LLMClient, is_vision_model
 from app.llm.math_verifier import verification_note
 from app.llm.smart_buddy import with_core
@@ -70,7 +70,7 @@ class MathBuddyPipeline:
     ):
         self.rag    = rag_engine
         self.llm    = llm_client or LLMClient()                    # TEXT (mặc định 70B)
-        self.vision_llm = LLMClient(model=GROQ_VISION_MODEL)       # ẢNH/OCR (scout có vision)
+        self.vision_llm = LLMClient(model=ACTIVE_VISION_MODEL)     # ẢNH/OCR (model vision đang dùng)
         self.router = router or RAGRouter(llm_fallback=self._llm_route_fallback)
         self.memory = memory or SessionMemory()
 
