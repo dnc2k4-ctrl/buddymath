@@ -1,0 +1,87 @@
+# ══════════════════════════════════════════════════════════════
+#  BuddyMath — BE (FastAPI serve luôn FE) + PostgreSQL
+#
+#  HTTPS do nginx + certbot TRÊN HOST đảm nhiệm (proxy về 127.0.0.1:8000).
+#
+#  Dùng trên VPS:
+#     cp .env.docker.example .env      # điền DOMAIN + các secret
+#     docker compose up -d --build
+# ══════════════════════════════════════════════════════════════
+
+# GHIM tên project → tên volume DB (buddymath_pgdata) LUÔN cố định, không phụ
+# thuộc vào tên/đường dẫn folder. Nhờ vậy copy folder mới đè lên rồi rebuild,
+# database CŨ vẫn được tái sử dụng (KHÔNG mất dữ liệu người dùng).
+name: buddymath
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mathbuddy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: mathbuddy
+    volumes:
+      - pgdata:/var/lib/postgresql/data      # DB BỀN qua các lần restart/redeploy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mathbuddy -d mathbuddy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy       # đợi Postgres sẵn sàng mới khởi động BE
+    environment:
+      DATABASE_URL: postgresql://mathbuddy:${POSTGRES_PASSWORD}@db:5432/mathbuddy
+      SECRET_KEY: ${SECRET_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@smartbuddy.vn}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      JINA_API_KEY: ${JINA_API_KEY}
+      GROQ_MODEL: ${GROQ_MODEL:-meta-llama/llama-4-scout-17b-16e-instruct}
+      JINA_MODEL: ${JINA_MODEL:-jina-embeddings-v3}
+      # ── LLM: chọn "não" chính. Mặc định groq (miễn phí). Muốn dùng Google Gemini
+      #    (tiếng Việt tốt hơn): đặt LLM_PROVIDER=gemini + GEMINI_API_KEY trong .env.
+      #    Lỗi/hết quota Gemini → app tự dùng lại Groq. Không đổi thì giữ nguyên như cũ.
+      LLM_PROVIDER: ${LLM_PROVIDER:-groq}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_BASE_URL: ${GEMINI_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-latest}
+      GEMINI_VISION_MODEL: ${GEMINI_VISION_MODEL:-gemini-flash-latest}
+      # Same-origin: nginx phục vụ https://DOMAIN → BE serve luôn FE tại đó.
+      PUBLIC_BASE_URL: https://${DOMAIN}
+      ALLOWED_ORIGINS: https://${DOMAIN}
+      # Email: ưu tiên BREVO_API_KEY (HTTP API). SMTP_* chỉ dùng nếu KHÔNG có Brevo.
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      FROM_EMAIL: ${FROM_EMAIL:-}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      # Token bảo vệ endpoint cron gửi báo cáo theo lịch (POST /tasks/run-scheduled-reports).
+      SCHEDULER_TOKEN: ${SCHEDULER_TOKEN:-}
+      BANK_ACCOUNT_NUMBER: ${BANK_ACCOUNT_NUMBER:-}
+      BANK_CODE: ${BANK_CODE:-}
+      BANK_ACCOUNT_NAME: ${BANK_ACCOUNT_NAME:-}
+      SEPAY_API_KEY: ${SEPAY_API_KEY:-}
+    volumes:
+      # Persist RAG index (faiss.index/metadata.pkl) + giữ tài liệu PDF/docx.
+      - ./buddymath/BE/data:/app/BE/data
+    # Chỉ mở trên 127.0.0.1 để nginx (trên host) proxy vào. KHÔNG phơi 8000 ra Internet.
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request,sys; sys.exit(0 if urllib.request.urlopen(\"http://localhost:8000/health\").getcode()==200 else 1)'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  pgdata:

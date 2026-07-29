@@ -1,0 +1,12 @@
+# Giảm build context (không copy vào image)
+buddymath/venv/
+**/__pycache__/
+**/*.py[cod]
+.git/
+.claude/
+**/.DS_Store
+*.md
+buddymath/BE/.env
+buddymath/BE/*.db
+buddymath/BE/*.sqlite3
+# Lưu ý: KHÔNG bỏ qua buddymath/BE/data (chứa tài liệu PDF/docx dùng cho RAG)
