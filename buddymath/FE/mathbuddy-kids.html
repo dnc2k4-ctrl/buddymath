@@ -3231,6 +3231,78 @@ const CL_API = (function() {
   return 'http://localhost:8000';
 })();
 
+// ═══ ĐA NGÔN NGỮ (i18n): Việt ⇄ Anh cho giao diện chính + AI trả lời tiếng Anh ═══
+// An toàn: CHỈ dịch đúng chuỗi có trong từ điển → không đụng tên người, số liệu, nội dung AI.
+let SB_LANG = (function(){ try { return localStorage.getItem('sb_lang') || 'vi'; } catch(e){ return 'vi'; } })();
+const I18N_VI2EN = {
+  "Trang chủ":"Home", "Hỏi đáp với Buddy":"Ask Buddy", "Tư duy đặt câu hỏi":"Question Thinking",
+  "Toán học":"Mathematics", "Tiếng Anh":"English", "Kỹ năng sống":"Life Skills",
+  "Ra quyết định":"Decision Making", "Giao tiếp":"Communication", "Quản lý thời gian":"Time Management",
+  "Quản lý cảm xúc":"Managing Emotions", "Xem tất cả kỹ năng":"See all skills",
+  "Lịch sử học tập":"Learning History", "Thành tích":"Achievements", "Hồ sơ cá nhân":"My Profile",
+  "Cài đặt":"Settings", "Thông báo":"Notifications", "Nhận thông báo trong ứng dụng":"Receive in-app notifications",
+  "Âm thanh":"Sound", "Hiệu ứng âm thanh khi học":"Sound effects while learning", "Giao diện":"Theme",
+  "Ngôn ngữ":"Language", "Chọn ngôn ngữ hiển thị":"Choose display language", "Tiếng Việt":"Vietnamese",
+  "Xóa lịch sử chat":"Clear chat history", "Xóa toàn bộ hội thoại với Buddy":"Delete all conversations with Buddy",
+  "Xóa":"Delete", "Đăng xuất":"Log out",
+  "Nộp bài":"Submit", "Đổi đề mới":"New test", "Tạo đề kiểm tra":"Create test", "Tạo câu hỏi":"Create questions",
+  "Bắt đầu":"Start", "Nhập đáp án...":"Enter your answer...", "Chụp đáp án câu này":"Photo this answer", "Chụp lại":"Retake",
+  "Đại số":"Algebra", "Hình học":"Geometry", "Hỗn hợp":"Mixed",
+  "Trung bình":"Medium", "Khó":"Hard", "Nâng cao":"Advanced",
+  "Chọn lớp để bắt đầu:":"Choose a grade to start:", "Thời gian (phút):":"Time (minutes):",
+  // Màn hình chính (home)
+  "Xin chào, Buddy":"Hi there, Buddy", "Hôm nay bạn muốn chinh phục thử thách nào":"What challenge would you like today",
+  "Hỏi ngay với Buddy":"Ask Buddy now", "Chọn danh mục học tập":"Choose a learning category",
+  "Học chủ đề + kiểm tra":"Topics + tests", "Từ vựng · hội thoại":"Vocabulary & conversation",
+  "Tư duy & cảm xúc":"Thinking & emotions", "Học cách hỏi hay":"Learn to ask well",
+  "Tiến độ học tập":"Learning Progress", "Tiến độ hôm nay":"Today's progress",
+  "Bạn đã hoàn thành":"You've completed", "bài tập":"exercises", "Xem chi tiết":"See details",
+  "Thành tích nổi bật":"Top Achievements", "Điểm số":"Points", "Bài đã làm hôm nay":"Done today",
+  "Tinh thần học tập":"Learning spirit", "Cố lên":"Keep going",
+  "Học tập là chìa khóa mở ra cánh cửa tương lai":"Learning is the key to the future",
+  "Chào mừng đến với SmartBuddy":"Welcome to SmartBuddy",
+};
+const I18N_EN2VI = (function(){ const o={}; for(const k in I18N_VI2EN) o[I18N_VI2EN[k]]=k; return o; })();
+function _sbTr(raw, dict){
+  if(raw==null) return null;
+  const s = String(raw), key = s.trim();
+  if(!key) return null;
+  if(dict[key] != null) return s.replace(key, () => dict[key]);
+  const m = key.match(/^[^\p{L}]*(.*\p{L})[^\p{L}]*$/u);  // bỏ emoji/ký hiệu ở CẢ HAI đầu (vd "⚙️ Cài đặt", "Cố lên!")
+  if(m && m[1] && dict[m[1]] != null) return s.replace(m[1], () => dict[m[1]]);
+  return null;
+}
+function _sbTrNode(node, dict){
+  if(node.nodeType === 3){ const o=_sbTr(node.nodeValue,dict); if(o!=null && o!==node.nodeValue) node.nodeValue=o; return; }
+  if(node.nodeType !== 1) return;
+  if(node.tagName==='SCRIPT'||node.tagName==='STYLE') return;
+  ['placeholder','title'].forEach(function(a){ if(node.hasAttribute&&node.hasAttribute(a)){ const o=_sbTr(node.getAttribute(a),dict); if(o!=null) node.setAttribute(a,o); } });
+  let ch=node.firstChild; while(ch){ const nx=ch.nextSibling; _sbTrNode(ch,dict); ch=nx; }
+}
+let _sbLangObs = null;
+function applyLang(lang){
+  SB_LANG = (lang==='en') ? 'en' : 'vi';
+  try { localStorage.setItem('sb_lang', SB_LANG); } catch(e){}
+  if(document.documentElement) document.documentElement.setAttribute('lang', SB_LANG);
+  if(!document.body) return;
+  if(SB_LANG==='en'){
+    _sbTrNode(document.body, I18N_VI2EN);
+    if(!_sbLangObs){ _sbLangObs=new MutationObserver(function(ms){ for(const m of ms) for(const n of m.addedNodes){ try{ _sbTrNode(n, I18N_VI2EN); }catch(e){} } }); _sbLangObs.observe(document.body,{childList:true,subtree:true}); }
+  } else {
+    if(_sbLangObs){ _sbLangObs.disconnect(); _sbLangObs=null; }
+    _sbTrNode(document.body, I18N_EN2VI);
+  }
+}
+function setLang(lang){
+  applyLang(lang);
+  if(typeof showAuthToast==='function') showAuthToast(SB_LANG==='en'?'🌐 Switched to English':'🌐 Đã chuyển sang Tiếng Việt','var(--teal)');
+}
+// Áp dụng ngôn ngữ đã lưu khi tải trang (chỉ tốn công khi chọn English)
+if(SB_LANG==='en'){
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ applyLang('en'); });
+  else applyLang('en');
+}
+
 // ── Bảo hiểm nạp bảng giá ─────────────────────────────────────────────────
 // Nếu <script src="/config/plans.js"> không vào được (mở file://, khác origin,
 // hoặc server chưa restart nên route 404) → lấy gói qua API rồi khôi phục Infinity
@@ -3271,6 +3343,10 @@ const CL_API = (function() {
               // Lệnh TẠO NỘI DUNG (không truyền 'system': tạo đề, chấm bài...) → TẮT lõi gia sư
               // để AI xuất được JSON/đáp án, thay vì từ chối "không đưa đáp án".
               if (b.use_core == null && (b.system == null || b.system === '')) b.use_core = false;
+              // Chọn English → yêu cầu AI trả lời bằng tiếng Anh (chỉ hội thoại/gia sư, KHÔNG áp cho lệnh tạo JSON).
+              if (SB_LANG === 'en' && b.use_core !== false) {
+                b.system = (b.system ? b.system + '\n\n' : '') + 'LANGUAGE MODE: The student selected English. Reply to the student ONLY in clear, simple English suitable for their grade level. Keep mathematical notation as usual.';
+              }
               opts = Object.assign({}, opts, { body: JSON.stringify(b) });
             }
           }catch(e){}
@@ -5540,7 +5616,7 @@ function openSettings() {
       ${_settingRow('🔔','Thông báo','Nhận thông báo trong ứng dụng', _switch('notif', notifOn))}
       ${_settingRow('🔊','Âm thanh','Hiệu ứng âm thanh khi học', _switch('sound', soundOn))}
       ${_settingRow('🎨','Giao diện','Tông màu Mint (mặc định)', '<span style="font-size:12px;color:#0E9E86;font-weight:800;">Mint 🌿</span>')}
-      ${_settingRow('🌐','Ngôn ngữ','Tiếng Việt', '<span style="font-size:12px;color:var(--text3);font-weight:700;">Tiếng Việt</span>')}
+      ${_settingRow('🌐','Ngôn ngữ','Chọn ngôn ngữ hiển thị', `<select id="sb-lang-select" onchange="setLang(this.value)" style="padding:9px 12px;border:1.5px solid #D6E0DC;border-radius:10px;background:#fff;font-family:'Nunito',Arial;font-weight:800;font-size:13px;color:var(--text1);cursor:pointer;min-height:40px;"><option value="vi"${SB_LANG!=='en'?' selected':''}>Tiếng Việt</option><option value="en"${SB_LANG==='en'?' selected':''}>English</option></select>`)}
       ${_settingRow('🗑️','Xóa lịch sử chat','Xóa toàn bộ hội thoại với Buddy', '<button onclick="clearChatHistory()" style="padding:7px 14px;border:1.5px solid #F0D0D0;border-radius:10px;background:#FFF6F6;color:var(--red);font-weight:800;font-size:12px;cursor:pointer;">Xóa</button>')}
     </div>
     <button onclick="logoutUser()" style="margin-top:16px;padding:12px 22px;border:none;border-radius:12px;background:#FFF0F0;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;color:var(--red);">🚪 Đăng xuất</button>
