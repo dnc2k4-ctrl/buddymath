@@ -4290,6 +4290,7 @@ Trả về JSON (không thêm text ngoài JSON):
         </div>
       </div>`;
     }).join('') + '</div>';
+    renderMath(el);   // render LaTeX ($...$) thành công thức toán đẹp (không hiện mã thô)
     if(genBtn) { genBtn.disabled=false; genBtn.textContent='✨ Tạo câu hỏi'; }
     if(refreshBtn) refreshBtn.style.display='flex';
   } catch(e) {
@@ -4468,6 +4469,7 @@ Trả về JSON (không thêm text ngoài JSON):
           ${(ex.loi_giai||'').split(/\n|(?=Bước \d+:)/).filter(s=>s.trim()).map(s=>`<div class="sol-step">${s.trim()}</div>`).join('')}
         </div>
       </div>`).join('') + '</div>';
+    renderMath(el);   // render LaTeX ($...$) thành công thức toán đẹp (không hiện mã thô)
     if(genBtn) { genBtn.disabled=false; genBtn.textContent='✨ Tạo đề kiểm tra'; }
     if(actionRow) actionRow.classList.add('visible');
   } catch(e) {
@@ -4544,6 +4546,9 @@ Trả về JSON (không thêm text ngoài JSON):
         if(solEl) solEl.classList.add('show');   // hiện lời giải để em sửa
       }
     });
+    // Render LaTeX ở đáp án đúng + lời giải vừa hiện (không để lộ mã $...$).
+    const _kt0 = document.getElementById(`kt-item-${grade}-0`);
+    if (_kt0 && _kt0.parentNode) renderMath(_kt0.parentNode);
 
     const total = answers.length;
     const pct = Math.round(correctCount/total*100);
