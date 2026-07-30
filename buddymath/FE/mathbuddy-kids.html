@@ -2471,25 +2471,38 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
           </div>
         </div>
         <div class="input-area">
-          <!-- Bàn phím ký hiệu toán: bấm để chèn vào ô nhập (chat với Buddy là phần hỏi chính) -->
+          <!-- Bàn phím ký hiệu toán ĐẦY ĐỦ lớp 3–9: bấm để chèn vào ô nhập (chat với Buddy là phần hỏi chính) -->
           <div class="chat-math-bar" aria-label="Ký hiệu toán học — bấm để chèn vào ô nhập">
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','+')" title="Cộng">+</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','-')" title="Trừ">−</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','×')" title="Nhân">×</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','÷')" title="Chia">÷</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','=')" title="Bằng">=</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','√')" title="Căn bậc hai">√</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∛')" title="Căn bậc ba">∛</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','²')" title="Mũ 2">x²</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','³')" title="Mũ 3">x³</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','^')" title="Lũy thừa (vd x^5)">^</button>
+            <button type="button" class="cmk-btn" id="sup-mode-btn" onmousedown="event.preventDefault()" onclick="toggleSupMode()" title="Nhập số mũ bất kỳ — gõ số sẽ tự nhỏ & lên trên">xⁿ</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','/')" title="Phân số / chia">/</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','(')" title="Ngoặc mở">(</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input',')')" title="Ngoặc đóng">)</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','×')" title="Nhân">×</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','÷')" title="Chia">÷</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','π')" title="Số pi">π</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','°')" title="Độ">°</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','|')" title="Giá trị tuyệt đối |x|">|</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','&lt;')" title="Bé hơn">&lt;</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','&gt;')" title="Lớn hơn">&gt;</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≤')" title="Nhỏ hơn hoặc bằng">≤</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≥')" title="Lớn hơn hoặc bằng">≥</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≠')" title="Khác (không bằng)">≠</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','±')" title="Cộng trừ">±</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≈')" title="Xấp xỉ">≈</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','π')" title="Số pi">π</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','°')" title="Độ (góc)">°</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','±')" title="Cộng trừ">±</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','%')" title="Phần trăm">%</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','Δ')" title="Delta (biệt thức)">Δ</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∞')" title="Vô cực">∞</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','⊥')" title="Vuông góc">⊥</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∥')" title="Song song">∥</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∠')" title="Góc">∠</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∈')" title="Thuộc (tập hợp)">∈</button>
             <button type="button" class="cmk-btn" id="hint-toggle-btn" onclick="toggleHintSystem()" style="border-color:var(--yellow);color:#7A5900;background:#FFFBF0;padding:0 10px;min-width:auto;" title="Bật/tắt gợi ý từng bước">💡 Gợi ý</button>
           </div>
 
@@ -3502,6 +3515,35 @@ function insertMathSym(inputId, sym){
   el.focus();
   try { el.setSelectionRange(pos,pos); } catch(_){}
 }
+
+// ── Chế độ nhập SỐ MŨ: bấm "xⁿ" rồi gõ số → tự nhỏ lại & nhảy lên trên (ký tự mũ Unicode) ──
+const _SUP_MAP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','−':'⁻','(':'⁽',')':'⁾','n':'ⁿ'};
+function _toSup(s){ return String(s).split('').map(c=>_SUP_MAP[c]||c).join(''); }
+let _sbSupMode = false;
+function toggleSupMode(){ _sbSupMode = !_sbSupMode; _sbUpdateSupUI(); const el=document.getElementById('user-input'); if(el) el.focus(); }
+function _sbUpdateSupUI(){
+  const btn=document.getElementById('sup-mode-btn');
+  if(btn){ btn.style.background=_sbSupMode?'#5b3fb0':''; btn.style.color=_sbSupMode?'#fff':''; btn.style.borderColor=_sbSupMode?'#5b3fb0':''; }
+  let hint=document.getElementById('sup-hint');
+  if(_sbSupMode){
+    if(!hint){ const bar=document.querySelector('.chat-math-bar'); if(bar&&bar.parentNode){ hint=document.createElement('div'); hint.id='sup-hint'; hint.textContent='⤴ Đang nhập số mũ: gõ số sẽ tự nhỏ & lên trên. Bấm "xⁿ" lần nữa để tắt.'; hint.style.cssText='font-size:11px;color:#5b3fb0;font-weight:800;margin:4px 2px 0;'; bar.parentNode.insertBefore(hint, bar.nextSibling); } }
+  } else if(hint){ hint.remove(); }
+}
+// Đổi số/ký tự vừa gõ trong ô chat thành dạng mũ khi đang bật chế độ (beforeinput ổn định trên mobile)
+document.addEventListener('beforeinput', function(e){
+  try{
+    const el=e.target;
+    if(!el || el.id!=='user-input' || !_sbSupMode) return;
+    if(e.inputType!=='insertText') return;                 // xoá/di chuyển con trỏ: giữ nguyên chế độ mũ
+    const d=e.data||'';
+    if(/^[0-9+\-−()n]+$/.test(d)){
+      e.preventDefault();
+      const s=el.selectionStart, en=el.selectionEnd, sup=_toSup(d);
+      el.value = el.value.slice(0,s) + sup + el.value.slice(en);
+      const pos=s+sup.length; try{ el.setSelectionRange(pos,pos); }catch(_){}
+    } else { _sbSupMode=false; _sbUpdateSupUI(); }          // gõ chữ/cách khác → thoát chế độ mũ, chèn bình thường
+  }catch(err){}
+}, true);
 
 const GRADE_COLOR = {
   toan3: 'linear-gradient(135deg,#FF6EB4,#A55EEA)',
@@ -5042,6 +5084,7 @@ function escapeHtml(s){
 
 function addMsg(role,html){
   try{ if(role==='user') sbPlaySound('send'); else if(role==='ai') sbPlaySound('receive'); }catch(e){}
+  try{ if(role==='user' && _sbSupMode){ _sbSupMode=false; _sbUpdateSupUI(); } }catch(e){}
   removeWelcome();
   const wrap=document.getElementById('messages');
   const row=document.createElement('div'); row.className=`msg-row ${role}`;
