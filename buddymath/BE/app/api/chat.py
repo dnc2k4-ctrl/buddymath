@@ -317,8 +317,9 @@ async def groq_proxy(
         logger.error(f"Groq proxy error: {exc}", exc_info=True)
         raise HTTPException(status_code=502, detail=f"Groq error: {exc}")
 
-    # Lưu lịch sử trò chuyện (chỉ khi đã đăng nhập) — để xem lại + báo cáo phụ huynh.
-    if user:
+    # Lưu lịch sử — CHỈ hội thoại thật của học sinh (use_core=True). Lệnh tạo đề/chấm bài
+    # (use_core=False) KHÔNG lưu để lịch sử không bị rác + báo cáo phụ huynh đếm đúng số câu hỏi.
+    if user and req.use_core:
         chat_history_service.save_exchange(
             db, user.id,
             _last_user_text(req.messages), reply,
