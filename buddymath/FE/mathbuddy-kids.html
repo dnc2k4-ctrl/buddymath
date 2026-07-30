@@ -2516,7 +2516,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
               </div>
             </div>
             <textarea class="input-box" id="user-input" aria-label="Nhập câu hỏi cho SmartBuddy"
-              placeholder="✏️ Nhập bài toán, câu hỏi, hoặc gửi ảnh bài em cần giải..."
+              placeholder="✏️ Nhập câu hỏi hoặc ảnh…"
               rows="1" onkeydown="handleKey(event)" oninput="autoH(this)"></textarea>
             <button class="send-btn" id="send-btn" onclick="send()" title="Gửi" aria-label="Gửi câu hỏi">➤</button>
           </div>
@@ -3178,7 +3178,29 @@ function confetti(){
 }
 
 // ── THÔNG BÁO CHÚC MỪNG / CHIA BUỒN (mượt, sau khi chấm bài) ──
+// ── Âm thanh phản hồi (Web Audio — không cần file). Tôn trọng nút "Tắt âm thanh". ──
+let _sbAC = null;
+function _sbAudio(){ if(_sbAC) return _sbAC; try{ _sbAC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} return _sbAC; }
+function sbSoundOn(){ try{ return localStorage.getItem('sb_sound_off') !== '1'; }catch(e){ return true; } }
+function _sbTone(freq, dur, type, when, vol){
+  const ac=_sbAudio(); if(!ac) return; const t0=ac.currentTime+(when||0);
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.type=type||'sine'; o.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol||0.13, t0+0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0+dur+0.03);
+}
+function sbPlaySound(kind){
+  if(!sbSoundOn()) return;
+  const ac=_sbAudio(); if(!ac) return; if(ac.state==='suspended'){ try{ ac.resume(); }catch(e){} }
+  if(kind==='correct'){ _sbTone(660,0.12,'sine',0); _sbTone(880,0.15,'sine',0.10); _sbTone(1180,0.22,'sine',0.20); }
+  else if(kind==='wrong'){ _sbTone(320,0.18,'sine',0,0.11); _sbTone(220,0.26,'sine',0.13,0.11); }
+  else if(kind==='notify'){ _sbTone(880,0.10,'triangle',0,0.10); _sbTone(1170,0.13,'triangle',0.09,0.10); }
+  else if(kind==='toggle'){ _sbTone(720,0.09,'sine',0,0.10); }
+  else if(kind==='tap'){ _sbTone(520,0.045,'sine',0,0.05); }
+}
 function showResultNotice(pct, correct, total){
+  try{ sbPlaySound(pct>=50?'correct':'wrong'); }catch(e){}
   if(!document.getElementById('rn-style')){
     const st=document.createElement('style'); st.id='rn-style';
     st.textContent=`
@@ -5280,7 +5302,7 @@ function showHomeScreen() {
     <style>@media(max-width:900px){.home-grid{grid-template-columns:1fr !important;} .home-cats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}</style>
     <div id="home-fit-wrap" style="width:100%;margin:0 auto;">
       <!-- Lời chào -->
-      <div style="margin:0 4px 10px;">
+      <div class="home-greet" style="margin:0 4px 10px;">
         <div style="font-family:'Baloo 2',cursive;font-size:29px;color:var(--text1);">Xin chào, Buddy! 👋</div>
         <div style="font-size:17.5px;color:var(--text2);font-weight:600;margin-top:2px;">Hôm nay bạn muốn chinh phục thử thách nào?</div>
       </div>
@@ -5307,7 +5329,7 @@ function showHomeScreen() {
         </div>
 
         <!-- RIGHT -->
-        <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="home-side-col" style="display:flex;flex-direction:column;gap:16px;">
           <div style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;padding:20px 22px;box-shadow:0 14px 32px rgba(18,49,74,.12);flex:1;display:flex;flex-direction:column;justify-content:center;">
             <div style="font-size:19.5px;font-weight:900;color:var(--text1);margin-bottom:14px;">📊 Tiến độ học tập</div>
             <div style="display:flex;align-items:center;gap:18px;">
@@ -5338,7 +5360,7 @@ function showHomeScreen() {
         </div>
       </div>
 
-      <div style="text-align:center;font-size:18.5px;color:var(--teal-d);font-weight:800;margin-top:14px;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
+      <div class="home-quote" style="text-align:center;font-size:18.5px;color:var(--teal-d);font-weight:800;margin-top:14px;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
     </div>
   `;
 
@@ -5392,6 +5414,8 @@ function fitHomeContent() {
   const wrap = document.getElementById('home-fit-wrap');
   const host = document.getElementById('intro-welcome-screen');
   if (!wrap || !host) return;
+  // Điện thoại: KHÔNG ép-vừa bằng zoom (gây chữ nhỏ + đè) → để trang cuộn tự nhiên, cỡ chữ chuẩn.
+  if (window.innerWidth <= 760) { wrap.style.zoom = '1'; wrap.style.width = '100%'; return; }
   wrap.style.width = '100%';   // luôn reset (tránh phóng to lỗi)
   wrap.style.zoom = '1';
   const cs = getComputedStyle(host);
@@ -5597,6 +5621,8 @@ function _flipSetting(id, el) {
   el.firstElementChild.style.left = on ? '23px' : '3px';
   if (id === 'notif') localStorage.setItem('sb_notif_off', on ? '0' : '1');
   if (id === 'sound') localStorage.setItem('sb_sound_off', on ? '0' : '1');
+  if (id === 'sound' && on) { const ac=_sbAudio(); if(ac&&ac.state==='suspended'){ try{ ac.resume(); }catch(e){} } sbPlaySound('toggle'); }
+  if (id === 'notif' && on) sbPlaySound('notify');
   const msg = { notif: on ? '🔔 Đã bật thông báo' : '🔕 Đã tắt thông báo', sound: on ? '🔊 Đã bật âm thanh' : '🔇 Đã tắt âm thanh' };
   if (typeof showAuthToast === 'function') showAuthToast(msg[id] || 'Đã lưu', 'var(--teal)');
 }
@@ -5617,7 +5643,6 @@ function openSettings() {
       ${_settingRow('🔊','Âm thanh','Hiệu ứng âm thanh khi học', _switch('sound', soundOn))}
       ${_settingRow('🎨','Giao diện','Tông màu Mint (mặc định)', '<span style="font-size:12px;color:#0E9E86;font-weight:800;">Mint 🌿</span>')}
       ${_settingRow('🌐','Ngôn ngữ','Chọn ngôn ngữ hiển thị', `<select id="sb-lang-select" onchange="setLang(this.value)" style="padding:9px 12px;border:1.5px solid #D6E0DC;border-radius:10px;background:#fff;font-family:'Nunito',Arial;font-weight:800;font-size:13px;color:var(--text1);cursor:pointer;min-height:40px;"><option value="vi"${SB_LANG!=='en'?' selected':''}>Tiếng Việt</option><option value="en"${SB_LANG==='en'?' selected':''}>English</option></select>`)}
-      ${_settingRow('🗑️','Xóa lịch sử chat','Xóa toàn bộ hội thoại với Buddy', '<button onclick="clearChatHistory()" style="padding:7px 14px;border:1.5px solid #F0D0D0;border-radius:10px;background:#FFF6F6;color:var(--red);font-weight:800;font-size:12px;cursor:pointer;">Xóa</button>')}
     </div>
     <button onclick="logoutUser()" style="margin-top:16px;padding:12px 22px;border:none;border-radius:12px;background:#FFF0F0;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;color:var(--red);">🚪 Đăng xuất</button>
   `);
@@ -9425,7 +9450,11 @@ function pushNotification(type, title, body, opts) {
   renderNotifBadge();
   const panel = document.getElementById('notif-panel');
   if (panel && panel.style.display !== 'none') renderNotifList();
+  const _notifOff = (function(){ try{ return localStorage.getItem('sb_notif_off')==='1'; }catch(e){ return false; } })();
+  if (_notifOff) return n;   // đã tắt thông báo → vẫn lưu vào chuông, nhưng KHÔNG popup/kêu/rung
   ringBell();
+  try{ sbPlaySound('notify'); }catch(e){}
+  if (navigator.vibrate){ try{ navigator.vibrate(25); }catch(e){} }
   if (!opts.silent) {
     const meta = NOTIF_TYPES[type] || NOTIF_TYPES.info;
     showAuthToast(`${meta.icon} ${title}`, opts.toastColor || meta.fg);
@@ -10311,6 +10340,44 @@ body:not(.role-parent) .main-area{
 /* Trang chủ trong suốt để lộ nền mint→trắng; auto-fit đảm bảo vừa khít nên ẩn cuộn */
 body:not(.role-parent) #intro-welcome-screen{ background:transparent !important; overflow:hidden !important; scrollbar-width:none !important; }
 body:not(.role-parent) #intro-welcome-screen::-webkit-scrollbar{ width:0 !important; height:0 !important; }
+
+/* ═══════════ TỐI ƯU GIAO DIỆN ĐIỆN THOẠI (gọn · dễ nhìn · mượt) ═══════════ */
+@keyframes sbPageIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+@media (max-width:760px){
+  /* Topbar sạch: hamburger BÊN TRÁI · chuông+avatar BÊN PHẢI, không đè nội dung */
+  #content-topbar{ justify-content:space-between !important; padding:8px 12px 4px !important; gap:8px; }
+  #content-topbar .menu-toggle{ order:-1; display:flex !important; width:42px; height:42px; background:#fff !important; border:1.5px solid #DDEBE6 !important; box-shadow:0 3px 10px rgba(18,49,74,.08); border-radius:12px; }
+  #content-topbar .menu-toggle span{ background:var(--ink) !important; }
+  #content-topbar .header-right{ margin-left:auto; }
+
+  /* TRANG CHỦ mobile: overlay absolute → ĐẨY nội dung xuống dưới topbar (hamburger không đè lời chào) */
+  body:not(.role-parent) #intro-welcome-screen{ overflow-y:auto !important; -webkit-overflow-scrolling:touch; padding:58px 14px 18px !important; }
+  #intro-welcome-screen #home-fit-wrap{ zoom:1 !important; width:100% !important; }
+  /* Chỉ giữ LỜI CHÀO + HERO + DANH MỤC; ẩn cột tiến độ/thành tích/ảnh + câu trích
+     (tiến độ & thành tích đã truy cập được qua nút "Lịch sử học tập"/"Thành tích" ở menu) */
+  #intro-welcome-screen .home-side-col, #intro-welcome-screen .home-quote{ display:none !important; }
+  #intro-welcome-screen .home-grid{ display:block !important; }
+  .home-greet{ margin:0 2px 12px !important; }
+  .home-greet > div:first-child{ font-size:22px !important; line-height:1.15; }
+  .home-greet > div:last-child{ font-size:13.5px !important; }
+  /* Thẻ danh mục: 2 cột, thu nhỏ ảnh + chữ cho cả 4 thẻ gọn gàng dễ nhìn */
+  #intro-welcome-screen .home-cats{ grid-template-columns:1fr 1fr !important; gap:11px !important; }
+  #intro-welcome-screen .home-cats > div{ padding:14px 8px 13px !important; border-radius:16px !important; }
+  #intro-welcome-screen .home-cats > div img{ height:74px !important; }
+  #intro-welcome-screen .home-cats > div > div:nth-of-type(1){ font-size:16px !important; margin-top:8px !important; }
+  #intro-welcome-screen .home-cats > div > div:nth-of-type(2){ font-size:11.5px !important; margin-top:3px !important; }
+
+  /* Ô chat: input giữ 16px (chống iOS tự phóng to), chỉ thu nhỏ placeholder cho gọn */
+  .input-box::placeholder{ font-size:13.5px; opacity:.75; }
+  .input-area{ padding:8px 10px max(12px, env(safe-area-inset-bottom)) !important; }
+
+  /* Chuyển trang mượt mà */
+  .topic-content-panel, #app-generic-panel, #intro-welcome-screen{ animation:sbPageIn .24s cubic-bezier(.22,.61,.36,1) both; }
+}
+@media (max-width:400px){
+  .home-greet > div:first-child{ font-size:20px !important; }
+  #intro-welcome-screen .home-cats{ gap:9px !important; }
+}
 </style>
 
 </body>
