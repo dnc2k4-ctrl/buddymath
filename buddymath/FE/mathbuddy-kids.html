@@ -1249,6 +1249,11 @@ body {
   animation: notifDrop 0.22s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes notifDrop { from{opacity:0;transform:translateY(-8px) scale(0.97);} to{opacity:1;transform:none;} }
+/* Điện thoại: panel thông báo bám 2 mép màn hình, nằm dưới thanh trên cùng → không tràn ra ngoài */
+@media (max-width:760px){
+  .notif-panel{ position:fixed; top:calc(58px + env(safe-area-inset-top,0px)); left:8px; right:8px; width:auto; max-width:none; }
+  .notif-list{ max-height:62vh; }
+}
 .notif-panel-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 13px 16px; background: linear-gradient(135deg,#1FCBA6,#13B392);
