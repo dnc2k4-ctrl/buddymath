@@ -1808,6 +1808,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
 body{ background:linear-gradient(165deg,#EAF7F4,#F4FBFA 50%,#EEF6FF) !important; }
 body:not(.role-parent) .topic-btn.nav-new,
 body:not(.role-parent) .topic-btn[data-color]{ background:transparent !important; border:none !important; border-left:none !important; box-shadow:none !important; color:#44586B !important; }
+body:not(.role-parent) .topic-btn.nav-new.active{ background:linear-gradient(135deg,#1FCBA6,#13B392) !important; color:#fff !important; box-shadow:0 6px 14px rgba(31,203,166,.28) !important; }
 </style>
 
 </head>
@@ -3828,6 +3829,9 @@ function selectTopic(btn) {
   ['intro-welcome-screen','app-generic-panel'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove();});
   document.querySelectorAll('.topic-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  // Nếu btn là nút ẢO (do hubOpen tạo, không nằm trên sidebar) → tô sáng nút THẬT theo data-topic HOẶC
+  // data-nav (vd "Tư duy đặt câu hỏi" dùng data-nav="prompt-playground") để có ô chọn màu mint.
+  try{ const _rb=document.querySelector('.sidebar .topic-btn[data-topic="'+btn.dataset.topic+'"], .sidebar .topic-btn[data-nav="'+btn.dataset.topic+'"]'); if(_rb) _rb.classList.add('active'); }catch(e){}
   document.querySelectorAll('.topic-content-panel, .grade-panel').forEach(p=>p.classList.remove('active'));
   const panel = document.getElementById('panel-'+btn.dataset.topic);
   if(panel) {
