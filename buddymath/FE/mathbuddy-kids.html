@@ -202,6 +202,25 @@ body {
 .cmk-btn:hover{ background:#ECE4FF; }
 .cmk-btn:active{ transform:translateY(1px); background:#DFD3FF; }
 @media (max-width:760px){ .chat-math-bar{ flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; } .chat-math-bar::-webkit-scrollbar{ display:none; } .cmk-btn{ flex-shrink:0; } }
+/* ── Nút mở BẢNG ký hiệu (cạnh nút chụp ảnh) + ô XEM TRƯỚC + BẢNG dạng bottom-sheet ── */
+.math-open-btn{ flex-shrink:0; width:46px; height:46px; min-height:46px; border:none; border-radius:14px; background:linear-gradient(135deg,#7C5CFF,#5b3fb0); color:#fff; font-family:'Nunito',Arial; font-size:15px; font-weight:900; cursor:pointer; -webkit-tap-highlight-color:transparent; box-shadow:0 3px 0 rgba(91,63,176,.3); }
+.math-open-btn:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(91,63,176,.3); }
+.mk-math-btn{ display:inline-flex; align-items:center; gap:7px; padding:10px 14px; border:none; border-radius:12px; background:linear-gradient(135deg,#7C5CFF,#5b3fb0); color:#fff; font-family:'Nunito',Arial; font-size:13px; font-weight:900; cursor:pointer; min-height:44px; -webkit-tap-highlight-color:transparent; }
+.mk-math-btn:active{ transform:translateY(1px); }
+.math-preview{ display:none; align-items:center; gap:8px; flex-wrap:wrap; margin:7px 2px 0; padding:7px 12px; background:#F2FBFF; border:1.5px solid #CFE6F5; border-radius:12px; }
+.math-preview .mp-label{ font-size:11px; font-weight:900; color:#4a7fa5; flex-shrink:0; }
+.math-preview .mp-math{ font-size:18px; color:#12314A; }
+#math-panel-backdrop{ display:none; position:fixed; inset:0; background:rgba(18,28,48,.4); z-index:9998; }
+#math-panel-backdrop.show{ display:block; }
+#math-panel{ display:none; position:fixed; left:50%; bottom:0; transform:translate(-50%,100%); width:min(600px,100%); max-height:66vh; background:#fff; border-radius:22px 22px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.22); z-index:9999; flex-direction:column; transition:transform .26s cubic-bezier(.4,0,.2,1); }
+#math-panel.show{ display:flex; transform:translate(-50%,0); }
+.mp-head{ display:flex; align-items:center; justify-content:space-between; padding:13px 18px; border-bottom:1px solid #EEF3F1; font-weight:900; color:#12314A; font-size:15px; flex-shrink:0; }
+.mp-close{ width:36px; height:36px; border:none; background:#F1F5F4; border-radius:10px; cursor:pointer; font-size:16px; font-weight:900; color:#66788a; }
+.mp-body{ overflow-y:auto; padding:6px 16px calc(18px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling:touch; }
+.mp-cat{ font-size:11px; font-weight:900; color:#5b7fa5; text-transform:uppercase; letter-spacing:.04em; margin:14px 2px 7px; }
+.mp-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(48px,1fr)); gap:8px; }
+.mp-key{ height:48px; border:1.5px solid #E0D8FF; background:#F7F4FF; color:#5b3fb0; border-radius:12px; font-size:19px; font-weight:800; cursor:pointer; font-family:'Nunito',Arial; -webkit-tap-highlight-color:transparent; }
+.mp-key:active{ transform:translateY(1px); background:#DFD3FF; }
 .qp { font-family:'Nunito',Arial; font-size:13px; font-weight:800; padding:7px 13px; border-radius:18px; border:2.5px solid #EEE; background:white; color:var(--text2); cursor:pointer; transition:all 0.15s cubic-bezier(.34,1.56,.64,1); box-shadow:0 2px 0 rgba(0,0,0,0.07); }
 .qp:nth-child(1):hover{border-color:var(--purple);color:var(--purple);transform:scale(1.05);}
 .qp:nth-child(2):hover{border-color:var(--teal);color:var(--teal);transform:scale(1.05);}
@@ -2471,39 +2490,8 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
           </div>
         </div>
         <div class="input-area">
-          <!-- Bàn phím ký hiệu toán ĐẦY ĐỦ lớp 3–9: bấm để chèn vào ô nhập (chat với Buddy là phần hỏi chính) -->
-          <div class="chat-math-bar" aria-label="Ký hiệu toán học — bấm để chèn vào ô nhập">
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','+')" title="Cộng">+</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','-')" title="Trừ">−</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','×')" title="Nhân">×</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','÷')" title="Chia">÷</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','=')" title="Bằng">=</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','√')" title="Căn bậc hai">√</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∛')" title="Căn bậc ba">∛</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','²')" title="Mũ 2">x²</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','³')" title="Mũ 3">x³</button>
-            <button type="button" class="cmk-btn sup-mode-btn" data-for="user-input" onmousedown="event.preventDefault()" onclick="toggleSupMode('user-input')" title="Nhập số mũ bất kỳ — gõ số sẽ tự nhỏ & lên trên">xⁿ</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','/')" title="Phân số / chia">/</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','(')" title="Ngoặc mở">(</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input',')')" title="Ngoặc đóng">)</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','|')" title="Giá trị tuyệt đối |x|">|</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','&lt;')" title="Bé hơn">&lt;</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','&gt;')" title="Lớn hơn">&gt;</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≤')" title="Nhỏ hơn hoặc bằng">≤</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≥')" title="Lớn hơn hoặc bằng">≥</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≠')" title="Khác (không bằng)">≠</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≈')" title="Xấp xỉ">≈</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','π')" title="Số pi">π</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','°')" title="Độ (góc)">°</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','±')" title="Cộng trừ">±</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','%')" title="Phần trăm">%</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','Δ')" title="Delta (biệt thức)">Δ</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∞')" title="Vô cực">∞</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','⊥')" title="Vuông góc">⊥</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∥')" title="Song song">∥</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∠')" title="Góc">∠</button>
-            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∈')" title="Thuộc (tập hợp)">∈</button>
-          </div>
+          <!-- Ô XEM TRƯỚC công thức đúng chuẩn SGK (render KaTeX khi gõ ký hiệu toán) -->
+          <div class="math-preview" id="mp-user-input" style="display:none;"></div>
 
           <!-- STEP-BY-STEP HINT SYSTEM -->
           <div class="hint-system-wrap" id="hint-system" style="display:none;">
@@ -2546,6 +2534,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
                 <button onclick="openCameraCapture();toggleImgMenu()" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;background:none;cursor:pointer;border-radius:10px;font-family:'Nunito',Arial;font-size:13px;font-weight:800;color:var(--text1);text-align:left;transition:background .15s;" onmouseenter="this.style.background='#F0FFF4'" onmouseleave="this.style.background='none'">📸 Chụp ảnh từ camera</button>
               </div>
             </div>
+            <button type="button" class="math-open-btn" onclick="openMathPanel('user-input')" title="Chèn ký hiệu toán" aria-label="Ký hiệu toán">√x</button>
             <textarea class="input-box" id="user-input" aria-label="Nhập câu hỏi cho SmartBuddy"
               placeholder="✏️ Nhập câu hỏi hoặc ảnh…"
               rows="1" onkeydown="handleKey(event)" oninput="autoH(this)"></textarea>
@@ -3498,20 +3487,54 @@ async function aiGenObject(prompt, maxTokens){
 // ── Bàn phím toán mini: giúp học sinh chèn ký hiệu (căn, mũ, phân số, π...) vào ô đáp án ──
 // Không phải ai cũng gõ được ký tự toán → bấm nút là chèn thẳng vào ô, giữ nguyên vị trí con trỏ.
 // Bộ ký hiệu Toán ĐẦY ĐỦ lớp 3–9 (dùng chung cho ô đáp án kiểm tra & chat). [nhãn, giá trị chèn]
-const FULL_MATH_KEYS = [
-  ['+','+'],['−','-'],['×','×'],['÷','÷'],['=','='],
-  ['√','√'],['∛','∛'],['x²','²'],['x³','³'],['xⁿ','__SUP__'],
-  ['/','/'],['(','('],[')',')'],['|','|'],
-  ['&lt;','&lt;'],['&gt;','&gt;'],['≤','≤'],['≥','≥'],['≠','≠'],['≈','≈'],
-  ['π','π'],['°','°'],['±','±'],['%','%'],['Δ','Δ'],['∞','∞'],
-  ['⊥','⊥'],['∥','∥'],['∠','∠'],['∈','∈'],
+// Ký hiệu Toán lớp 3–9, gom theo NHÓM cho BẢNG ký hiệu (bấm 1 nút để mở — tiết kiệm màn hình). [nhãn, chèn]
+const MATH_PANEL = [
+  ['Số học', [['+','+'],['−','-'],['×','×'],['÷','÷'],['·','·'],['=','=']]],
+  ['Phân số · Lũy thừa · Căn', [['a⁄b','__FRAC__'],['½','½'],['¼','¼'],['¾','¾'],['⅓','⅓'],['⅔','⅔'],['x²','²'],['x³','³'],['xⁿ','__SUP__'],['xₙ','__SUB__'],['√','√'],['∛','∛']]],
+  ['So sánh', [['<','&lt;'],['>','&gt;'],['≤','≤'],['≥','≥'],['≠','≠'],['≈','≈']]],
+  ['Ngoặc · Giá trị tuyệt đối', [['(','('],[')',')'],['|','|']]],
+  ['Đặc biệt', [['π','π'],['°','°'],['±','±'],['%','%'],['∞','∞'],['Δ','Δ']]],
+  ['Tập hợp', [['∈','∈'],['∉','∉'],['⊂','⊂'],['∅','∅'],['∪','∪'],['∩','∩'],['ℕ','ℕ'],['ℤ','ℤ'],['ℚ','ℚ'],['ℝ','ℝ']]],
+  ['Hình học · Logic', [['∠','∠'],['⊥','⊥'],['∥','∥'],['△','△'],['≅','≅'],['∼','∼'],['⇒','⇒'],['⇔','⇔']]],
 ];
-function mathKeypad(inputId){
-  const btns = FULL_MATH_KEYS.map(function(k){
-    if(k[1]==='__SUP__') return '<button type="button" class="cmk-btn sup-mode-btn" data-for="'+inputId+'" onmousedown="event.preventDefault()" onclick="toggleSupMode(\''+inputId+'\')" title="Nhập số mũ — gõ số tự nhỏ & lên trên">xⁿ</button>';
-    return '<button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym(\''+inputId+'\',\''+k[1]+'\')" title="'+k[0]+'">'+k[0]+'</button>';
-  }).join('');
-  return '<div class="chat-math-bar" aria-label="Ký hiệu toán học">' + btns + '</div>';
+let _mathPanelTarget = null;   // ô nhập mà bảng ký hiệu sẽ chèn vào
+function _buildMathPanel(){
+  if(document.getElementById('math-panel')) return;
+  const bd=document.createElement('div'); bd.id='math-panel-backdrop'; bd.addEventListener('click', closeMathPanel);
+  const p=document.createElement('div'); p.id='math-panel'; p.setAttribute('role','dialog');
+  let h='<div class="mp-head"><span>🔢 Ký hiệu toán học</span><button type="button" class="mp-close" onclick="closeMathPanel()" aria-label="Đóng">✕</button></div><div class="mp-body">';
+  MATH_PANEL.forEach(function(cat){
+    h+='<div class="mp-cat">'+cat[0]+'</div><div class="mp-grid">';
+    cat[1].forEach(function(k){
+      const label=k[0], val=k[1];
+      if(val==='__FRAC__') h+='<button type="button" class="mp-key" onmousedown="event.preventDefault()" onclick="mathPanelFrac()" title="Phân số: gõ a/b rồi bấm">a⁄b</button>';
+      else if(val==='__SUP__') h+='<button type="button" class="mp-key mp-mode" data-mode="sup" onmousedown="event.preventDefault()" onclick="mathPanelMode(\'sup\')" title="Số mũ: gõ số tự nhỏ &amp; lên trên">xⁿ</button>';
+      else if(val==='__SUB__') h+='<button type="button" class="mp-key mp-mode" data-mode="sub" onmousedown="event.preventDefault()" onclick="mathPanelMode(\'sub\')" title="Chỉ số dưới: gõ số tự nhỏ &amp; xuống dưới">xₙ</button>';
+      else h+='<button type="button" class="mp-key" onmousedown="event.preventDefault()" onclick="mathPanelInsert(\''+val+'\')" title="'+label+'">'+label+'</button>';
+    });
+    h+='</div>';
+  });
+  h+='</div>';
+  p.innerHTML=h;
+  document.body.appendChild(bd); document.body.appendChild(p);
+}
+function openMathPanel(inputId){
+  _buildMathPanel();
+  _mathPanelTarget=inputId||'user-input';
+  document.getElementById('math-panel-backdrop').classList.add('show');
+  document.getElementById('math-panel').classList.add('show');
+  _sbUpdateModeUI();
+}
+function _hideMathPanel(){ const p=document.getElementById('math-panel'), b=document.getElementById('math-panel-backdrop'); if(p) p.classList.remove('show'); if(b) b.classList.remove('show'); }
+function closeMathPanel(){ _hideMathPanel(); _sbMode=null; _sbUpdateModeUI(); }
+function mathPanelInsert(sym){ if(_mathPanelTarget){ insertMathSym(_mathPanelTarget, sym); } }
+function mathPanelFrac(){ if(_mathPanelTarget){ makeFraction(_mathPanelTarget); } }
+function mathPanelMode(type){
+  if(!_mathPanelTarget) return;
+  _setSbMode(_mathPanelTarget, type);
+  _hideMathPanel();   // ẩn bảng để lộ ô nhập → gõ số sẽ tự nhỏ & lên/xuống
+  const el=document.getElementById(_mathPanelTarget); if(el) el.focus();
+  if(_sbMode && typeof showAuthToast==='function') showAuthToast(type==='sub'?'⤵ Nhập chỉ số dưới: gõ số sẽ xuống dưới. Gõ dấu cách để tắt.':'⤴ Nhập số mũ: gõ số sẽ lên trên. Gõ dấu cách để tắt.','var(--teal)');
 }
 function insertMathSym(inputId, sym){
   const el = document.getElementById(inputId);
@@ -3522,44 +3545,102 @@ function insertMathSym(inputId, sym){
   const pos = s + sym.length;
   el.focus();
   try { el.setSelectionRange(pos,pos); } catch(_){}
+  updateMathPreview(inputId);
 }
 
-// ── Chế độ nhập SỐ MŨ: bấm "xⁿ" rồi gõ số → tự nhỏ lại & nhảy lên trên (ký tự mũ Unicode) ──
+// ── Chế độ SỐ MŨ (xⁿ) & CHỈ SỐ DƯỚI (xₙ): gõ số tự nhỏ & lên trên / xuống dưới (ký tự Unicode) ──
 const _SUP_MAP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','−':'⁻','(':'⁽',')':'⁾','n':'ⁿ'};
+const _SUB_MAP = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','+':'₊','-':'₋','−':'₋','(':'₍',')':'₎','n':'ₙ'};
 function _toSup(s){ return String(s).split('').map(c=>_SUP_MAP[c]||c).join(''); }
-let _sbSupTarget = null;   // id ô đang bật chế độ số mũ (mỗi lúc chỉ 1 ô: chat HOẶC 1 câu kiểm tra)
-function toggleSupMode(inputId){
+function _toSub(s){ return String(s).split('').map(c=>_SUB_MAP[c]||c).join(''); }
+let _sbMode = null;   // { target:inputId, type:'sup'|'sub' } — mỗi lúc chỉ 1 ô bật
+function _setSbMode(inputId, type){
   inputId = inputId || 'user-input';
-  _sbSupTarget = (_sbSupTarget === inputId) ? null : inputId;
-  _sbUpdateSupUI();
+  _sbMode = (_sbMode && _sbMode.target===inputId && _sbMode.type===type) ? null : { target:inputId, type:type };
+  _sbUpdateModeUI();
   const el=document.getElementById(inputId); if(el) el.focus();
 }
-function _sbUpdateSupUI(){
-  document.querySelectorAll('.sup-mode-btn').forEach(function(b){
-    const on = b.getAttribute('data-for') === _sbSupTarget;
+function toggleSupMode(inputId){ _setSbMode(inputId, 'sup'); }
+function toggleSubMode(inputId){ _setSbMode(inputId, 'sub'); }
+function _sbUpdateModeUI(){
+  document.querySelectorAll('.mode-btn, .mp-mode').forEach(function(b){
+    const forOk = b.classList.contains('mp-mode')
+      ? !!(_sbMode && _sbMode.target===_mathPanelTarget)
+      : !!(_sbMode && b.getAttribute('data-for')===_sbMode.target);
+    const on = _sbMode && forOk && b.getAttribute('data-mode')===_sbMode.type;
     b.style.background=on?'#5b3fb0':''; b.style.color=on?'#fff':''; b.style.borderColor=on?'#5b3fb0':'';
   });
-  const old=document.getElementById('sup-hint'); if(old) old.remove();
-  if(_sbSupTarget){
-    const btn=document.querySelector('.sup-mode-btn[data-for="'+_sbSupTarget+'"]');
-    const bar=btn && btn.closest('.chat-math-bar');
-    if(bar && bar.parentNode){ const h=document.createElement('div'); h.id='sup-hint'; h.textContent='⤴ Đang nhập số mũ: gõ số sẽ tự nhỏ & lên trên. Bấm "xⁿ" lần nữa để tắt.'; h.style.cssText='font-size:11px;color:#5b3fb0;font-weight:800;margin:4px 2px 0;'; bar.parentNode.insertBefore(h, bar.nextSibling); }
-  }
 }
-// Đổi số/ký tự vừa gõ thành dạng mũ khi đang bật chế độ (beforeinput ổn định trên mobile). Áp cho ô đang bật.
+// Gõ số khi đang bật chế độ → tự đổi thành ký tự mũ/chỉ số (beforeinput ổn định trên mobile). Áp cho ô đang bật.
 document.addEventListener('beforeinput', function(e){
   try{
     const el=e.target;
-    if(!el || !_sbSupTarget || el.id!==_sbSupTarget) return;
-    if(e.inputType!=='insertText') return;                 // xoá/di chuyển con trỏ: giữ nguyên chế độ mũ
+    if(!el || !_sbMode || el.id!==_sbMode.target) return;
+    if(e.inputType!=='insertText') return;                 // xoá/di chuyển con trỏ: giữ nguyên chế độ
     const d=e.data||'';
     if(/^[0-9+\-−()n]+$/.test(d)){
       e.preventDefault();
-      const s=el.selectionStart, en=el.selectionEnd, sup=_toSup(d);
-      el.value = el.value.slice(0,s) + sup + el.value.slice(en);
-      const pos=s+sup.length; try{ el.setSelectionRange(pos,pos); }catch(_){}
-    } else { _sbSupTarget=null; _sbUpdateSupUI(); }          // gõ chữ/cách khác → thoát chế độ mũ, chèn bình thường
+      const conv = _sbMode.type==='sub' ? _toSub(d) : _toSup(d);
+      const s=el.selectionStart, en=el.selectionEnd;
+      el.value = el.value.slice(0,s) + conv + el.value.slice(en);
+      const pos=s+conv.length; try{ el.setSelectionRange(pos,pos); }catch(_){}
+      updateMathPreview(el.id);
+    } else { _sbMode=null; _sbUpdateModeUI(); }              // gõ chữ/cách khác → thoát chế độ, chèn bình thường
   }catch(err){}
+}, true);
+// ── Phân số: gõ "a/b" rồi bấm nút "a⁄b" → thành ᵃ⁄ᵦ (tử số nhỏ trên, mẫu số nhỏ dưới). Hỗn số: gõ số nguyên trước rồi làm phân số (vd 2 3/4 → 2³⁄₄). ──
+function makeFraction(inputId){
+  const el=document.getElementById(inputId); if(!el) return;
+  const pos=(el.selectionStart!=null)?el.selectionStart:el.value.length;
+  const before=el.value.slice(0,pos);
+  const m=before.match(/(\d+)\s*\/\s*(\d+)\s*$/);           // "a/b" ngay trước con trỏ
+  if(m){
+    const frac=_toSup(m[1])+'⁄'+_toSub(m[2]);
+    const start=pos-m[0].length;
+    el.value=el.value.slice(0,start)+frac+el.value.slice(pos);
+    const np=start+frac.length; el.focus(); try{el.setSelectionRange(np,np);}catch(_){}
+  } else {
+    insertMathSym(inputId,'/');                             // chưa có a/b → chèn dấu / để gõ tử/mẫu rồi bấm lại
+    if(typeof showAuthToast==='function') showAuthToast('Gõ tử số/mẫu số (vd 3/4) rồi bấm nút a⁄b nhé!', 'var(--teal)');
+  }
+  updateMathPreview(inputId);
+}
+
+// ── XEM TRƯỚC công thức đúng chuẩn SÁCH GIÁO KHOA (render KaTeX): phân số kẻ ngang, căn có vạch, mũ/chỉ số ──
+const _SUP_TO_N={}; for(const _k in _SUP_MAP){ _SUP_TO_N[_SUP_MAP[_k]]=_k; }
+const _SUB_TO_N={}; for(const _k in _SUB_MAP){ _SUB_TO_N[_SUB_MAP[_k]]=_k; }
+const _SUP_CLASS='['+Object.keys(_SUP_TO_N).join('')+']';
+const _SUB_CLASS='['+Object.keys(_SUB_TO_N).join('')+']';
+function _normSup(str){ return str.split('').map(c=>_SUP_TO_N[c]||c).join(''); }
+function _normSub(str){ return str.split('').map(c=>_SUB_TO_N[c]||c).join(''); }
+function _mathToLatex(s){
+  let t=String(s);
+  t=t.replace(new RegExp('('+_SUP_CLASS+'+)\\u2044('+_SUB_CLASS+'+)','g'), (m,a,b)=>'\\frac{'+_normSup(a)+'}{'+_normSub(b)+'}');  // ⁿ⁄ₘ → phân số kẻ ngang
+  t=t.replace(new RegExp(_SUP_CLASS+'+','g'), m=>'^{'+_normSup(m)+'}');
+  t=t.replace(new RegExp(_SUB_CLASS+'+','g'), m=>'_{'+_normSub(m)+'}');
+  t=t.replace(/½/g,'\\frac{1}{2}').replace(/¼/g,'\\frac{1}{4}').replace(/¾/g,'\\frac{3}{4}').replace(/⅓/g,'\\frac{1}{3}').replace(/⅔/g,'\\frac{2}{3}');
+  t=t.replace(/(\d+)\s*\/\s*(\d+)/g,'\\frac{$1}{$2}');       // a/b → phân số kẻ ngang
+  t=t.replace(/√\s*\(([^)]*)\)/g,'\\sqrt{$1}').replace(/√\s*(\d+(?:[.,]\d+)?|[a-zA-Z])/g,'\\sqrt{$1}').replace(/√/g,'\\sqrt{\\;}');
+  t=t.replace(/∛\s*\(([^)]*)\)/g,'\\sqrt[3]{$1}').replace(/∛\s*(\d+|[a-zA-Z])/g,'\\sqrt[3]{$1}').replace(/∛/g,'\\sqrt[3]{\\;}');
+  t=t.replace(/\|([^|]*)\|/g,'\\left|$1\\right|');
+  const op={'×':' \\times ','÷':' \\div ','·':' \\cdot ','≤':' \\le ','≥':' \\ge ','≠':' \\ne ','≈':' \\approx ','±':' \\pm ','∞':'\\infty ','π':'\\pi ','∠':'\\angle ','⊥':' \\perp ','∥':' \\parallel ','△':'\\triangle ','≅':' \\cong ','∼':' \\sim ','⇒':' \\Rightarrow ','⇔':' \\Leftrightarrow ','∈':' \\in ','∉':' \\notin ','⊂':' \\subset ','∅':'\\varnothing ','∪':' \\cup ','∩':' \\cap ','°':'^{\\circ}','−':'-','ℕ':'\\mathbb{N}','ℤ':'\\mathbb{Z}','ℚ':'\\mathbb{Q}','ℝ':'\\mathbb{R}'};
+  t=t.replace(/[×÷·≤≥≠≈±∞π∠⊥∥△≅∼⇒⇔∈∉⊂∅∪∩°−ℕℤℚℝ]/g, c=>op[c]||c);
+  return t;
+}
+function _hasMathSyms(v){ return /[⁰¹²³⁴⁵⁶⁷⁸⁹₀-₉√∛×÷·≤≥≠≈±∞π∠⊥∥△≅∼⇒⇔∈∉⊂∅∪∩°½¼¾⅓⅔ℕℤℚℝ]|\u2044|\d\s*\/\s*\d/.test(v); }
+function updateMathPreview(inputId){
+  const el=document.getElementById(inputId); const pv=document.getElementById('mp-'+inputId);
+  if(!el||!pv) return;
+  const v=(el.value||'').trim();
+  if(!v || !_hasMathSyms(v)){ pv.style.display='none'; pv.innerHTML=''; return; }
+  pv.innerHTML='<span class="mp-label">📐 SGK:</span> <span class="mp-math">$'+_mathToLatex(v)+'$</span>';
+  pv.style.display='flex';
+  if(typeof renderMath==='function') renderMath(pv);
+}
+// Gõ vào ô chat / ô đáp án → cập nhật preview
+document.addEventListener('input', function(e){
+  const el=e.target;
+  if(el && (el.id==='user-input' || (el.classList && el.classList.contains('answer-input')))) updateMathPreview(el.id);
 }, true);
 
 const GRADE_COLOR = {
@@ -4735,9 +4816,12 @@ Trả về JSON (không thêm text ngoài JSON):
         <div class="ex-q"><span class="ex-number">${ex.so}</span>${diffBadge}<span style="background:#fff3cd;color:#856404;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;margin-right:6px;">${ex.loai}</span>${ex.cau_hoi}</div>
         <input class="answer-input" id="kt-ans-${grade}-${i}" type="text" placeholder="✏️ Nhập đáp án...">
         <div class="mk-photo-thumb" id="kt-ans-thumb-${grade}-${i}"><img loading="lazy" alt="ảnh bài làm"><div class="t-label"></div><button type="button" class="t-retake" onclick="answerByPhoto('${grade}',${i})">🔄 Chụp lại</button></div>
-        ${mathKeypad('kt-ans-'+grade+'-'+i)}
-        <div class="mk-actions"><button type="button" class="mk-photo-btn" id="kt-ans-photo-btn-${grade}-${i}" onclick="answerByPhoto('${grade}',${i})">📷 Chụp đáp án câu này</button></div>
-        <div class="mk-hint">Bấm ký hiệu để chèn, <b>📷 chụp bài làm câu này</b>, hoặc gõ tay: căn = <b>sqrt</b>, mũ = <b>^</b>, phân số = <b>/</b></div>
+        <div class="math-preview" id="mp-kt-ans-${grade}-${i}" style="display:none;"></div>
+        <div class="mk-actions">
+          <button type="button" class="mk-math-btn" onclick="openMathPanel('kt-ans-${grade}-${i}')">🔢 Ký hiệu toán</button>
+          <button type="button" class="mk-photo-btn" id="kt-ans-photo-btn-${grade}-${i}" onclick="answerByPhoto('${grade}',${i})">📷 Chụp đáp án câu này</button>
+        </div>
+        <div class="mk-hint">Bấm <b>🔢 Ký hiệu toán</b> để chèn √, phân số, mũ…; hoặc <b>📷 chụp bài làm</b>; hoặc gõ tay (căn=sqrt, mũ=^, phân số=/)</div>
         <input type="file" id="kt-ans-photo-${grade}-${i}" accept="image/*" capture="environment" style="display:none;" onchange="_onAnswerPhoto('${grade}',${i},this)">
         <div class="solution-steps" id="kt-sol-${grade}-${i}">
           <div class="sol-title">📋 Hướng dẫn giải từng bước:</div>
@@ -4774,7 +4858,7 @@ async function submitKiemtra(grade) {
 Câu trả lời học sinh: ${JSON.stringify(studentAnswers)}
 
 Với mỗi câu, so sánh GIÁ TRỊ toán học, KHÔNG bắt bẻ cách viết. Mọi cách viết cùng giá trị đều ĐÚNG, ví dụ:
-- "5" = "5.0"; "1/2" = "0.5" = "0,5"
+- "5" = "5.0"; "1/2" = "0.5" = "0,5"; "½" = "1/2"; "³⁄₄" = "3/4" = "0.75"; "2½" = "2 1/2" = "2.5" (hỗn số); "x²" = "x^2"; "x₁" = "x_1"
 - "√3" = "sqrt(3)" = "căn 3" = "can3"; "2√3" = "2*sqrt(3)" = "2 căn 3"
 - "x²" = "x^2" = "x mũ 2"; "≤" = "<="; "≥" = ">="; "≠" = "!="; "π" = "pi"; "×" = "*"; "÷" = "/"
 - Bỏ qua khác biệt khoảng trắng, chữ hoa/thường, dấu phẩy hay chấm thập phân.
@@ -5101,7 +5185,7 @@ function escapeHtml(s){
 
 function addMsg(role,html){
   try{ if(role==='user') sbPlaySound('send'); else if(role==='ai') sbPlaySound('receive'); }catch(e){}
-  try{ if(role==='user' && _sbSupTarget){ _sbSupTarget=null; _sbUpdateSupUI(); } }catch(e){}
+  try{ if(role==='user' && _sbMode){ _sbMode=null; _sbUpdateModeUI(); } }catch(e){}
   removeWelcome();
   const wrap=document.getElementById('messages');
   const row=document.createElement('div'); row.className=`msg-row ${role}`;
