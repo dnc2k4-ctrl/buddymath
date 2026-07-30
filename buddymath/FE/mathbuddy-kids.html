@@ -409,6 +409,16 @@ body {
 .answer-input:focus { border-color: var(--orange); }
 .answer-input.correct { border-color: var(--green); background: #F0FFF6; color: #1a7a40; }
 .answer-input.wrong { border-color: var(--red); background: #FFF0F0; color: #c0392b; }
+.math-keypad { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+.mk-btn {
+  min-width:38px; height:36px; padding:0 9px;
+  border:1.5px solid #E0D8FF; background:#F7F4FF; color:#5b3fb0;
+  border-radius:9px; font-size:16px; font-weight:800; line-height:1;
+  font-family:'Nunito', Arial; cursor:pointer; -webkit-tap-highlight-color:transparent;
+}
+.mk-btn:hover { background:#ECE4FF; }
+.mk-btn:active { transform:translateY(1px); background:#DFD3FF; }
+.mk-hint { font-size:11px; color:#8a8a99; font-weight:700; margin-top:5px; line-height:1.4; }
 .answer-correct-tag { display:inline-block; background:var(--green); color:white; border-radius:8px; padding:2px 10px; font-size:12px; font-weight:900; margin-top:6px; }
 .answer-wrong-tag { display:inline-block; background:var(--red); color:white; border-radius:8px; padding:2px 10px; font-size:12px; font-weight:900; margin-top:6px; }
 .solution-steps { background: linear-gradient(135deg,#F0FFF4,#E8FFEE); border-radius:12px; padding:12px 16px; margin-top:10px; border-left:4px solid var(--green); display:none; }
@@ -3317,6 +3327,26 @@ async function aiGenObject(prompt, maxTokens){
   throw lastErr || new Error('fail');
 }
 
+// ── Bàn phím toán mini: giúp học sinh chèn ký hiệu (căn, mũ, phân số, π...) vào ô đáp án ──
+// Không phải ai cũng gõ được ký tự toán → bấm nút là chèn thẳng vào ô, giữ nguyên vị trí con trỏ.
+const MATH_KEYS = ['√','x²','x³','^','(',')','/','π','≤','≥','≠','±','°'];
+function mathKeypad(inputId){
+  return '<div class="math-keypad">' + MATH_KEYS.map(k=>{
+    const ins = k==='x²' ? '²' : k==='x³' ? '³' : k;      // nút hiện x² nhưng chèn ký tự ²
+    return `<button type="button" class="mk-btn" title="Chèn ${ins}" onmousedown="event.preventDefault()" onclick="insertMathSym('${inputId}','${ins}')">${k}</button>`;
+  }).join('') + '</div>';
+}
+function insertMathSym(inputId, sym){
+  const el = document.getElementById(inputId);
+  if(!el) return;
+  const s = (el.selectionStart!=null) ? el.selectionStart : el.value.length;
+  const e = (el.selectionEnd!=null) ? el.selectionEnd : el.value.length;
+  el.value = el.value.slice(0,s) + sym + el.value.slice(e);
+  const pos = s + sym.length;
+  el.focus();
+  try { el.setSelectionRange(pos,pos); } catch(_){}
+}
+
 const GRADE_COLOR = {
   toan3: 'linear-gradient(135deg,#FF6EB4,#A55EEA)',
   toan4: 'linear-gradient(135deg,#A55EEA,#3742FA)',
@@ -4488,7 +4518,9 @@ Trả về JSON (không thêm text ngoài JSON):
     el.innerHTML = '<div class="test-exercises-wrap">' + exList.map((ex,i)=>`
       <div class="test-ex-item" id="kt-item-${grade}-${i}">
         <div class="ex-q"><span class="ex-number">${ex.so}</span>${diffBadge}<span style="background:#fff3cd;color:#856404;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;margin-right:6px;">${ex.loai}</span>${ex.cau_hoi}</div>
-        <input class="answer-input" id="kt-ans-${grade}-${i}" type="text" placeholder="✏️ Nhập câu trả lời của em...">
+        <input class="answer-input" id="kt-ans-${grade}-${i}" type="text" placeholder="✏️ Nhập đáp án...">
+        ${mathKeypad('kt-ans-'+grade+'-'+i)}
+        <div class="mk-hint">Bấm ký hiệu để chèn — hoặc gõ tay: căn = <b>sqrt</b>, mũ = <b>^</b> (vd x^2), phân số = <b>/</b></div>
         <div class="solution-steps" id="kt-sol-${grade}-${i}">
           <div class="sol-title">📋 Hướng dẫn giải từng bước:</div>
           ${(ex.loi_giai||'').split(/\n|(?=Bước \d+:)/).filter(s=>s.trim()).map(s=>`<div class="sol-step">${s.trim()}</div>`).join('')}
@@ -4522,7 +4554,12 @@ async function submitKiemtra(grade) {
 Đáp án đúng: ${JSON.stringify(answers.map(a=>a.dap_an))}
 Câu trả lời học sinh: ${JSON.stringify(studentAnswers)}
 
-Với mỗi câu, so sánh giá trị toán học (chấp nhận cách viết khác nhau nếu giá trị bằng nhau, VD: "5" và "5.0" là đúng, "1/2" và "0.5" là đúng).
+Với mỗi câu, so sánh GIÁ TRỊ toán học, KHÔNG bắt bẻ cách viết. Mọi cách viết cùng giá trị đều ĐÚNG, ví dụ:
+- "5" = "5.0"; "1/2" = "0.5" = "0,5"
+- "√3" = "sqrt(3)" = "căn 3" = "can3"; "2√3" = "2*sqrt(3)" = "2 căn 3"
+- "x²" = "x^2" = "x mũ 2"; "≤" = "<="; "≥" = ">="; "≠" = "!="; "π" = "pi"; "×" = "*"; "÷" = "/"
+- Bỏ qua khác biệt khoảng trắng, chữ hoa/thường, dấu phẩy hay chấm thập phân.
+Chỉ chấm SAI khi giá trị toán học thật sự khác nhau.
 Trả về JSON (không thêm text ngoài JSON):
 {"results": [{"so": 1, "dung": true/false}]}`;
 
