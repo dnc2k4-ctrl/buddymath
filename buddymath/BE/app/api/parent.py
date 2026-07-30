@@ -175,6 +175,63 @@ def _build_child_context(child: User, recs: list[ScoreRecord], period: str) -> s
     )
 
 
+async def _build_chat_insight(db: Session, child: User, days: int) -> str:
+    """
+    Tóm tắt TÍN HIỆU học tập & cảm xúc từ những gì CON trò chuyện với Buddy — để cố vấn phụ huynh
+    có thể trả lời đúng khi phụ huynh hỏi 'con dạo này thế nào'.
+    CÓ TRÁCH NHIỆM (chuẩn an toàn trẻ em): tóm tắt, KHÔNG trích nguyên văn tin nhắn riêng tư;
+    nêu rõ 'CẢNH BÁO' nếu có dấu hiệu nguy cơ (buồn kéo dài, bị bắt nạt, tự làm hại, bạo lực…).
+    """
+    try:
+        hist = chat_history_service.history_for_user(db, child.id, days=days, limit=150)
+    except Exception as e:
+        logger.warning(f"Lấy lịch sử chat của con lỗi: {e}")
+        return ""
+    # Chỉ lấy TIN NHẮN CỦA CON (role=user) — nơi con bày tỏ/hỏi/chia sẻ.
+    child_msgs = [(h.get("content") or "").strip() for h in hist
+                  if h.get("role") == "user" and (h.get("content") or "").strip()]
+    if not child_msgs:
+        return ""
+    child_msgs = list(reversed(child_msgs))[-70:]          # theo thời gian, tối đa 70 tin gần nhất
+    joined = "\n".join(f"- {m[:220]}" for m in child_msgs)
+
+    # (a) CẢNH BÁO nghiêm trọng = QUÉT TỪ KHÓA XÁC ĐỊNH (không để AI suy diễn → chống báo động sai).
+    low = "\n".join(child_msgs).lower()
+    _serious = ["bị đánh", "đánh em", "bị bắt nạt", "bắt nạt", "tự tử", "muốn chết", "tự làm hại",
+                "tự hại", "làm hại bản thân", "bạo lực", "đánh nhau", "bị dọa", "bị đe dọa", "bị bạo hành"]
+    matched = [k for k in _serious if k in low]
+
+    # (b) AI CHỈ tóm tắt tâm trạng + chủ đề — CẤM suy diễn sự việc nghiêm trọng.
+    sys = (
+        "Bạn là chuyên gia tâm lý học đường. Dưới đây là tin nhắn một em học sinh gửi cho gia sư AI. "
+        "Hãy tóm tắt NGẮN cho phụ huynh về VIỆC HỌC và TÂM TRẠNG của em.\n"
+        "QUY TẮC TUYỆT ĐỐI:\n"
+        "• Chỉ mô tả điều em THỰC SỰ nói. KHÔNG suy diễn, KHÔNG bịa sự việc, KHÔNG thổi phồng.\n"
+        "• TUYỆT ĐỐI KHÔNG tự kết luận em bị đánh / bị bắt nạt / bị bạo lực / tự làm hại nếu em KHÔNG nói thẳng ra. "
+        "Ví dụ: em nói 'không có bạn chơi, cô đơn' → chỉ viết 'em cảm thấy cô đơn, thiếu bạn ở trường'; "
+        "TUYỆT ĐỐI KHÔNG được viết là em bị đánh hay bị bắt nạt.\n"
+        "• Không trích nguyên văn tin nhắn.\n"
+        "Nêu 2–4 gạch đầu dòng tiếng Việt: (1) môn/chủ đề em hay hỏi & chỗ hay bí; (2) tâm trạng chung "
+        "(vui/bình thường/căng thẳng/nản/lo/cô đơn…) đúng mức độ; (3) điều em TỰ NÓI là lo lắng, nếu có. "
+        "Nếu dữ liệu ít → chỉ cần nói 'chưa đủ dữ liệu để nhận định cảm xúc'."
+    )
+    summary = ""
+    try:
+        summary = (await LLMClient().complete(
+            [{"role": "system", "content": sys},
+             {"role": "user", "content": "Tin nhắn của em học sinh:\n" + joined}],
+            temperature=0.2, max_tokens=320,
+        ) or "").strip()
+    except Exception as e:
+        logger.warning(f"Tóm tắt tín hiệu chat lỗi: {e}")
+
+    # (c) Ghép CẢNH BÁO chỉ khi con NHẮC TRỰC TIẾP (dựa trên từ khóa thật, không phải AI đoán).
+    if matched:
+        summary += ("\nCẢNH BÁO: con có NHẮC TRỰC TIẾP tới các từ: " + ", ".join(matched) +
+                    ". Phụ huynh nên gần gũi hỏi han nhẹ nhàng và cân nhắc hỗ trợ chuyên môn (giáo viên/chuyên gia tâm lý).")
+    return summary.strip()
+
+
 def _advisor_system_prompt(child_context: str, age: int) -> str:
     return (
         "Bạn là chuyên gia tư vấn giáo dục & tâm lý lứa tuổi của SmartBuddy, đang trò chuyện "
@@ -186,6 +243,11 @@ def _advisor_system_prompt(child_context: str, age: int) -> str:
         "YÊU CẦU:\n"
         "- Trả lời bằng tiếng Việt, ấm áp và tôn trọng; xưng \"em\", gọi phụ huynh là \"anh/chị\".\n"
         "- Bám sát dữ liệu thật của con; nếu cần số liệu chưa có thì nói rõ, không bịa.\n"
+        "- Khi phụ huynh hỏi về cảm xúc/tâm trạng/điều con chưa nói: dựa vào phần 'TÓM TẮT TỪ TRÒ CHUYỆN CỦA CON' (nếu có ở trên). "
+        "Chia sẻ NHẸ NHÀNG, mang tính đồng hành; CHỈ nói điều CÓ trong tóm tắt, TUYỆT ĐỐI không tự thêm/phóng đại "
+        "tình tiết nghiêm trọng (ví dụ đừng suy 'cô đơn/không có bạn' thành 'bị đánh/bắt nạt'); không kể nguyên văn tin nhắn riêng tư của con; "
+        "khuyến khích phụ huynh chủ động trò chuyện, lắng nghe con. Nếu tóm tắt có dòng bắt đầu bằng 'CẢNH BÁO' → "
+        "ưu tiên khuyên phụ huynh gần gũi lắng nghe con và tìm hỗ trợ chuyên môn phù hợp (không hoảng, không phán xét).\n"
         "- Lời khuyên cụ thể, khả thi, phù hợp độ tuổi và ĐÚNG vấn đề phụ huynh nêu; ưu tiên bước hành động rõ ràng.\n"
         "- Trình bày ngắn gọn: 3–6 gạch đầu dòng, **in đậm** ý chính.\n"
         "- Nếu vấn đề nghiêm trọng (sức khỏe tâm thần, bạo lực, tự làm hại...) → khuyên phụ huynh tìm chuyên gia/bác sĩ phù hợp.\n"
@@ -216,6 +278,11 @@ async def parent_advisor(
 
     age = (child.grade or 5) + 6
     context = _build_child_context(child, recs, req.period)
+    # Bổ sung: tín hiệu học tập & cảm xúc từ TRÒ CHUYỆN của con (grounded thật, có trách nhiệm).
+    chat_insight = await _build_chat_insight(db, child, days)
+    if chat_insight:
+        context += ("\n\n- TÓM TẮT TỪ TRÒ CHUYỆN CỦA CON VỚI BUDDY "
+                    "(tín hiệu học tập & cảm xúc, KHÔNG phải nguyên văn):\n" + chat_insight)
     messages = [{"role": "system", "content": _advisor_system_prompt(context, age)}]
 
     # Lịch sử hội thoại gần nhất (tối đa 8 lượt) để giữ mạch trò chuyện
