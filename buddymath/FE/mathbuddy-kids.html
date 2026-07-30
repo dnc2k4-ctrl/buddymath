@@ -475,8 +475,24 @@ body {
 }
 .submit-test-btn:hover { transform:translateY(-2px); box-shadow:0 7px 0 rgba(46,213,115,0.4); }
 .submit-test-btn:disabled { background:#ccc; box-shadow:0 3px 0 #aaa; cursor:not-allowed; transform:none; }
-.photo-test-btn { background:linear-gradient(135deg,#1FCBA6,#3742FA); box-shadow:0 5px 0 rgba(55,66,250,0.35); }
-.photo-test-btn:hover { box-shadow:0 7px 0 rgba(55,66,250,0.35); }
+.mk-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:8px; }
+.mk-photo-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:11px 16px; border:none; border-radius:12px; width:100%; max-width:340px;
+  background:linear-gradient(135deg,#1FCBA6,#3742FA); color:#fff;
+  font-family:'Nunito',Arial; font-size:14px; font-weight:900; line-height:1;
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
+  box-shadow:0 3px 0 rgba(55,66,250,0.30); min-height:46px;
+}
+.mk-photo-btn:hover { filter:brightness(1.05); }
+.mk-photo-btn:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(55,66,250,0.30); }
+.mk-photo-btn:disabled { opacity:.6; cursor:not-allowed; }
+.mk-photo-thumb { display:none; margin-top:8px; align-items:center; gap:10px; background:#F2FFFB; border:1.5px solid #B9E8DC; border-radius:12px; padding:8px 10px; }
+.mk-photo-thumb.show { display:flex; }
+.mk-photo-thumb img { width:54px; height:54px; object-fit:cover; border-radius:8px; border:1px solid #cceee2; flex-shrink:0; }
+.mk-photo-thumb .t-label { font-size:12px; font-weight:800; color:#0f8a6a; line-height:1.4; word-break:break-word; min-width:0; }
+.mk-photo-thumb .t-retake { margin-left:auto; flex-shrink:0; font-size:12px; font-weight:900; color:#3742FA; background:#EAF0FF; border:none; border-radius:9px; padding:9px 12px; cursor:pointer; min-height:40px; -webkit-tap-highlight-color:transparent; }
+.answer-input.from-photo { border-color:#1FCBA6; background:#F2FFFB; }
 
 /* Score summary */
 .test-result-summary {
@@ -4400,8 +4416,6 @@ function buildKiemtraPanel(grade, panel) {
       </div>
       <div id="kt-action-row-${grade}" class="kt-action-row" style="display:none;">
         <button class="submit-test-btn" id="submit-btn-${grade}" onclick="submitKiemtra('${grade}')">📤 Nộp bài</button>
-        <button class="submit-test-btn photo-test-btn" id="kt-photo-btn-${grade}" onclick="submitKiemtraPhoto('${grade}')">📸 Nộp bằng ảnh</button>
-        <input type="file" id="kt-photo-input-${grade}" accept="image/*" capture="environment" style="display:none;" onchange="_onKiemtraPhoto('${grade}', this)">
         <button class="refresh-btn" onclick="refreshKiemtra('${grade}')">🔄 Đổi đề mới</button>
       </div>
       <div class="test-result-summary" id="kt-result-${grade}">
@@ -4523,8 +4537,11 @@ Trả về JSON (không thêm text ngoài JSON):
       <div class="test-ex-item" id="kt-item-${grade}-${i}">
         <div class="ex-q"><span class="ex-number">${ex.so}</span>${diffBadge}<span style="background:#fff3cd;color:#856404;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;margin-right:6px;">${ex.loai}</span>${ex.cau_hoi}</div>
         <input class="answer-input" id="kt-ans-${grade}-${i}" type="text" placeholder="✏️ Nhập đáp án...">
+        <div class="mk-photo-thumb" id="kt-ans-thumb-${grade}-${i}"><img loading="lazy" alt="ảnh bài làm"><div class="t-label"></div><button type="button" class="t-retake" onclick="answerByPhoto('${grade}',${i})">🔄 Chụp lại</button></div>
         ${mathKeypad('kt-ans-'+grade+'-'+i)}
-        <div class="mk-hint">Bấm ký hiệu để chèn — hoặc gõ tay: căn = <b>sqrt</b>, mũ = <b>^</b> (vd x^2), phân số = <b>/</b></div>
+        <div class="mk-actions"><button type="button" class="mk-photo-btn" id="kt-ans-photo-btn-${grade}-${i}" onclick="answerByPhoto('${grade}',${i})">📷 Chụp đáp án câu này</button></div>
+        <div class="mk-hint">Bấm ký hiệu để chèn, <b>📷 chụp bài làm câu này</b>, hoặc gõ tay: căn = <b>sqrt</b>, mũ = <b>^</b>, phân số = <b>/</b></div>
+        <input type="file" id="kt-ans-photo-${grade}-${i}" accept="image/*" capture="environment" style="display:none;" onchange="_onAnswerPhoto('${grade}',${i},this)">
         <div class="solution-steps" id="kt-sol-${grade}-${i}">
           <div class="sol-title">📋 Hướng dẫn giải từng bước:</div>
           ${(ex.loi_giai||'').split(/\n|(?=Bước \d+:)/).filter(s=>s.trim()).map(s=>`<div class="sol-step">${s.trim()}</div>`).join('')}
@@ -4648,53 +4665,49 @@ async function _applyKiemtraGrading(grade, results, studentAnswers){
   notifyAchievement('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, pct);
 }
 
-// ── Nộp bài bằng ẢNH: học sinh chụp bài làm → AI vision đọc đáp án từng câu → điền vào ô → chấm ──
-function submitKiemtraPhoto(grade){
-  const answers = window['kiemtraAnswers_'+grade];
-  if(!answers || answers.length===0){ alert('Vui lòng chờ đề kiểm tra tải xong!'); return; }
-  const input = document.getElementById('kt-photo-input-'+grade);
-  if(input){ input.value=''; input.click(); }   // mở camera/thư viện ảnh
+// ── Chụp đáp án TỪNG CÂU bằng ảnh: AI vision đọc đáp án học sinh viết → điền vào ô câu đó ──
+// Điền vào ô nên KHÔNG bị tính là bỏ trống; em vẫn sửa lại được rồi bấm "Nộp bài" để chấm.
+function answerByPhoto(grade, i){
+  const input = document.getElementById(`kt-ans-photo-${grade}-${i}`);
+  if(input){ input.value=''; input.click(); }   // mở camera (điện thoại) / thư viện ảnh
 }
-async function _onKiemtraPhoto(grade, fileInput){
+async function _onAnswerPhoto(grade, i, fileInput){
   const file = fileInput.files && fileInput.files[0];
   if(!file) return;
   if(!['image/jpeg','image/png','image/webp'].includes(file.type)){ alert('Chỉ hỗ trợ ảnh JPG, PNG hoặc WEBP nhé!'); return; }
   if(file.size > 6*1024*1024){ alert('Ảnh lớn quá (tối đa 6MB) — em chụp lại nhỏ hơn nhé!'); return; }
-  const answers   = window['kiemtraAnswers_'+grade];
-  const photoBtn  = document.getElementById('kt-photo-btn-'+grade);
-  const submitBtn = document.getElementById('submit-btn-'+grade);
-  if(photoBtn){ photoBtn.disabled=true; photoBtn.textContent='⏳ Đang đọc ảnh...'; }
-  if(submitBtn) submitBtn.disabled=true;
+  const answers = window['kiemtraAnswers_'+grade];
+  const q   = (answers && answers[i]) ? answers[i].cau_hoi : '';
+  const inp = document.getElementById(`kt-ans-${grade}-${i}`);
+  const btn = document.getElementById(`kt-ans-photo-btn-${grade}-${i}`);
+  const oldPh = inp ? inp.placeholder : '';
+  if(inp) inp.placeholder = '⏳ Đang đọc ảnh...';
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Đang đọc...'; }
   try{
-    const b64 = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(String(e.target.result).split(',')[1]); r.onerror=rej; r.readAsDataURL(file); });
-    const prompt = `Trong ẢNH là bài làm viết tay của học sinh cho ${answers.length} câu toán.
-NHIỆM VỤ: đọc ĐÁP ÁN CUỐI CÙNG của học sinh cho TỪNG câu (theo thứ tự câu 1..${answers.length}), so sánh với đáp án đúng rồi chấm đúng/sai.
-Đáp án đúng: ${JSON.stringify(answers.map(a=>a.dap_an))}
-So theo GIÁ TRỊ toán học, chấp nhận mọi cách viết cùng giá trị (2√3=2 căn 3, x²=x^2, 1/2=0,5, π=pi...). Chỉ SAI khi giá trị khác nhau. Câu nào không đọc được thì "hoc_sinh_ghi":"(không đọc được)" và "dung":false.
-Trả về JSON (không thêm text ngoài JSON):
-{"results":[{"so":1,"hoc_sinh_ghi":"đáp án đọc được từ ảnh","dung":true}]}`;
+    const dataUrl = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(String(e.target.result)); r.onerror=rej; r.readAsDataURL(file); });
+    const b64 = dataUrl.split(',')[1];
+    const prompt = `Trong ẢNH là bài làm viết tay của học sinh cho câu hỏi sau:
+"${q}"
+NHIỆM VỤ: đọc ĐÁP ÁN CUỐI CÙNG mà học sinh viết trong ảnh cho câu này. Chỉ lấy đáp án (số/biểu thức), KHÔNG lấy lời giải, KHÔNG tự giải hộ.
+Trả về JSON (không thêm text ngoài JSON): {"dap_an":"đáp án học sinh viết trong ảnh"}`;
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ max_tokens:2000, use_core:false, messages:[{role:'user',content:prompt}], image_base64:b64, image_media_type:file.type })
+      body: JSON.stringify({ max_tokens:400, use_core:false, messages:[{role:'user',content:prompt}], image_base64:b64, image_media_type:file.type })
     });
     if(!res.ok) throw new Error('http '+res.status);
     const data = await res.json();
     const info = parseLooseJSON(data.content?.[0]?.text || '');
-    const results = info.results || [];
-    if(results.length===0) throw new Error('empty');
-    // Điền đáp án AI đọc được vào từng ô để học sinh THẤY được AI đọc gì
-    const studentAnswers = answers.map((_,i)=>{
-      const v = results[i]?.hoc_sinh_ghi || '';
-      const inp = document.getElementById(`kt-ans-${grade}-${i}`);
-      if(inp) inp.value = v;
-      return v;
-    });
-    await _applyKiemtraGrading(grade, results, studentAnswers);
+    const val = (info.dap_an!=null ? String(info.dap_an) : '').trim();
+    if(!val) throw new Error('empty');
+    if(inp){ inp.value = val; inp.classList.add('from-photo'); inp.focus(); }
+    const thumb = document.getElementById(`kt-ans-thumb-${grade}-${i}`);
+    if(thumb){ const im=thumb.querySelector('img'); if(im) im.src=dataUrl; const lb=thumb.querySelector('.t-label'); if(lb) lb.textContent='✓ Đã đọc từ ảnh: '+val; thumb.classList.add('show'); }
+    const act = btn && btn.closest('.mk-actions'); if(act) act.style.display='none';   // ẩn nút chụp chính, dùng nút "Chụp lại" trong khung ảnh
   }catch(e){
-    alert('Chưa đọc được ảnh bài làm 😅 Em chụp lại rõ hơn nhé: đủ sáng, chụp thẳng, chữ số rõ ràng.');
-    if(submitBtn) submitBtn.disabled=false;
+    alert('Chưa đọc được ảnh 😅 Em chụp lại rõ hơn (đủ sáng, chụp thẳng, chữ số rõ ràng) nhé!');
   }
-  if(photoBtn){ photoBtn.disabled=false; photoBtn.textContent='📸 Nộp bằng ảnh'; }
+  if(inp) inp.placeholder = oldPh || '✏️ Nhập đáp án...';
+  if(btn){ btn.disabled=false; btn.textContent='📷 Chụp đáp án câu này'; }
 }
 
 // ── CHAT STATE ──
