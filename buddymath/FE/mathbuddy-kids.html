@@ -3272,6 +3272,51 @@ const CL_API = (function() {
     return res;
   };
 })();
+// ── Parse JSON CHỊU LỖI cho các lệnh AI sinh nội dung (tạo đề, bài tập, chấm bài) ──
+// AI hay nhét LaTeX (\sqrt, \frac, \times, \begin...) thẳng vào chuỗi JSON → escape
+// không hợp lệ → JSON.parse ném lỗi ("Bad escaped character") → "lúc được lúc không".
+// Hàm này: bỏ hàng rào ```json, lấy đúng khối {...}, nhân đôi backslash LaTeX rồi parse lại.
+function fixJsonBackslashes(s){
+  let out='';
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(c!=='\\'){ out+=c; continue; }
+    const n=s[i+1], n2=s[i+2];
+    if(n==='\\'||n==='/'||n==='"'){ out+=c+n; i++; continue; }            // escape hợp lệ, giữ nguyên
+    if(n==='u' && /^[0-9a-fA-F]{4}$/.test(s.substr(i+2,4))){ out+=s.substr(i,6); i+=5; continue; }
+    if((n==='n'||n==='r'||n==='t'||n==='b'||n==='f') && !/[a-zA-Z]/.test(n2||'')){ out+=c+n; i++; continue; } // \n \t THẬT (không phải \neq, \times)
+    out+='\\\\';                                                          // backslash LaTeX → nhân đôi cho hợp lệ
+  }
+  return out;
+}
+function parseLooseJSON(raw){
+  let s=String(raw||'').replace(/```json/gi,'').replace(/```/g,'').trim();
+  const a=s.indexOf('{'), b=s.lastIndexOf('}');
+  if(a>=0 && b>a) s=s.slice(a,b+1);                                       // bỏ lời dẫn ngoài JSON
+  try { return JSON.parse(s); } catch(_){}                               // thử parse thẳng trước
+  return JSON.parse(fixJsonBackslashes(s));                              // sửa escape rồi parse; vẫn ném thì caller bắt
+}
+// Gọi AI sinh JSON + TỰ THỬ LẠI (tối đa 3 lần) nếu lỗi mạng/parse/đề bị cắt giữa chừng.
+// → khắc phục "lúc tạo được lúc không". Interceptor tự thêm use_core=false + token + lớp.
+async function aiGenObject(prompt, maxTokens){
+  maxTokens = maxTokens || 8000;
+  let lastErr;
+  for(let k=0;k<3;k++){
+    try{
+      const res = await fetch(`${CL_API}/v1/messages`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ max_tokens:maxTokens, messages:[{role:'user',content:prompt}] })
+      });
+      if(!res.ok) throw new Error('http '+res.status);
+      const data = await res.json();
+      const raw = data.content?.[0]?.text || '';
+      if(!raw.trim()) throw new Error('empty');
+      return parseLooseJSON(raw);
+    }catch(e){ lastErr=e; }
+  }
+  throw lastErr || new Error('fail');
+}
+
 const GRADE_COLOR = {
   toan3: 'linear-gradient(135deg,#FF6EB4,#A55EEA)',
   toan4: 'linear-gradient(135deg,#A55EEA,#3742FA)',
@@ -3916,8 +3961,7 @@ Trả về JSON (không thêm text ngoài JSON):
     });
     const data = await res.json();
     const raw = data.content?.[0]?.text || '';
-    const m = raw.match(/\{[\s\S]*\}/);
-    const info = JSON.parse(m ? m[0] : raw);
+    const info = parseLooseJSON(raw);
 
     const btHtml = (info.bai_tap || []).map((bt, i) => {
       const stepsHtml = (bt.loi_giai || '').split('\n').filter(s => s.trim()).map(step =>
@@ -4144,8 +4188,7 @@ Trả về JSON (không thêm text ngoài JSON):
     });
     const data = await res.json();
     const raw = data.content?.[0]?.text || '';
-    const m = raw.match(/\{[\s\S]*\}/);
-    const info = JSON.parse(m ? m[0] : raw);
+    const info = parseLooseJSON(raw);
 
     const btHtml = (info.bai_tap_nang_cao || []).map((bt, i) => `
       <div class="ex-box" style="margin-top:8px;">
@@ -4265,16 +4308,7 @@ Trả về JSON (không thêm text ngoài JSON):
 }`;
 
   try {
-    const res = await fetch(`${CL_API}/v1/messages`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({  max_tokens:4000,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data = await res.json();
-    const raw = data.content?.[0]?.text || '';
-    let info;
-    try { const m=raw.match(/\{[\s\S]*\}/); info=JSON.parse(m?m[0]:raw); } catch(e){ throw new Error('parse'); }
+    const info = await aiGenObject(prompt, 8000);
     const exList = info.exercises||[];
     const diffColor = diff==='trungbinh'?'#2ED573':diff==='kho'?'#FF6B35':'#A55EEA';
     const diffBadge = `<span style="background:${diffColor};color:white;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;margin-right:6px;">${diffLabel}</span>`;
@@ -4442,16 +4476,7 @@ Trả về JSON (không thêm text ngoài JSON):
 {"exercises": [{"so": 1, "cau_hoi": "Câu hỏi đầy đủ", "dap_an": "Đáp án ngắn (số/biểu thức)", "loi_giai": "Bước 1: ...\\nBước 2: ...\\nKết quả: ...", "loai": "Đại số hoặc Hình học", "do_kho": "${diffLabel}"}]}`;
 
   try {
-    const res = await fetch(`${CL_API}/v1/messages`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({  max_tokens:4000,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data = await res.json();
-    const raw = data.content?.[0]?.text || '';
-    let info;
-    try { const m=raw.match(/\{[\s\S]*\}/); info=JSON.parse(m?m[0]:raw); } catch(e){ throw new Error('parse'); }
+    const info = await aiGenObject(prompt, 8000);
     const exList = info.exercises||[];
 
     // Store correct answers for grading
@@ -4511,7 +4536,7 @@ Trả về JSON (không thêm text ngoài JSON):
     const data = await res.json();
     const raw = data.content?.[0]?.text||'';
     let grading;
-    try { const m=raw.match(/\{[\s\S]*\}/); grading=JSON.parse(m?m[0]:raw); } catch(e){ throw new Error('parse'); }
+    try { grading=parseLooseJSON(raw); } catch(e){ throw new Error('parse'); }
 
     let correctCount = 0;
     const details = [];                                 // kết quả TỪNG CÂU để lưu backend
@@ -7296,9 +7321,7 @@ Trả JSON (KHÔNG text ngoài JSON):
     });
     const data = await res.json();
     const raw = data.content?.[0]?.text || '';
-    const m = raw.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('no JSON');
-    _qcLastResult = JSON.parse(m[0]);
+    _qcLastResult = parseLooseJSON(raw);
   } catch(e) {
     _qcLastResult = _qcLocalEval(q);
   }
