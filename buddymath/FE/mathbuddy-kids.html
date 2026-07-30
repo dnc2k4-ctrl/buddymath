@@ -475,6 +475,8 @@ body {
 }
 .submit-test-btn:hover { transform:translateY(-2px); box-shadow:0 7px 0 rgba(46,213,115,0.4); }
 .submit-test-btn:disabled { background:#ccc; box-shadow:0 3px 0 #aaa; cursor:not-allowed; transform:none; }
+.photo-test-btn { background:linear-gradient(135deg,#1FCBA6,#3742FA); box-shadow:0 5px 0 rgba(55,66,250,0.35); }
+.photo-test-btn:hover { box-shadow:0 7px 0 rgba(55,66,250,0.35); }
 
 /* Score summary */
 .test-result-summary {
@@ -4398,6 +4400,8 @@ function buildKiemtraPanel(grade, panel) {
       </div>
       <div id="kt-action-row-${grade}" class="kt-action-row" style="display:none;">
         <button class="submit-test-btn" id="submit-btn-${grade}" onclick="submitKiemtra('${grade}')">📤 Nộp bài</button>
+        <button class="submit-test-btn photo-test-btn" id="kt-photo-btn-${grade}" onclick="submitKiemtraPhoto('${grade}')">📸 Nộp bằng ảnh</button>
+        <input type="file" id="kt-photo-input-${grade}" accept="image/*" capture="environment" style="display:none;" onchange="_onKiemtraPhoto('${grade}', this)">
         <button class="refresh-btn" onclick="refreshKiemtra('${grade}')">🔄 Đổi đề mới</button>
       </div>
       <div class="test-result-summary" id="kt-result-${grade}">
@@ -4575,59 +4579,7 @@ Trả về JSON (không thêm text ngoài JSON):
     let grading;
     try { grading=parseLooseJSON(raw); } catch(e){ throw new Error('parse'); }
 
-    let correctCount = 0;
-    const details = [];                                 // kết quả TỪNG CÂU để lưu backend
-    (grading.results||[]).forEach((r,i)=>{
-      details.push({
-        no: i + 1,
-        q: String(answers[i]?.cau_hoi || '').slice(0, 180),
-        loai: answers[i]?.loai || '',
-        chosen: studentAnswers[i] || '(bỏ trống)',
-        answer: answers[i]?.dap_an || '',
-        correct: !!r.dung,
-      });
-      const inp = document.getElementById(`kt-ans-${grade}-${i}`);
-      const solEl = document.getElementById(`kt-sol-${grade}-${i}`);
-      const itemEl = document.getElementById(`kt-item-${grade}-${i}`);
-      if(!inp) return;
-      inp.readOnly = true;
-      if(r.dung) {
-        correctCount++;
-        inp.classList.add('correct');
-        if(itemEl) itemEl.classList.add('graded-correct');   // tô nền XANH cả câu
-        const tag = document.createElement('div');
-        tag.innerHTML = '<span class="answer-correct-tag">✅ Đúng — Giỏi lắm!</span>';
-        inp.parentNode.insertBefore(tag, inp.nextSibling);
-        if(solEl) solEl.classList.add('show');   // giải thích lại vì sao đúng
-      } else {
-        inp.classList.add('wrong');
-        if(itemEl) itemEl.classList.add('graded-wrong');     // tô nền ĐỎ cả câu
-        const tag = document.createElement('div');
-        tag.innerHTML = `<span class="answer-wrong-tag">❌ Sai — Đáp án đúng: ${answers[i].dap_an}</span>`;
-        inp.parentNode.insertBefore(tag, inp.nextSibling);
-        if(solEl) solEl.classList.add('show');   // hiện lời giải để em sửa
-      }
-    });
-    // Render LaTeX ở đáp án đúng + lời giải vừa hiện (không để lộ mã $...$).
-    const _kt0 = document.getElementById(`kt-item-${grade}-0`);
-    if (_kt0 && _kt0.parentNode) renderMath(_kt0.parentNode);
-
-    const total = answers.length;
-    const pct = Math.round(correctCount/total*100);
-    const emoji = pct>=80?'🏆':pct>=60?'👍':pct>=40?'📚':'💪';
-    const msg = pct>=80?'Xuất sắc! Em làm rất tốt!':pct>=60?'Khá tốt! Cố gắng thêm nhé!':pct>=40?'Cần ôn luyện thêm!':'Hãy xem lại lý thuyết và hỏi Buddy nhé!';
-    const resultEl = document.getElementById('kt-result-'+grade);
-    document.getElementById('kt-result-score-'+grade).innerHTML = `${emoji} ${correctCount}/${total} câu đúng (${pct}%)`;
-    document.getElementById('kt-result-label-'+grade).textContent = msg;
-    resultEl.classList.add('show');
-    resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
-    if(pct>=80) confetti();
-    showResultNotice(pct, correctCount, total);   // thông báo chúc mừng/chia buồn
-
-    // Record score to backend
-    const gradeNum = grade.replace('toan','');
-    await recordScore('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, JSON.stringify(details), `${emoji} ${msg} (${correctCount}/${total} câu - ${pct}%)`);
-    notifyAchievement('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, pct);
+    await _applyKiemtraGrading(grade, grading.results, studentAnswers);
   } catch(e) {
     alert('Không thể kết nối AI để chấm bài. Vui lòng thử lại!');
     pushNotification('warning', 'Chưa chấm được bài kiểm tra',
@@ -4636,6 +4588,113 @@ Trả về JSON (không thêm text ngoài JSON):
 
   submitBtn.disabled = false;
   submitBtn.textContent = '📤 Nộp bài';
+}
+
+// ── Chấm điểm + hiển thị + lưu (dùng chung cho nộp gõ tay VÀ nộp bằng ảnh) ──
+async function _applyKiemtraGrading(grade, results, studentAnswers){
+  const answers = window['kiemtraAnswers_'+grade];
+  let correctCount = 0;
+  const details = [];                                 // kết quả TỪNG CÂU để lưu backend
+  (results||[]).forEach((r,i)=>{
+    details.push({
+      no: i + 1,
+      q: String(answers[i]?.cau_hoi || '').slice(0, 180),
+      loai: answers[i]?.loai || '',
+      chosen: studentAnswers[i] || '(bỏ trống)',
+      answer: answers[i]?.dap_an || '',
+      correct: !!r.dung,
+    });
+    const inp = document.getElementById(`kt-ans-${grade}-${i}`);
+    const solEl = document.getElementById(`kt-sol-${grade}-${i}`);
+    const itemEl = document.getElementById(`kt-item-${grade}-${i}`);
+    if(!inp) return;
+    inp.readOnly = true;
+    if(r.dung) {
+      correctCount++;
+      inp.classList.add('correct');
+      if(itemEl) itemEl.classList.add('graded-correct');   // tô nền XANH cả câu
+      const tag = document.createElement('div');
+      tag.innerHTML = '<span class="answer-correct-tag">✅ Đúng — Giỏi lắm!</span>';
+      inp.parentNode.insertBefore(tag, inp.nextSibling);
+      if(solEl) solEl.classList.add('show');   // giải thích lại vì sao đúng
+    } else {
+      inp.classList.add('wrong');
+      if(itemEl) itemEl.classList.add('graded-wrong');     // tô nền ĐỎ cả câu
+      const tag = document.createElement('div');
+      tag.innerHTML = `<span class="answer-wrong-tag">❌ Sai — Đáp án đúng: ${answers[i].dap_an}</span>`;
+      inp.parentNode.insertBefore(tag, inp.nextSibling);
+      if(solEl) solEl.classList.add('show');   // hiện lời giải để em sửa
+    }
+  });
+  // Render LaTeX ở đáp án đúng + lời giải vừa hiện (không để lộ mã $...$).
+  const _kt0 = document.getElementById(`kt-item-${grade}-0`);
+  if (_kt0 && _kt0.parentNode) renderMath(_kt0.parentNode);
+
+  const total = answers.length;
+  const pct = Math.round(correctCount/total*100);
+  const emoji = pct>=80?'🏆':pct>=60?'👍':pct>=40?'📚':'💪';
+  const msg = pct>=80?'Xuất sắc! Em làm rất tốt!':pct>=60?'Khá tốt! Cố gắng thêm nhé!':pct>=40?'Cần ôn luyện thêm!':'Hãy xem lại lý thuyết và hỏi Buddy nhé!';
+  const resultEl = document.getElementById('kt-result-'+grade);
+  document.getElementById('kt-result-score-'+grade).innerHTML = `${emoji} ${correctCount}/${total} câu đúng (${pct}%)`;
+  document.getElementById('kt-result-label-'+grade).textContent = msg;
+  resultEl.classList.add('show');
+  resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(pct>=80) confetti();
+  showResultNotice(pct, correctCount, total);   // thông báo chúc mừng/chia buồn
+
+  // Record score to backend
+  const gradeNum = grade.replace('toan','');
+  await recordScore('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, JSON.stringify(details), `${emoji} ${msg} (${correctCount}/${total} câu - ${pct}%)`);
+  notifyAchievement('Toán', `Kiểm tra Lớp ${gradeNum}`, correctCount, total, pct);
+}
+
+// ── Nộp bài bằng ẢNH: học sinh chụp bài làm → AI vision đọc đáp án từng câu → điền vào ô → chấm ──
+function submitKiemtraPhoto(grade){
+  const answers = window['kiemtraAnswers_'+grade];
+  if(!answers || answers.length===0){ alert('Vui lòng chờ đề kiểm tra tải xong!'); return; }
+  const input = document.getElementById('kt-photo-input-'+grade);
+  if(input){ input.value=''; input.click(); }   // mở camera/thư viện ảnh
+}
+async function _onKiemtraPhoto(grade, fileInput){
+  const file = fileInput.files && fileInput.files[0];
+  if(!file) return;
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)){ alert('Chỉ hỗ trợ ảnh JPG, PNG hoặc WEBP nhé!'); return; }
+  if(file.size > 6*1024*1024){ alert('Ảnh lớn quá (tối đa 6MB) — em chụp lại nhỏ hơn nhé!'); return; }
+  const answers   = window['kiemtraAnswers_'+grade];
+  const photoBtn  = document.getElementById('kt-photo-btn-'+grade);
+  const submitBtn = document.getElementById('submit-btn-'+grade);
+  if(photoBtn){ photoBtn.disabled=true; photoBtn.textContent='⏳ Đang đọc ảnh...'; }
+  if(submitBtn) submitBtn.disabled=true;
+  try{
+    const b64 = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(String(e.target.result).split(',')[1]); r.onerror=rej; r.readAsDataURL(file); });
+    const prompt = `Trong ẢNH là bài làm viết tay của học sinh cho ${answers.length} câu toán.
+NHIỆM VỤ: đọc ĐÁP ÁN CUỐI CÙNG của học sinh cho TỪNG câu (theo thứ tự câu 1..${answers.length}), so sánh với đáp án đúng rồi chấm đúng/sai.
+Đáp án đúng: ${JSON.stringify(answers.map(a=>a.dap_an))}
+So theo GIÁ TRỊ toán học, chấp nhận mọi cách viết cùng giá trị (2√3=2 căn 3, x²=x^2, 1/2=0,5, π=pi...). Chỉ SAI khi giá trị khác nhau. Câu nào không đọc được thì "hoc_sinh_ghi":"(không đọc được)" và "dung":false.
+Trả về JSON (không thêm text ngoài JSON):
+{"results":[{"so":1,"hoc_sinh_ghi":"đáp án đọc được từ ảnh","dung":true}]}`;
+    const res = await fetch(`${CL_API}/v1/messages`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ max_tokens:2000, use_core:false, messages:[{role:'user',content:prompt}], image_base64:b64, image_media_type:file.type })
+    });
+    if(!res.ok) throw new Error('http '+res.status);
+    const data = await res.json();
+    const info = parseLooseJSON(data.content?.[0]?.text || '');
+    const results = info.results || [];
+    if(results.length===0) throw new Error('empty');
+    // Điền đáp án AI đọc được vào từng ô để học sinh THẤY được AI đọc gì
+    const studentAnswers = answers.map((_,i)=>{
+      const v = results[i]?.hoc_sinh_ghi || '';
+      const inp = document.getElementById(`kt-ans-${grade}-${i}`);
+      if(inp) inp.value = v;
+      return v;
+    });
+    await _applyKiemtraGrading(grade, results, studentAnswers);
+  }catch(e){
+    alert('Chưa đọc được ảnh bài làm 😅 Em chụp lại rõ hơn nhé: đủ sáng, chụp thẳng, chữ số rõ ràng.');
+    if(submitBtn) submitBtn.disabled=false;
+  }
+  if(photoBtn){ photoBtn.disabled=false; photoBtn.textContent='📸 Nộp bằng ảnh'; }
 }
 
 // ── CHAT STATE ──
