@@ -2482,7 +2482,7 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∛')" title="Căn bậc ba">∛</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','²')" title="Mũ 2">x²</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','³')" title="Mũ 3">x³</button>
-            <button type="button" class="cmk-btn" id="sup-mode-btn" onmousedown="event.preventDefault()" onclick="toggleSupMode()" title="Nhập số mũ bất kỳ — gõ số sẽ tự nhỏ & lên trên">xⁿ</button>
+            <button type="button" class="cmk-btn sup-mode-btn" data-for="user-input" onmousedown="event.preventDefault()" onclick="toggleSupMode('user-input')" title="Nhập số mũ bất kỳ — gõ số sẽ tự nhỏ & lên trên">xⁿ</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','/')" title="Phân số / chia">/</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','(')" title="Ngoặc mở">(</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input',')')" title="Ngoặc đóng">)</button>
@@ -2503,7 +2503,6 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∥')" title="Song song">∥</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∠')" title="Góc">∠</button>
             <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∈')" title="Thuộc (tập hợp)">∈</button>
-            <button type="button" class="cmk-btn" id="hint-toggle-btn" onclick="toggleHintSystem()" style="border-color:var(--yellow);color:#7A5900;background:#FFFBF0;padding:0 10px;min-width:auto;" title="Bật/tắt gợi ý từng bước">💡 Gợi ý</button>
           </div>
 
           <!-- STEP-BY-STEP HINT SYSTEM -->
@@ -3498,12 +3497,21 @@ async function aiGenObject(prompt, maxTokens){
 
 // ── Bàn phím toán mini: giúp học sinh chèn ký hiệu (căn, mũ, phân số, π...) vào ô đáp án ──
 // Không phải ai cũng gõ được ký tự toán → bấm nút là chèn thẳng vào ô, giữ nguyên vị trí con trỏ.
-const MATH_KEYS = ['√','x²','x³','^','(',')','/','π','≤','≥','≠','±','°'];
+// Bộ ký hiệu Toán ĐẦY ĐỦ lớp 3–9 (dùng chung cho ô đáp án kiểm tra & chat). [nhãn, giá trị chèn]
+const FULL_MATH_KEYS = [
+  ['+','+'],['−','-'],['×','×'],['÷','÷'],['=','='],
+  ['√','√'],['∛','∛'],['x²','²'],['x³','³'],['xⁿ','__SUP__'],
+  ['/','/'],['(','('],[')',')'],['|','|'],
+  ['&lt;','&lt;'],['&gt;','&gt;'],['≤','≤'],['≥','≥'],['≠','≠'],['≈','≈'],
+  ['π','π'],['°','°'],['±','±'],['%','%'],['Δ','Δ'],['∞','∞'],
+  ['⊥','⊥'],['∥','∥'],['∠','∠'],['∈','∈'],
+];
 function mathKeypad(inputId){
-  return '<div class="math-keypad">' + MATH_KEYS.map(k=>{
-    const ins = k==='x²' ? '²' : k==='x³' ? '³' : k;      // nút hiện x² nhưng chèn ký tự ²
-    return `<button type="button" class="mk-btn" title="Chèn ${ins}" onmousedown="event.preventDefault()" onclick="insertMathSym('${inputId}','${ins}')">${k}</button>`;
-  }).join('') + '</div>';
+  const btns = FULL_MATH_KEYS.map(function(k){
+    if(k[1]==='__SUP__') return '<button type="button" class="cmk-btn sup-mode-btn" data-for="'+inputId+'" onmousedown="event.preventDefault()" onclick="toggleSupMode(\''+inputId+'\')" title="Nhập số mũ — gõ số tự nhỏ & lên trên">xⁿ</button>';
+    return '<button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym(\''+inputId+'\',\''+k[1]+'\')" title="'+k[0]+'">'+k[0]+'</button>';
+  }).join('');
+  return '<div class="chat-math-bar" aria-label="Ký hiệu toán học">' + btns + '</div>';
 }
 function insertMathSym(inputId, sym){
   const el = document.getElementById(inputId);
@@ -3519,21 +3527,30 @@ function insertMathSym(inputId, sym){
 // ── Chế độ nhập SỐ MŨ: bấm "xⁿ" rồi gõ số → tự nhỏ lại & nhảy lên trên (ký tự mũ Unicode) ──
 const _SUP_MAP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','−':'⁻','(':'⁽',')':'⁾','n':'ⁿ'};
 function _toSup(s){ return String(s).split('').map(c=>_SUP_MAP[c]||c).join(''); }
-let _sbSupMode = false;
-function toggleSupMode(){ _sbSupMode = !_sbSupMode; _sbUpdateSupUI(); const el=document.getElementById('user-input'); if(el) el.focus(); }
-function _sbUpdateSupUI(){
-  const btn=document.getElementById('sup-mode-btn');
-  if(btn){ btn.style.background=_sbSupMode?'#5b3fb0':''; btn.style.color=_sbSupMode?'#fff':''; btn.style.borderColor=_sbSupMode?'#5b3fb0':''; }
-  let hint=document.getElementById('sup-hint');
-  if(_sbSupMode){
-    if(!hint){ const bar=document.querySelector('.chat-math-bar'); if(bar&&bar.parentNode){ hint=document.createElement('div'); hint.id='sup-hint'; hint.textContent='⤴ Đang nhập số mũ: gõ số sẽ tự nhỏ & lên trên. Bấm "xⁿ" lần nữa để tắt.'; hint.style.cssText='font-size:11px;color:#5b3fb0;font-weight:800;margin:4px 2px 0;'; bar.parentNode.insertBefore(hint, bar.nextSibling); } }
-  } else if(hint){ hint.remove(); }
+let _sbSupTarget = null;   // id ô đang bật chế độ số mũ (mỗi lúc chỉ 1 ô: chat HOẶC 1 câu kiểm tra)
+function toggleSupMode(inputId){
+  inputId = inputId || 'user-input';
+  _sbSupTarget = (_sbSupTarget === inputId) ? null : inputId;
+  _sbUpdateSupUI();
+  const el=document.getElementById(inputId); if(el) el.focus();
 }
-// Đổi số/ký tự vừa gõ trong ô chat thành dạng mũ khi đang bật chế độ (beforeinput ổn định trên mobile)
+function _sbUpdateSupUI(){
+  document.querySelectorAll('.sup-mode-btn').forEach(function(b){
+    const on = b.getAttribute('data-for') === _sbSupTarget;
+    b.style.background=on?'#5b3fb0':''; b.style.color=on?'#fff':''; b.style.borderColor=on?'#5b3fb0':'';
+  });
+  const old=document.getElementById('sup-hint'); if(old) old.remove();
+  if(_sbSupTarget){
+    const btn=document.querySelector('.sup-mode-btn[data-for="'+_sbSupTarget+'"]');
+    const bar=btn && btn.closest('.chat-math-bar');
+    if(bar && bar.parentNode){ const h=document.createElement('div'); h.id='sup-hint'; h.textContent='⤴ Đang nhập số mũ: gõ số sẽ tự nhỏ & lên trên. Bấm "xⁿ" lần nữa để tắt.'; h.style.cssText='font-size:11px;color:#5b3fb0;font-weight:800;margin:4px 2px 0;'; bar.parentNode.insertBefore(h, bar.nextSibling); }
+  }
+}
+// Đổi số/ký tự vừa gõ thành dạng mũ khi đang bật chế độ (beforeinput ổn định trên mobile). Áp cho ô đang bật.
 document.addEventListener('beforeinput', function(e){
   try{
     const el=e.target;
-    if(!el || el.id!=='user-input' || !_sbSupMode) return;
+    if(!el || !_sbSupTarget || el.id!==_sbSupTarget) return;
     if(e.inputType!=='insertText') return;                 // xoá/di chuyển con trỏ: giữ nguyên chế độ mũ
     const d=e.data||'';
     if(/^[0-9+\-−()n]+$/.test(d)){
@@ -3541,7 +3558,7 @@ document.addEventListener('beforeinput', function(e){
       const s=el.selectionStart, en=el.selectionEnd, sup=_toSup(d);
       el.value = el.value.slice(0,s) + sup + el.value.slice(en);
       const pos=s+sup.length; try{ el.setSelectionRange(pos,pos); }catch(_){}
-    } else { _sbSupMode=false; _sbUpdateSupUI(); }          // gõ chữ/cách khác → thoát chế độ mũ, chèn bình thường
+    } else { _sbSupTarget=null; _sbUpdateSupUI(); }          // gõ chữ/cách khác → thoát chế độ mũ, chèn bình thường
   }catch(err){}
 }, true);
 
@@ -5084,7 +5101,7 @@ function escapeHtml(s){
 
 function addMsg(role,html){
   try{ if(role==='user') sbPlaySound('send'); else if(role==='ai') sbPlaySound('receive'); }catch(e){}
-  try{ if(role==='user' && _sbSupMode){ _sbSupMode=false; _sbUpdateSupUI(); } }catch(e){}
+  try{ if(role==='user' && _sbSupTarget){ _sbSupTarget=null; _sbUpdateSupUI(); } }catch(e){}
   removeWelcome();
   const wrap=document.getElementById('messages');
   const row=document.createElement('div'); row.className=`msg-row ${role}`;
