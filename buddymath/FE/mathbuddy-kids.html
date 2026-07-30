@@ -3190,15 +3190,36 @@ function _sbTone(freq, dur, type, when, vol){
   g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
   o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0+dur+0.03);
 }
+// Bộ tiếng dễ thương (cute), ngắn gọn, dễ nghe cho trẻ em.
 function sbPlaySound(kind){
   if(!sbSoundOn()) return;
   const ac=_sbAudio(); if(!ac) return; if(ac.state==='suspended'){ try{ ac.resume(); }catch(e){} }
-  if(kind==='correct'){ _sbTone(660,0.12,'sine',0); _sbTone(880,0.15,'sine',0.10); _sbTone(1180,0.22,'sine',0.20); }
-  else if(kind==='wrong'){ _sbTone(320,0.18,'sine',0,0.11); _sbTone(220,0.26,'sine',0.13,0.11); }
-  else if(kind==='notify'){ _sbTone(880,0.10,'triangle',0,0.10); _sbTone(1170,0.13,'triangle',0.09,0.10); }
-  else if(kind==='toggle'){ _sbTone(720,0.09,'sine',0,0.10); }
-  else if(kind==='tap'){ _sbTone(520,0.045,'sine',0,0.05); }
+  const T=_sbTone;
+  switch(kind){
+    case 'correct':  T(660,0.12,'sine',0,0.13); T(880,0.12,'sine',0.09,0.13); T(1320,0.22,'sine',0.18,0.14); break; // đô-mi-đố reo vui
+    case 'wrong':    T(494,0.15,'triangle',0,0.10); T(370,0.24,'triangle',0.12,0.10); break;                        // "ò-ó" nhẹ, không gắt
+    case 'notify':   T(988,0.10,'triangle',0,0.11); T(1319,0.15,'triangle',0.09,0.11); break;                       // "đinh-đong" xinh
+    case 'toggle':   T(660,0.06,'sine',0,0.09); T(990,0.07,'sine',0.05,0.09); break;
+    case 'tap':      T(720,0.045,'sine',0,0.045); break;                                                            // "tách" rất nhẹ khi bấm
+    case 'login':    T(659,0.11,'sine',0,0.12); T(880,0.11,'sine',0.10,0.12); T(1175,0.20,'sine',0.20,0.13); break; // chào mừng
+    case 'logout':   T(880,0.12,'sine',0,0.11); T(587,0.22,'sine',0.11,0.11); break;                               // tạm biệt êm
+    case 'send':     T(560,0.05,'sine',0,0.07); T(760,0.06,'sine',0.045,0.07); break;                              // vút gửi đi
+    case 'receive':  T(760,0.06,'sine',0,0.07); T(560,0.07,'sine',0.05,0.07); break;                              // "pop" nhận trả lời
+    case 'create':   T(659,0.11,'triangle',0,0.12); T(784,0.11,'triangle',0.10,0.12); T(1047,0.20,'triangle',0.20,0.13); break; // "ta-da" tạo xong
+    default:         T(720,0.05,'sine',0,0.05);
+  }
 }
+// Tiếng "tách" nhẹ khi bấm CÁC NÚT cho sinh động (tôn trọng nút Tắt âm thanh).
+document.addEventListener('click', function(ev){
+  try{
+    if(!sbSoundOn()) return;
+    const el = ev.target.closest('button, .topic-btn, .home-cats > div, .mk-btn, .qp, .sub-btn, [role="button"]');
+    if(!el) return;
+    // Bỏ qua nút đã có âm riêng để không kêu chồng (gửi chat, nộp bài, công tắc, chụp ảnh câu)
+    if(el.id==='send-btn' || el.classList.contains('submit-test-btn') || el.classList.contains('mk-photo-btn')) return;
+    sbPlaySound('tap');
+  }catch(e){}
+}, true);
 function showResultNotice(pct, correct, total){
   try{ sbPlaySound(pct>=50?'correct':'wrong'); }catch(e){}
   if(!document.getElementById('rn-style')){
@@ -4648,6 +4669,7 @@ Trả về JSON (không thêm text ngoài JSON):
     renderMath(el);   // render LaTeX ($...$) thành công thức toán đẹp (không hiện mã thô)
     if(genBtn) { genBtn.disabled=false; genBtn.textContent='✨ Tạo đề kiểm tra'; }
     if(actionRow) actionRow.classList.add('visible');
+    try{ pushNotification('success', 'Đề kiểm tra đã sẵn sàng! 📝', 'Cùng làm bài và chinh phục điểm cao nào!', { sound:'create' }); }catch(e){}
   } catch(e) {
     el.innerHTML = '<div class="test-exercises-wrap"><div class="test-ex-item"><div class="ex-q">Không thể kết nối AI. Vui lòng thử lại.</div></div></div>';
     if(genBtn) { genBtn.disabled=false; genBtn.textContent='✨ Tạo đề kiểm tra'; }
@@ -5000,6 +5022,7 @@ function escapeHtml(s){
 }
 
 function addMsg(role,html){
+  try{ if(role==='user') sbPlaySound('send'); else if(role==='ai') sbPlaySound('receive'); }catch(e){}
   removeWelcome();
   const wrap=document.getElementById('messages');
   const row=document.createElement('div'); row.className=`msg-row ${role}`;
@@ -7556,6 +7579,7 @@ function _qcLocalEval(q) {
 
 function qcShowEval(r) {
   const score = r.score || 0;
+  try{ sbPlaySound(score >= 70 ? 'correct' : 'wrong'); }catch(e){}
   const qb = document.getElementById('qc-quality-box');
   if (qb) qb.style.display = 'block';
   setTimeout(() => {
@@ -8181,7 +8205,7 @@ async function doModalLogin() {
       _authShowOk('auth-login-ok', '✅ Đăng nhập thành công! Xin chào ' + uName + ' 👋');
       renderAuthState();
       pushNotification('login', 'Đăng nhập thành công 👋',
-        'Xin chào ' + uName + '! Chúc em một buổi học thật vui và hiệu quả.');
+        'Xin chào ' + uName + '! Chúc em một buổi học thật vui và hiệu quả.', { sound:'login' });
       showMascotMood && showMascotMood();
       // Auto-open portal theo vai trò
       if (authCurrentUser.role === 'parent') {
@@ -9269,10 +9293,11 @@ function loginSuccess(acct) {
 }
 
 function logoutUser() {
+  try{ sbPlaySound('logout'); }catch(e){}
   // Ghi thông báo đăng xuất vào kho của người dùng trước khi xóa phiên (toast do dòng dưới lo)
   if (authCurrentUser) {
     const _who = authCurrentUser.username || authCurrentUser.name || 'bạn';
-    pushNotification('logout', 'Đã đăng xuất', 'Hẹn gặp lại ' + _who + '! Thành tích của em vẫn được lưu lại an toàn.', { silent: true });
+    pushNotification('logout', 'Đã đăng xuất', 'Hẹn gặp lại ' + _who + '! Thành tích của em vẫn được lưu lại an toàn.', { silent: true, sound: false });
   }
   authCurrentUser = null;
   _sbToken = null;
@@ -9453,7 +9478,7 @@ function pushNotification(type, title, body, opts) {
   const _notifOff = (function(){ try{ return localStorage.getItem('sb_notif_off')==='1'; }catch(e){ return false; } })();
   if (_notifOff) return n;   // đã tắt thông báo → vẫn lưu vào chuông, nhưng KHÔNG popup/kêu/rung
   ringBell();
-  try{ sbPlaySound('notify'); }catch(e){}
+  if (opts.sound !== false){ try{ sbPlaySound(opts.sound || 'notify'); }catch(e){} }
   if (navigator.vibrate){ try{ navigator.vibrate(25); }catch(e){} }
   if (!opts.silent) {
     const meta = NOTIF_TYPES[type] || NOTIF_TYPES.info;
