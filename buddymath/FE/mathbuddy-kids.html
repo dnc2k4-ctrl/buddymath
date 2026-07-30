@@ -7736,6 +7736,7 @@ Trả JSON (KHÔNG text ngoài JSON):
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({  max_tokens:700,
+        use_core:false,     // lệnh CHẤM câu hỏi (trả JSON) — KHÔNG tiêm lõi gia sư, tránh trả lời kiểu trò chuyện
         system: sysPrompt,
         messages: [{ role:'user', content:`Câu hỏi của học sinh: "${q}"` }]
       })
