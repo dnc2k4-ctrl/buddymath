@@ -1802,6 +1802,14 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
 }
 </style>
 
+<!-- CHỐNG NHÁY: áp phẳng nav + mint header/nền NGAY từ <head> (trước khi body vẽ) để không lộ style hộp-màu cũ -->
+<style id="sb-anti-flash">
+.header{ background:linear-gradient(120deg,#1FCBA6,#14B39A 60%,#12A88F) !important; }
+body{ background:linear-gradient(165deg,#EAF7F4,#F4FBFA 50%,#EEF6FF) !important; }
+body:not(.role-parent) .topic-btn.nav-new,
+body:not(.role-parent) .topic-btn[data-color]{ background:transparent !important; border:none !important; border-left:none !important; box-shadow:none !important; color:#44586B !important; }
+</style>
+
 </head>
 <body>
 
