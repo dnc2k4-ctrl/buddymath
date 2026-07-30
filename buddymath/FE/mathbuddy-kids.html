@@ -196,6 +196,12 @@ body {
 /* INPUT */
 .input-area { padding:10px 16px 14px; background:white; border-top:3px solid rgba(0,0,0,0.06); display:flex; flex-direction:column; gap:10px; flex-shrink:0; }
 .quick-prompts{display:flex; gap:6px; flex-wrap:wrap;}
+/* Bàn phím ký hiệu toán cho ô chat chính với Buddy */
+.chat-math-bar{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+.cmk-btn{ min-width:34px; height:33px; padding:0 8px; border:1.5px solid #E0D8FF; background:#F7F4FF; color:#5b3fb0; border-radius:9px; font-size:15px; font-weight:800; line-height:1; font-family:'Nunito',Arial; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .12s, transform .08s; }
+.cmk-btn:hover{ background:#ECE4FF; }
+.cmk-btn:active{ transform:translateY(1px); background:#DFD3FF; }
+@media (max-width:760px){ .chat-math-bar{ flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; } .chat-math-bar::-webkit-scrollbar{ display:none; } .cmk-btn{ flex-shrink:0; } }
 .qp { font-family:'Nunito',Arial; font-size:13px; font-weight:800; padding:7px 13px; border-radius:18px; border:2.5px solid #EEE; background:white; color:var(--text2); cursor:pointer; transition:all 0.15s cubic-bezier(.34,1.56,.64,1); box-shadow:0 2px 0 rgba(0,0,0,0.07); }
 .qp:nth-child(1):hover{border-color:var(--purple);color:var(--purple);transform:scale(1.05);}
 .qp:nth-child(2):hover{border-color:var(--teal);color:var(--teal);transform:scale(1.05);}
@@ -2465,13 +2471,26 @@ button, a, .topic-btn, .qp { -webkit-tap-highlight-color:transparent; }
           </div>
         </div>
         <div class="input-area">
-          <div class="quick-prompts">
-            <button class="qp" onclick="useQP('Gợi ý bước tiếp theo là gì?')">💭 Bước tiếp theo?</button>
-            <button class="qp" onclick="useQP('Buddy giải thích lại dễ hơn được không?')">🔄 Giải thích dễ hiểu hơn nữa!</button>
-            <button class="qp" onclick="useQP('Cho em xem ví dụ tương tự')">📝 Ví dụ tương tự</button>
-            <button class="qp" onclick="useQP('Em vẫn chưa hiểu bước này')">❓ Em chưa hiểu!</button>
-            <button class="qp" onclick="useQP('Em làm xong rồi, kiểm tra giúp em nhé!')">✅ Kiểm tra bài!</button>
-            <button class="qp" id="hint-toggle-btn" onclick="toggleHintSystem()" style="border-color:var(--yellow);color:#7A5900;background:#FFFBF0;">💡 Gợi ý từng bước</button>
+          <!-- Bàn phím ký hiệu toán: bấm để chèn vào ô nhập (chat với Buddy là phần hỏi chính) -->
+          <div class="chat-math-bar" aria-label="Ký hiệu toán học — bấm để chèn vào ô nhập">
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','√')" title="Căn bậc hai">√</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','²')" title="Mũ 2">x²</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','³')" title="Mũ 3">x³</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','^')" title="Lũy thừa (vd x^5)">^</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','/')" title="Phân số / chia">/</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','(')" title="Ngoặc mở">(</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input',')')" title="Ngoặc đóng">)</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','×')" title="Nhân">×</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','÷')" title="Chia">÷</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','π')" title="Số pi">π</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','°')" title="Độ">°</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≤')" title="Nhỏ hơn hoặc bằng">≤</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≥')" title="Lớn hơn hoặc bằng">≥</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≠')" title="Khác (không bằng)">≠</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','±')" title="Cộng trừ">±</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','≈')" title="Xấp xỉ">≈</button>
+            <button type="button" class="cmk-btn" onmousedown="event.preventDefault()" onclick="insertMathSym('user-input','∞')" title="Vô cực">∞</button>
+            <button type="button" class="cmk-btn" id="hint-toggle-btn" onclick="toggleHintSystem()" style="border-color:var(--yellow);color:#7A5900;background:#FFFBF0;padding:0 10px;min-width:auto;" title="Bật/tắt gợi ý từng bước">💡 Gợi ý</button>
           </div>
 
           <!-- STEP-BY-STEP HINT SYSTEM -->
