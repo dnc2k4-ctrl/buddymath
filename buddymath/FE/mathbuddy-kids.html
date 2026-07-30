@@ -4640,7 +4640,7 @@ async function loadOntapExercises(grade, type) {
     ? `ĐỘ KHÓ TRUNG BÌNH: Câu hỏi áp dụng trực tiếp công thức/định nghĩa, 1-2 bước tính, số liệu đơn giản, học sinh trung bình làm được. KHÔNG ra câu khó hay nâng cao.`
     : diff === 'kho'
     ? `ĐỘ KHÓ KHÓ: Câu hỏi kết hợp 2-3 kiến thức, cần biến đổi trung gian, đòi hỏi tư duy, học sinh khá mới làm được. KHÔNG ra câu dễ hay nâng cao.`
-    : `ĐỘ KHÓ NÂNG CAO: Câu hỏi phức tạp, nhiều bước, cần suy luận sâu, kết hợp nhiều chương, dành cho học sinh giỏi. KHÔNG ra câu trung bình hay khó vừa.`;
+    : `ĐỘ KHÓ NÂNG CAO: Câu hỏi phức tạp, nhiều bước, cần suy luận sâu, biết vận dụng linh hoạt kiến thức — NHƯNG PHẢI nằm TRONG chương trình SGK của lớp đang học, KHÔNG ra dạng thi học sinh giỏi/Olympic quốc gia, KHÔNG dùng kiến thức ngoài chương trình. KHÔNG ra câu trung bình hay khó vừa.`;
 
   const prompt = `Bạn là giáo viên giỏi chuyên luyện thi môn toán Việt Nam.
 NHIỆM VỤ: Tạo ${topicDesc} với độ khó ${diffLabel}.
@@ -4812,7 +4812,7 @@ async function loadKiemtraExercises(grade, type) {
     ? `ĐỘ KHÓ TRUNG BÌNH: Câu hỏi áp dụng trực tiếp công thức, 1-2 bước tính, số liệu đơn giản. KHÔNG ra câu khó hay nâng cao.`
     : diff === 'kho'
     ? `ĐỘ KHÓ KHÓ: Câu hỏi kết hợp 2-3 kiến thức, cần biến đổi trung gian, đòi hỏi tư duy. KHÔNG ra câu dễ hay nâng cao.`
-    : `ĐỘ KHÓ NÂNG CAO: Câu hỏi phức tạp, nhiều bước, suy luận sâu, kết hợp nhiều chương, dành cho học sinh giỏi. KHÔNG ra câu trung bình hay khó vừa.`;
+    : `ĐỘ KHÓ NÂNG CAO: Câu hỏi phức tạp, nhiều bước, suy luận sâu, biết vận dụng linh hoạt kiến thức — NHƯNG PHẢI nằm TRONG chương trình SGK của lớp đang học, KHÔNG ra dạng thi học sinh giỏi/Olympic quốc gia, KHÔNG dùng kiến thức ngoài chương trình. KHÔNG ra câu trung bình hay khó vừa.`;
 
   const prompt = `Bạn là giáo viên giỏi chuyên luyện thi môn toán Việt Nam.
 NHIỆM VỤ: Tạo đề kiểm tra gồm ${topicDesc} với độ khó ${diffLabel}.
