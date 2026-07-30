@@ -90,8 +90,9 @@ LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "groq").strip().lower()
 # Gemini dùng endpoint OpenAI-compatible → client hiện tại gọi được luôn (không cần code riêng).
 GEMINI_API_KEY      = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_BASE_URL     = os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
-GEMINI_MODEL        = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
-GEMINI_VISION_MODEL = os.environ.get("GEMINI_VISION_MODEL", "gemini-flash-latest")  # Gemini flash đa phương thức (đọc ảnh)
+# flash-lite: gần như KHÔNG "thinking" nên KHÔNG bị cắt câu do thinking ăn hết token; ít tốn quota.
+GEMINI_MODEL        = os.environ.get("GEMINI_MODEL", "gemini-flash-lite-latest")
+GEMINI_VISION_MODEL = os.environ.get("GEMINI_VISION_MODEL", "gemini-flash-lite-latest")  # đa phương thức (đọc ảnh)
 
 if LLM_PROVIDER == "gemini" and GEMINI_API_KEY:
     ACTIVE_API_KEY      = GEMINI_API_KEY
