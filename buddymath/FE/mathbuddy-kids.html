@@ -3910,7 +3910,7 @@ Trả về JSON (không thêm text ngoài JSON):
     const res = await fetch(`${CL_API}/v1/messages`, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 1200,
+        max_tokens: 1200,
         messages: [{role: 'user', content: prompt}]
       })
     });
@@ -4138,7 +4138,7 @@ Trả về JSON (không thêm text ngoài JSON):
     const res = await fetch(`${CL_API}/v1/messages`, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 900,
+        max_tokens: 900,
         messages: [{role: 'user', content: prompt}]
       })
     });
@@ -4267,7 +4267,7 @@ Trả về JSON (không thêm text ngoài JSON):
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:4000,
+      body: JSON.stringify({  max_tokens:4000,
         messages:[{role:'user',content:prompt}]
       })
     });
@@ -4444,7 +4444,7 @@ Trả về JSON (không thêm text ngoài JSON):
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:4000,
+      body: JSON.stringify({  max_tokens:4000,
         messages:[{role:'user',content:prompt}]
       })
     });
@@ -4504,7 +4504,7 @@ Trả về JSON (không thêm text ngoài JSON):
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:600,
+      body: JSON.stringify({  max_tokens:600,
         messages:[{role:'user',content:gradingPrompt}]
       })
     });
@@ -4756,8 +4756,6 @@ Khi phát hiện dấu hiệu nản lòng ("không hiểu gì hết", "khó quá
 MỤC TIÊU TỐI THƯỢNG: Học sinh phải tự tính ra đáp án — Buddy KHÔNG được để lộ bất kỳ thông tin nào giúp thu hẹp phạm vi đáp án! 🎯`;
 }
 
-function tryEx(text) { document.getElementById('user-input').value=text; send(); }
-function useQP(text) { document.getElementById('user-input').value=text; send(); }
 function autoH(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,130)+'px'; }
 function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
 function removeWelcome() { const w=document.getElementById('welcome-screen'); if(w) w.style.display='none'; }
@@ -4996,7 +4994,7 @@ async function send(){
   try{
     const res=await fetch(`${CL_API}/v1/messages`,{
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:getSystem(),messages:chatHistory})
+      body:JSON.stringify({max_tokens:1000,system:getSystem(),messages:chatHistory})
     });
     const data=await res.json();
     const reply=data.content?.[0]?.text||'Xin lỗi, mình gặp lỗi rồi. Thử lại nhé! 😅';
@@ -6647,7 +6645,7 @@ async function getHint() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 300,
+        max_tokens: 300,
         messages: [{ role: 'user', content: hintPrompt }],
       })
     });
@@ -6871,8 +6869,7 @@ Trả lời CHÍNH XÁC theo JSON format sau (không thêm bất kỳ text ngoà
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
+                max_tokens: 1000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       })
@@ -7030,8 +7027,7 @@ Trả lời CHÍNH XÁC theo JSON (không thêm text ngoài JSON):
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 800,
+                max_tokens: 800,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       })
@@ -7131,8 +7127,7 @@ Chấm điểm từng ô (0–20 điểm/ô) và tổng hợp. Trả lời CHÍN
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
+                max_tokens: 1000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       })
@@ -7294,7 +7289,7 @@ Trả JSON (KHÔNG text ngoài JSON):
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:700,
+      body: JSON.stringify({  max_tokens:700,
         system: sysPrompt,
         messages: [{ role:'user', content:`Câu hỏi của học sinh: "${q}"` }]
       })
@@ -7752,7 +7747,7 @@ async function enhancedSend() {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 1000,
+        max_tokens: 1000,
         system: getSocraticSystem(),
         messages: chatHistory
       })

@@ -143,12 +143,6 @@ def allowed_models() -> set[str]:
     )
 
 
-# ─── LLM: Claude (proxy tuỳ chọn) ─────────────────────────────────────────────
-CLAUDE_API_KEY  = os.environ.get("CLAUDE_API_KEY", "")
-CLAUDE_BASE_URL = os.environ.get("CLAUDE_BASE_URL", "https://api.anthropic.com/v1")
-CLAUDE_MODEL    = os.environ.get("CLAUDE_MODEL", "claude-sonnet-4-6")
-
-
 # ─── Embedding: Jina AI ───────────────────────────────────────────────────────
 JINA_API_KEY = os.environ.get("JINA_API_KEY", "")
 JINA_MODEL   = os.environ.get("JINA_MODEL", "jina-embeddings-v3")
