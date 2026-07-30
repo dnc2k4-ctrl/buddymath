@@ -3234,12 +3234,18 @@ const CL_API = (function() {
       const u = (typeof url === 'string') ? url : (url && url.url) || '';
       if (u.endsWith('/v1/messages') && opts){
         if (typeof opts.body === 'string'){
-          const su = JSON.parse(localStorage.getItem('sb_user') || 'null');
-          const g  = su && Number(su.grade);
-          if (g >= 1 && g <= 12){
+          try{
             const b = JSON.parse(opts.body);
-            if (b && b.grade == null){ b.grade = g; opts = Object.assign({}, opts, { body: JSON.stringify(b) }); }
-          }
+            if (b){
+              const su = JSON.parse(localStorage.getItem('sb_user') || 'null');
+              const g  = su && Number(su.grade);
+              if (g >= 1 && g <= 12 && b.grade == null) b.grade = g;
+              // Lệnh TẠO NỘI DUNG (không truyền 'system': tạo đề, chấm bài...) → TẮT lõi gia sư
+              // để AI xuất được JSON/đáp án, thay vì từ chối "không đưa đáp án".
+              if (b.use_core == null && (b.system == null || b.system === '')) b.use_core = false;
+              opts = Object.assign({}, opts, { body: JSON.stringify(b) });
+            }
+          }catch(e){}
         }
         const tok = localStorage.getItem('sb_token');
         if (tok){
@@ -4261,7 +4267,7 @@ Trả về JSON (không thêm text ngoài JSON):
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1800,
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:4000,
         messages:[{role:'user',content:prompt}]
       })
     });
@@ -4437,7 +4443,7 @@ Trả về JSON (không thêm text ngoài JSON):
   try {
     const res = await fetch(`${CL_API}/v1/messages`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1800,
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:4000,
         messages:[{role:'user',content:prompt}]
       })
     });

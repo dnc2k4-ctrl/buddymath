@@ -43,3 +43,4 @@ class GroqDirectRequest(BaseModel):
     temperature:      float         = 0.5
     image_base64:     Optional[str] = None
     image_media_type: str           = "image/jpeg"
+    use_core:         bool          = True   # tiêm lõi gia sư Buddy; đặt False cho lệnh TẠO nội dung (tạo đề/chấm bài)

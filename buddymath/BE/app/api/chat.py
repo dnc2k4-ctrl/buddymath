@@ -224,7 +224,7 @@ async def groq_proxy(
         raise HTTPException(400, "Hội thoại quá dài.")
     if len(_last_user_text(req.messages)) > 8000:
         raise HTTPException(400, "Câu hỏi quá dài. Em rút gọn lại giúp Buddy nhé!")
-    req.max_tokens = max(1, min(req.max_tokens, 2000))
+    req.max_tokens = max(1, min(req.max_tokens, 8000))
 
     # Enforce gói: có ảnh → tính "giải ảnh"; không → "câu hỏi AI/Toán" (+ khoá môn theo gói)
     _has_img = bool(req.image_base64) or _has_image(req.messages)
@@ -242,9 +242,16 @@ async def groq_proxy(
     else:
         model = None  # LLMClient() mặc định = ACTIVE_TEXT_MODEL
     client = LLMClient(model=model) if model else LLMClient()
-    # Tầng 1: lõi Smart Buddy + hồ sơ lớp + dữ kiện toán đã kiểm chứng (sympy) cho câu học sinh
-    verify = verification_note(_last_user_text(req.messages))
-    msgs: list[dict] = [{"role": "system", "content": with_core((req.system or "") + verify, grade=req.grade)}]
+    # Tầng 1: lõi gia sư Buddy CHỈ cho TRÒ CHUYỆN với học sinh. Lệnh TẠO nội dung (tạo đề/chấm bài
+    # — FE không truyền 'system' nên use_core=False) thì KHÔNG tiêm lõi, để AI xuất được JSON/đáp án.
+    if req.use_core:
+        verify = verification_note(_last_user_text(req.messages))
+        system_content = with_core((req.system or "") + verify, grade=req.grade)
+    else:
+        system_content = (req.system or "")
+    msgs: list[dict] = []
+    if system_content.strip():
+        msgs.append({"role": "system", "content": system_content})
     msgs.extend(req.messages)
 
     supports_vision = is_vision_model(client.model)
