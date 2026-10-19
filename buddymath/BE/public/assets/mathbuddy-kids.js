@@ -6771,7 +6771,8 @@ function renderAuthState() {
   const parentSection = document.getElementById('parent-sidebar-section');
   const studentSection = document.getElementById('student-sidebar-section');
   const adminSection = document.getElementById('admin-sidebar-section');
-  const parentLink = document.getElementById('parent-portal-link');
+  const parentPortalSwitchLink = document.getElementById('parent-portal-switch-link');
+  const studentHistoryLink = document.getElementById('student-history-link');
   const adminLink  = document.getElementById('admin-portal-link');
 
   if (!authCurrentUser) {
@@ -6803,15 +6804,17 @@ function renderAuthState() {
   if (letEl) { letEl.style.display = 'flex'; letEl.textContent = name[0]?.toUpperCase() || '?'; }
 
   // Phân quyền hiển thị: admin / parent / student
+  const isStudent = u.role === 'student';
   const isParent = u.role === 'parent';
   const isAdmin  = u.role === 'admin';
   const hasParentAccess = !!u.parent_access && !isAdmin;
-  const hasStudentAccess = !isAdmin && (!isParent || hasParentAccess);
+  const hasStudentAccess = isStudent;
   document.body.classList.toggle('role-parent', isParent);
-  if (parentSection) parentSection.style.display = hasParentAccess ? '' : 'none';
+  if (parentSection) parentSection.style.display = isParent && hasParentAccess ? '' : 'none';
   if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';
   if (studentSection) studentSection.style.display = hasStudentAccess ? '' : 'none';
-  if (parentLink) parentLink.style.display = hasParentAccess ? '' : 'none';
+  if (parentPortalSwitchLink) parentPortalSwitchLink.style.display = isStudent ? '' : 'none';
+  if (studentHistoryLink) studentHistoryLink.style.display = hasStudentAccess ? '' : 'none';
   if (adminLink) adminLink.style.display = isAdmin ? '' : 'none';
   if (el('user-dropdown-email') && isAdmin && !email) el('user-dropdown-email').textContent = '🛡️ Quản trị viên';
   if (el('parent-welcome-msg') && isParent) el('parent-welcome-msg').textContent = 'Xin chào ' + name + '! Theo dõi con học tập.';
