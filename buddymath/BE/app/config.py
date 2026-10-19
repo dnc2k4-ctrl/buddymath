@@ -23,23 +23,9 @@ IS_VERCEL = os.environ.get("VERCEL") == "1"
 
 # ─── Đường dẫn ────────────────────────────────────────────────────────────────
 _LOCAL_BE_DIR = Path(__file__).resolve().parent.parent
-if IS_VERCEL:
-    _VERCEL_BUNDLE_ROOT = Path(__file__).resolve().parents[1]
-    _VERCEL_REPO_CANDIDATES = (
-        _VERCEL_BUNDLE_ROOT / "buddymath",
-        _VERCEL_BUNDLE_ROOT,
-    )
-    REPO_DIR = next(
-        (
-            path for path in _VERCEL_REPO_CANDIDATES
-            if (path / "FE").is_dir() and (path / "BE").is_dir()
-        ),
-        _VERCEL_REPO_CANDIDATES[0],
-    )
-    BE_DIR = REPO_DIR / "BE"
-else:
-    BE_DIR = _LOCAL_BE_DIR
-    REPO_DIR = BE_DIR.parent
+_VERCEL_BUNDLE_ROOT = Path(__file__).resolve().parents[1]
+BE_DIR = _VERCEL_BUNDLE_ROOT if IS_VERCEL else _LOCAL_BE_DIR
+REPO_DIR = _VERCEL_BUNDLE_ROOT / "buddymath" if IS_VERCEL else BE_DIR.parent
 FRONTEND_DIR  = Path(os.environ.get("FRONTEND_DIR", REPO_DIR / "FE")).resolve()
 DATA_ROOT     = Path(os.environ.get("DATA_ROOT", BE_DIR / "data")).resolve()
 IMAGES_DIR    = Path(os.environ.get("IMAGES_DIR", FRONTEND_DIR / "images")).resolve()

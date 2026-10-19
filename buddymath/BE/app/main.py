@@ -19,7 +19,6 @@ import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -155,26 +154,16 @@ def create_app() -> FastAPI:
             resp.headers["Content-Security-Policy"] = _CSP
         return resp
 
-    # Static images (mascot sprites, logo…)
-    images_dir = "buddymath/FE/images" if IS_VERCEL else str(IMAGES_DIR)
-    frontend_dir = "buddymath/FE" if IS_VERCEL else str(FRONTEND_DIR)
-    if IS_VERCEL:
-        if not IMAGES_DIR.is_dir():
-            bundle_root = Path(__file__).resolve().parents[1]
-            available = sorted(path.name for path in bundle_root.iterdir())
-            raise RuntimeError(
-                f"Vercel deployment is missing the packaged images directory: {IMAGES_DIR}; "
-                f"function bundle entries: {available}"
-            )
-    else:
+    if not IS_VERCEL:
         IMAGES_DIR.mkdir(parents=True, exist_ok=True)
-    app.mount("/images", StaticFiles(directory=images_dir), name="images")
+        app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
 
     # Routers
     for module in (pages, auth, billing, scores, parent, chat, catalog, classroom):
         app.include_router(module.router)
 
-    app.mount("/", StaticFiles(directory=frontend_dir), name="frontend")
+    if not IS_VERCEL:
+        app.mount("/", StaticFiles(directory=str(FRONTEND_DIR)), name="frontend")
 
     # 404 thân thiện: trả trang HTML cho trình duyệt, JSON cho lời gọi API.
     @app.exception_handler(404)
