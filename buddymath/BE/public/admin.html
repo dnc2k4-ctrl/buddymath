@@ -42,6 +42,9 @@ button,a,label,input,select,textarea{touch-action:manipulation;}
   .err{background:#fef2f2;color:var(--red);font-size:13px;font-weight:600;padding:9px 12px;
     border-radius:9px;margin-bottom:12px;display:none}
   .hint{font-size:11px;color:var(--t3);text-align:center;margin-top:14px;line-height:1.5}
+  .login-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:12px;font-weight:800}
+  .login-links a{color:var(--blue);text-decoration:none}
+  .login-links a:hover{text-decoration:underline}
 
   /* ── Dashboard ── */
   #app-view{display:none;max-width:1050px;margin:0 auto;padding:18px}
@@ -49,6 +52,8 @@ button,a,label,input,select,textarea{touch-action:manipulation;}
     padding:14px 20px;box-shadow:0 4px 18px rgba(0,0,0,.06);margin-bottom:16px;flex-wrap:wrap}
   .topbar h1{font-size:19px;font-weight:900}
   .topbar .who{font-size:12px;color:var(--t2);font-weight:600}
+  .topbar a{color:var(--blue);font-size:13px;font-weight:800;text-decoration:none}
+  .topbar a:hover{text-decoration:underline}
   .spacer{flex:1}
   .btn-sm{padding:8px 14px;border:2px solid var(--line);border-radius:10px;background:#fff;
     cursor:pointer;font-size:13px;font-weight:800;color:var(--t2);font-family:inherit}
@@ -101,6 +106,11 @@ button,a,label,input,select,textarea{touch-action:manipulation;}
       <button class="btn" type="submit" id="login-btn">Đăng nhập →</button>
     </form>
     <div class="hint">Chỉ tài khoản có vai trò <b>admin</b> mới vào được.<br>Dùng email quản trị và mật khẩu đã cấu hình cho ứng dụng.</div>
+    <nav class="login-links" aria-label="Các khu vực SmartBuddy">
+      <a href="/">Trang chủ</a>
+      <a href="/app">Học sinh</a>
+      <a href="/parent-portal">Phụ huynh</a>
+    </nav>
   </div>
 </div>
 
@@ -113,6 +123,9 @@ button,a,label,input,select,textarea{touch-action:manipulation;}
       <div class="who" id="who"></div>
     </div>
     <div class="spacer"></div>
+    <a href="/">Trang chủ</a>
+    <a href="/app">Khu vực học sinh</a>
+    <a href="/parent-portal">Khu vực phụ huynh</a>
     <button class="btn-sm primary" onclick="openCreate()">＋ Tạo tài khoản</button>
     <button class="btn-sm" onclick="loadAll()">🔄 Tải lại</button>
     <button class="btn-sm" onclick="logout()">Đăng xuất</button>

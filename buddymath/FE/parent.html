@@ -50,6 +50,9 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 .user-role{font-size:10px;font-weight:700;color:rgba(255,255,255,0.85);}
 .logout-btn{background:rgba(255,255,255,0.18);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:12px;padding:8px 13px;font-family:'Nunito',Arial;font-size:12.5px;font-weight:900;cursor:pointer;transition:all .15s;box-shadow:0 3px 0 rgba(0,0,0,0.12);}
 .logout-btn:hover{background:rgba(255,255,255,0.32);transform:translateY(-1px);}
+.site-nav-panel{display:flex;gap:7px;flex-wrap:wrap;}
+.site-nav-panel a{flex:1 1 110px;text-align:center;padding:8px 10px;border:1.5px solid #CDEEE4;border-radius:10px;background:#fff;color:var(--teal-d);font-size:12px;font-weight:900;text-decoration:none;}
+.site-nav-panel a:hover{background:#EAFBF5;}
 
 /* ── Layout ── */
 .layout{display:grid;grid-template-columns:300px 1fr;flex:1;overflow:hidden;position:relative;z-index:1;}
@@ -300,6 +303,11 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 <div class="layout">
   <!-- Sidebar -->
   <div class="sidebar">
+    <nav class="site-nav-panel" aria-label="Các khu vực SmartBuddy">
+      <a href="/">🏠 Trang chủ</a>
+      <a href="/app">🎒 Học sinh</a>
+      <a href="/admin">🛡️ Quản trị</a>
+    </nav>
     <div class="sidebar-title">👨‍👩‍👧 Con em tôi</div>
     <div id="children-list"><div class="loading-spinner"></div></div>
 
