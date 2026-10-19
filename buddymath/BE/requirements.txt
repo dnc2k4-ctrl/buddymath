@@ -10,6 +10,7 @@ passlib[bcrypt]
 bcrypt==4.0.1
 python-jose[cryptography]
 psycopg2-binary   # driver PostgreSQL (dùng khi deploy với DATABASE_URL=postgresql://...)
+psycopg[binary]   # Neon integration provides a postgresql+psycopg:// URL
 
 # ── HTTP / config ──────────────────────────────────────────────
 httpx
