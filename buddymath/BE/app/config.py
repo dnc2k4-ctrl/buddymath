@@ -49,10 +49,21 @@ ADMIN_EMAIL          = os.environ.get("ADMIN_EMAIL", "admin@smartbuddy.vn")
 ADMIN_PASSWORD       = os.environ.get("ADMIN_PASSWORD", "")
 ENABLE_DEMO_ACCOUNTS = os.environ.get("ENABLE_DEMO_ACCOUNTS", "").lower() in ("1", "true", "yes")
 
-DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{(BE_DIR / 'smartbuddy.db').as_posix()}")
 IS_VERCEL = os.environ.get("VERCEL") == "1"
-if IS_VERCEL and not os.environ.get("DATABASE_URL"):
+_DATABASE_URL_ENV_KEYS = (
+    "DATABASE_URL",
+    "DATABASE_POSTGRES_URL",
+    "DATABASE_POSTGRES_URL_UNPOOLED",
+    "DATABASE_POSTGRES_URL_NON_POOLING",
+    "DATABASE_URL_UNPOOLED",
+)
+_database_url = next(
+    (os.environ[key] for key in _DATABASE_URL_ENV_KEYS if os.environ.get(key)),
+    None,
+)
+if IS_VERCEL and not _database_url:
     raise RuntimeError("DATABASE_URL must point to a persistent PostgreSQL database on Vercel.")
+DATABASE_URL = _database_url or f"sqlite:///{(BE_DIR / 'smartbuddy.db').as_posix()}"
 if IS_VERCEL and not DATABASE_URL.startswith(
     ("postgres://", "postgresql://", "postgresql+psycopg2://")
 ):

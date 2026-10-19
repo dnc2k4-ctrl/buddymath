@@ -40,7 +40,7 @@ quyền truy cập trước; đừng khởi chạy production bằng database tr
 
 | Biến | Bắt buộc | Ghi chú |
 |------|----------|---------|
-| `DATABASE_URL` | Có | Neon PostgreSQL URL đã restore dữ liệu |
+| `DATABASE_URL` | Có | Neon PostgreSQL URL. Vercel Neon integration tự cấp `DATABASE_POSTGRES_URL`; app tự nhận biến này nếu chưa đặt `DATABASE_URL`. |
 | `SECRET_KEY` | Có | Secret riêng, dài/ngẫu nhiên; không dùng giá trị mặc định |
 | `GROQ_API_KEY` | Có | API key cho chat và synthesis |
 | `JINA_API_KEY` | Có | API key cho embedding truy vấn RAG |
