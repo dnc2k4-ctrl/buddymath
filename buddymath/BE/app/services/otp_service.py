@@ -44,6 +44,11 @@ def create_otp(purpose: str, target: str) -> str:
     return code
 
 
+def discard_otp(purpose: str, target: str) -> None:
+    """Remove an OTP and its resend cooldown when delivery fails."""
+    _store.pop(_key(purpose, target), None)
+
+
 def verify_otp(purpose: str, target: str, code: str) -> tuple[bool, str]:
     """Xác minh mã. Đúng → xoá mã (dùng 1 lần). Trả về (ok, thông báo)."""
     k = _key(purpose, target)

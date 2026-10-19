@@ -433,9 +433,7 @@ async function doForgotSend(){
       document.getElementById('fg-email-show').textContent = email;
       document.getElementById('fg-step1').style.display = 'none';
       document.getElementById('fg-step2').style.display = '';
-      let msg = data.message || 'Đã gửi mã! Kiểm tra hộp thư (cả mục Spam) nhé.';
-      if (data.dev_code){ document.getElementById('fg-code').value = data.dev_code; msg = '(DEV) Mã của bạn: ' + data.dev_code; }
-      showOk('fg-ok', msg);
+      showOk('fg-ok', data.message || 'Đã gửi mã! Kiểm tra hộp thư (cả mục Spam) nhé.');
       document.getElementById('fg-code').focus();
     }
   }catch(e){ showErr('fg-err','Không kết nối được server. Kiểm tra server đang chạy!'); }
@@ -531,9 +529,7 @@ async function sendRegisterOtp(isResend){
     if (!res.ok){ showErr('reg-err', data.detail || 'Không gửi được mã xác minh.'); btn.disabled=false; btn.innerHTML = otpSent?'✨ Xác nhận & Đăng ký':'✉️ Gửi mã xác minh'; return; }
     otpSent = true;
     document.getElementById('reg-otp-group').style.display = 'block';
-    let msg = data.message || 'Đã gửi mã xác minh tới email của bạn. Kiểm tra hộp thư (cả Spam) nhé!';
-    if (data.dev_code){ document.getElementById('reg-code').value = data.dev_code; msg = '(DEV) Mã xác minh của bạn: ' + data.dev_code; }
-    showOk('reg-ok', msg);
+    showOk('reg-ok', data.message || 'Đã gửi mã xác minh tới email của bạn. Kiểm tra hộp thư (cả Spam) nhé!');
     document.getElementById('reg-code').focus();
     btn.disabled = false; btn.innerHTML = '✨ Xác nhận & Đăng ký';
   }catch(e){ showErr('reg-err','Không kết nối được server. Hãy kiểm tra server đang chạy!'); btn.disabled=false; btn.innerHTML = old; }

@@ -4,6 +4,7 @@ auth.py – Router đăng ký/đăng nhập, profile và admin/debug.
 from __future__ import annotations
 
 import asyncio
+import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -24,6 +25,7 @@ from app.services.auth_service import seed_demo_accounts
 from app.services.email_service import send_otp_email, smtp_configured
 
 router = APIRouter(tags=["auth"])
+logger = logging.getLogger(__name__)
 
 
 class ForgotReq(BaseModel):
@@ -42,18 +44,21 @@ async def send_register_otp(req: SendOtpReq, db: Session = Depends(get_db)):
     email = req.email.strip().lower()
     if db.query(User).filter(User.email == email).first():
         raise HTTPException(400, "Email này đã được đăng ký rồi")
+    if not smtp_configured():
+        raise HTTPException(
+            503,
+            "Dịch vụ gửi email chưa được cấu hình. Vui lòng thử lại sau.",
+        )
     if not otp_service.can_send("register", email):
         raise HTTPException(429, "Bạn vừa yêu cầu mã. Vui lòng đợi khoảng 45 giây.")
     code = otp_service.create_otp("register", email)
     resp = {"ok": True, "message": "Mã xác minh đã được gửi tới email của bạn."}
-    if not smtp_configured():
-        resp["dev_code"] = code
-        resp["message"] = "SMTP chưa cấu hình — dùng mã dev bên dưới để thử (chỉ hiện ở dev)."
-        return resp
     try:
         await asyncio.to_thread(send_otp_email, email, code, "register")
-    except Exception:
-        raise HTTPException(500, "Không gửi được email lúc này. Vui lòng thử lại.")
+    except Exception as exc:
+        otp_service.discard_otp("register", email)
+        logger.exception("Failed to send registration OTP email.")
+        raise HTTPException(502, "Không gửi được email lúc này. Vui lòng thử lại.") from exc
     return resp
 
 
@@ -103,6 +108,11 @@ async def login(req: LoginReq, db: Session = Depends(get_db)):
 async def forgot_password(req: ForgotReq, db: Session = Depends(get_db)):
     """Gửi mã OTP đặt lại mật khẩu về email. Luôn trả success để không lộ email nào tồn tại."""
     email = req.email.strip().lower()
+    if not smtp_configured():
+        raise HTTPException(
+            503,
+            "Dịch vụ gửi email chưa được cấu hình. Vui lòng thử lại sau.",
+        )
     user = db.query(User).filter(User.email == email).first()
     resp = {"ok": True, "message": "Nếu email tồn tại trong hệ thống, mã xác minh đã được gửi."}
     if not user:
@@ -110,16 +120,12 @@ async def forgot_password(req: ForgotReq, db: Session = Depends(get_db)):
     if not otp_service.can_send("reset", email):
         raise HTTPException(429, "Bạn vừa yêu cầu mã. Vui lòng đợi khoảng 45 giây rồi thử lại.")
     code = otp_service.create_otp("reset", email)
-    if not smtp_configured():
-        # Chưa cấu hình SMTP (thường là môi trường dev) → trả mã để test cục bộ.
-        # Trên production đã cấu hình SMTP thì KHÔNG bao giờ lộ mã.
-        resp["dev_code"] = code
-        resp["message"] = "SMTP chưa cấu hình — dùng mã dev bên dưới để thử (chỉ hiện ở môi trường dev)."
-        return resp
     try:
         await asyncio.to_thread(send_otp_email, email, code, "reset")
-    except Exception:
-        raise HTTPException(500, "Không gửi được email lúc này. Vui lòng thử lại sau ít phút.")
+    except Exception as exc:
+        otp_service.discard_otp("reset", email)
+        logger.exception("Failed to send password-reset OTP email.")
+        raise HTTPException(502, "Không gửi được email lúc này. Vui lòng thử lại sau ít phút.") from exc
     return resp
 
 

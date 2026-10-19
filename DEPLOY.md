@@ -51,7 +51,7 @@ quyền truy cập trước; đừng khởi chạy production bằng database tr
 | `PUBLIC_BASE_URL` | Nên có | Domain production, ví dụ `https://<project>.vercel.app` |
 | `ADMIN_PASSWORD` | Khuyến nghị | Mật khẩu mạnh cho `admin@smartbuddy.vn` |
 | `ADMIN_PASSWORD_RESET` | Chỉ khi cần reset | Đặt `1` để áp dụng `ADMIN_PASSWORD` mới cho admin hiện có trong lần deploy kế tiếp; sau khi đăng nhập được, xoá biến này và redeploy. |
-| `BREVO_API_KEY`, `FROM_EMAIL` | Tuỳ chọn | Gửi email báo cáo phụ huynh |
+| `BREVO_API_KEY`, `FROM_EMAIL` | Bắt buộc cho OTP | Cần API key Brevo và địa chỉ gửi đã xác minh trong Brevo để gửi OTP đăng ký/đặt lại mật khẩu. |
 
 `GROQ_MODEL`, `JINA_MODEL`, `LLM_PROVIDER` và các cấu hình khác dùng mặc định
 trong `app/config.py` nếu không đặt. Không bật demo accounts ở production.
@@ -71,6 +71,8 @@ trong `app/config.py` nếu không đặt. Không bật demo accounts ở produc
 - `faiss.index` và `metadata.pkl` được đóng gói read-only trong deploy. Hai file
   này đã được cho phép theo dõi trong Git. Để thêm/sửa tài liệu RAG, cập nhật
   index bằng môi trường local, commit cả hai artifacts rồi redeploy.
+- Nếu chưa cấu hình Brevo hoặc SMTP, API gửi OTP trả lỗi cấu hình và không trả
+  mã xác minh về trình duyệt. Không dùng mã OTP dev trên production.
 - Các trang HTML và ảnh frontend được đồng bộ từ `buddymath/FE/` sang
   `buddymath/BE/public/` bằng `build.py`; commit các file public để Vercel phục
   vụ chúng như static assets. Trên Vercel, các route trang chính chuyển hướng

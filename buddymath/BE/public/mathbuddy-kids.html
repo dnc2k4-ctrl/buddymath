@@ -6235,9 +6235,7 @@ async function doModalForgotSend() {
     else {
       document.getElementById('fgm-step1').style.display = 'none';
       document.getElementById('fgm-step2').style.display = '';
-      let msg = data.message || 'Đã gửi mã! Kiểm tra email (cả mục Spam) nhé.';
-      if (data.dev_code) { document.getElementById('fgm-code').value = data.dev_code; msg = '(DEV) Mã của bạn: ' + data.dev_code; }
-      _fgmMsg('fgm-ok', msg, 1); document.getElementById('fgm-code').focus();
+      _fgmMsg('fgm-ok', data.message || 'Đã gửi mã! Kiểm tra email (cả mục Spam) nhé.', 1); document.getElementById('fgm-code').focus();
     }
   } catch (e) { _fgmMsg('fgm-err', 'Không kết nối được server.', 1); }
   btn.disabled = false; btn.textContent = old;
