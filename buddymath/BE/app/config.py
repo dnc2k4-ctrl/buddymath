@@ -19,8 +19,14 @@ except ImportError:
     pass
 
 
+IS_VERCEL = os.environ.get("VERCEL") == "1"
+
 # ─── Đường dẫn ────────────────────────────────────────────────────────────────
-BE_DIR        = Path(__file__).resolve().parent.parent           # .../BE
+_LOCAL_BE_DIR = Path(__file__).resolve().parent.parent
+BE_DIR = (
+    (Path(__file__).resolve().parents[1] / "buddymath" / "BE").resolve()
+    if IS_VERCEL else _LOCAL_BE_DIR
+)
 REPO_DIR      = BE_DIR.parent                                    # .../buddymath
 FRONTEND_DIR  = Path(os.environ.get("FRONTEND_DIR", REPO_DIR / "FE")).resolve()
 DATA_ROOT     = Path(os.environ.get("DATA_ROOT", BE_DIR / "data")).resolve()
@@ -49,7 +55,6 @@ ADMIN_EMAIL          = os.environ.get("ADMIN_EMAIL", "admin@smartbuddy.vn")
 ADMIN_PASSWORD       = os.environ.get("ADMIN_PASSWORD", "")
 ENABLE_DEMO_ACCOUNTS = os.environ.get("ENABLE_DEMO_ACCOUNTS", "").lower() in ("1", "true", "yes")
 
-IS_VERCEL = os.environ.get("VERCEL") == "1"
 _DATABASE_URL_ENV_KEYS = (
     "DATABASE_URL",
     "DATABASE_POSTGRES_URL",

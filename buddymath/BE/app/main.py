@@ -155,7 +155,11 @@ def create_app() -> FastAPI:
         return resp
 
     # Static images (mascot sprites, logo…)
-    IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    if IS_VERCEL:
+        if not IMAGES_DIR.is_dir():
+            raise RuntimeError(f"Vercel deployment is missing the packaged images directory: {IMAGES_DIR}")
+    else:
+        IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
 
     # Routers
