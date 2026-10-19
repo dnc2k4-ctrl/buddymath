@@ -955,7 +955,6 @@ async function loadChildren(){
 // ── Select child ──
 async function selectChild(id){
   selectedChild={id};
-  showParentTip('report');
   const mobileSelector=document.getElementById('mobile-parent-child');
   mobileSelector.value=String(id);
   document.getElementById('mobile-ai-btn').disabled=false;
@@ -1110,7 +1109,6 @@ function switchTab(tab){
   document.getElementById('view-report').style.display=tab==='report'?'flex':'none';
   document.getElementById('view-advisor').style.display=tab==='advisor'?'block':'none';
   document.body.classList.toggle('parent-chat-open',tab==='advisor'&&window.matchMedia('(max-width:760px)').matches);
-  showParentTip(tab==='advisor'?'advisor':'report');
 }
 
 // ── Set period ──

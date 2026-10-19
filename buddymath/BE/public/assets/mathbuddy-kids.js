@@ -781,7 +781,6 @@ function selectTopic(btn) {
       document.getElementById('classroom-board-view').style.display = 'none';
     }
   }
-  showFeatureGuide(btn.dataset.topic);
 }
 
 function toggleGrade(btn) {
@@ -808,7 +807,6 @@ function selectGradeTopic(btn, grade, topicSlug) {
     LOADED_PANELS.add(panelKey);
     buildGradePanel(grade, topicSlug, panelKey);
   }
-  showFeatureGuide('grade-topic');
   } catch(err) { console.error('selectGradeTopic error:', err); }
 }
 
@@ -826,7 +824,6 @@ function selectSpecial(btn, grade, mode) {
       else buildKiemtraPanel(grade, panel);
     }
   }
-  showFeatureGuide('grade-topic');
 }
 
 // Quay lại màn chọn bài Toán (panel-math-home)
@@ -2639,12 +2636,11 @@ function homeOpen(topic) {
   if (intro) intro.remove();
   const btn = document.querySelector('.topic-btn[data-topic="' + topic + '"]');
   if (btn) { btn.click(); return; }
-  if (topic === 'buddy' && typeof quickStartBuddy === 'function') { showFeatureGuide(topic); quickStartBuddy(); return; }
+  if (topic === 'buddy' && typeof quickStartBuddy === 'function') { quickStartBuddy(); return; }
   // Không có nút trên sidebar (vd 'prompt-playground' – Tư duy đặt câu hỏi):
   // mở panel trực tiếp qua nút ảo, đưa về màn hình đầu (qc-home) cho sạch.
   if (typeof hubOpen === 'function') {
     hubOpen(topic);
-    showFeatureGuide(topic);
     if (topic === 'prompt-playground' && typeof qcGoTo === 'function') { try { qcGoTo(0); } catch (e) {} }
   }
 }
@@ -6281,7 +6277,6 @@ async function doLinkChild() {
       document.getElementById('link-child-email-input').value = '';
       pushNotification('link', 'Liên kết con thành công 🔗',
         isSameAccount ? 'Bảng kiểm soát đã được liên kết với tài khoản học hiện tại.' : 'Đã kết nối với tài khoản học sinh ' + email + '. Bạn có thể theo dõi tiến độ học tập của con ngay bây giờ.');
-      showFeatureGuide('parent-home');
       setTimeout(() => { toggleLinkChildForm(); loadParentDashboard(); }, 1200);
       setMascotPoseById('buddy-sprite-parent-header', 6); // celebrate
     } else {
