@@ -51,6 +51,7 @@ ACCESS_TOKEN_EXPIRE_HOURS = int(os.environ.get("ACCESS_TOKEN_EXPIRE_HOURS", str(
 # (ENABLE_DEMO_ACCOUNTS=1). Production để trống → KHÔNG seed tài khoản mật khẩu mặc định.
 ADMIN_EMAIL          = os.environ.get("ADMIN_EMAIL", "admin@smartbuddy.vn")
 ADMIN_PASSWORD       = os.environ.get("ADMIN_PASSWORD", "")
+ADMIN_PASSWORD_RESET = os.environ.get("ADMIN_PASSWORD_RESET", "").lower() in ("1", "true", "yes")
 ENABLE_DEMO_ACCOUNTS = os.environ.get("ENABLE_DEMO_ACCOUNTS", "").lower() in ("1", "true", "yes")
 
 _DATABASE_URL_ENV_KEYS = (

@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 
-from app.config import ADMIN_EMAIL, ADMIN_PASSWORD, ENABLE_DEMO_ACCOUNTS
+from app.config import ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_PASSWORD_RESET, ENABLE_DEMO_ACCOUNTS
 from app.core.database import SessionLocal
 from app.core.security import hash_password, verify_password
 from app.models.user import User
@@ -31,6 +31,7 @@ def seed_demo_accounts() -> None:
       • Demo student/parent: chỉ khi ENABLE_DEMO_ACCOUNTS (dev/local).
       • Admin: mật khẩu lấy từ ENV (ADMIN_PASSWORD). Nếu admin cũ còn dùng 'admin123'
         và đã đặt ADMIN_PASSWORD → tự đổi sang mật khẩu mới (khắc phục lỗ hổng cũ).
+        Chỉ khi ADMIN_PASSWORD_RESET được bật mới chủ động đặt lại mật khẩu admin hiện có.
       • Prod không đặt ADMIN_PASSWORD → KHÔNG tạo admin mật khẩu mặc định (chỉ cảnh báo).
     """
     db = SessionLocal()
@@ -67,8 +68,12 @@ def seed_demo_accounts() -> None:
                 if admin.role != "admin":       # nâng cấp tài khoản admin cũ gán nhầm role
                     admin.role, admin.grade = "admin", 0
                     logger.info(f"[SEED] Nâng cấp role admin cho {ADMIN_EMAIL}")
+                # Cờ reset chỉ dùng một lần khi quản trị viên chủ động đặt lại mật khẩu.
+                if ADMIN_PASSWORD and ADMIN_PASSWORD_RESET:
+                    admin.password_hash = hash_password(ADMIN_PASSWORD)
+                    logger.warning(f"[SEED] Đã đặt lại mật khẩu admin theo yêu cầu ({ADMIN_EMAIL}).")
                 # Khắc phục lỗ hổng: admin còn dùng 'admin123' + đã có ADMIN_PASSWORD → đổi ngay.
-                if ADMIN_PASSWORD and verify_password(_OLD_DEFAULT_ADMIN_PW, admin.password_hash):
+                elif ADMIN_PASSWORD and verify_password(_OLD_DEFAULT_ADMIN_PW, admin.password_hash):
                     admin.password_hash = hash_password(ADMIN_PASSWORD)
                     logger.warning(f"[SEED] Đã đổi mật khẩu admin mặc định cũ → ADMIN_PASSWORD ({ADMIN_EMAIL}).")
         else:

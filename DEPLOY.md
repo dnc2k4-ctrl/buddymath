@@ -50,6 +50,7 @@ quyền truy cập trước; đừng khởi chạy production bằng database tr
 | `CRON_SECRET` | Có | Secret mạnh cho cron; Vercel gửi dưới dạng `Authorization: Bearer ...` |
 | `PUBLIC_BASE_URL` | Nên có | Domain production, ví dụ `https://<project>.vercel.app` |
 | `ADMIN_PASSWORD` | Khuyến nghị | Mật khẩu mạnh cho `admin@smartbuddy.vn` |
+| `ADMIN_PASSWORD_RESET` | Chỉ khi cần reset | Đặt `1` để áp dụng `ADMIN_PASSWORD` mới cho admin hiện có trong lần deploy kế tiếp; sau khi đăng nhập được, xoá biến này và redeploy. |
 | `BREVO_API_KEY`, `FROM_EMAIL` | Tuỳ chọn | Gửi email báo cáo phụ huynh |
 
 `GROQ_MODEL`, `JINA_MODEL`, `LLM_PROVIDER` và các cấu hình khác dùng mặc định
