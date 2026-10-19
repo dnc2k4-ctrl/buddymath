@@ -20,6 +20,9 @@
   a.btn{display:inline-block;padding:13px 26px;border-radius:14px;text-decoration:none;font-weight:900;
     color:#fff;background:linear-gradient(135deg,#1FCBA6,#13B392);box-shadow:0 10px 22px rgba(19,179,146,.32)}
   a.btn:hover{transform:translateY(-2px)}
+  .links{display:flex;justify-content:center;gap:10px 16px;flex-wrap:wrap;margin-top:20px;font-size:13px;font-weight:800}
+  .links a{color:#0E8F79;text-decoration:none}
+  .links a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -29,6 +32,11 @@
     <h1>Ối! Không tìm thấy trang này</h1>
     <p>Có thể đường dẫn bị sai hoặc trang đã được chuyển đi. Buddy sẽ đưa bạn về nhà nhé!</p>
     <a class="btn" href="/">← Về trang chủ</a>
+    <nav class="links" aria-label="Các khu vực SmartBuddy">
+      <a href="/app">Học sinh</a>
+      <a href="/parent-portal">Phụ huynh</a>
+      <a href="/admin">Quản trị</a>
+    </nav>
   </div>
 </body>
 </html>

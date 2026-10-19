@@ -1887,8 +1887,10 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
         <div class="user-dropdown-name" id="user-dropdown-name">--</div>
         <div class="user-dropdown-email" id="user-dropdown-email">--</div>
         <hr style="border:none;border-top:1px solid #F0EEFF;margin:8px 0;">
+        <a class="user-dropdown-item" href="/" style="color:var(--red);text-decoration:none;">🏠 Về trang chủ</a>
+        <a class="user-dropdown-item" href="/parent-portal" style="color:var(--red);text-decoration:none;">👨‍👩‍👧 Cổng phụ huynh</a>
+        <a class="user-dropdown-item" href="/admin" style="color:var(--red);text-decoration:none;">🛡️ Đăng nhập quản trị</a>
         <button class="user-dropdown-item" onclick="openAdminPanel()" id="admin-portal-link" style="display:none;">🛡️ Quản lý người dùng</button>
-        <a class="user-dropdown-item" href="/admin" id="admin-login-link" style="display:none;color:var(--red);text-decoration:none;">🔐 Trang đăng nhập quản trị</a>
         <button class="user-dropdown-item" onclick="openParentPortal()" id="parent-portal-link" style="display:none;">👨‍👩‍👧 Bảng kiểm soát phụ huynh</button>
         <button class="user-dropdown-item" onclick="showScoreHistory()">📊 Lịch sử điểm số</button>
         <button class="user-dropdown-item" onclick="logoutUser()">🚪 Đăng xuất</button>
@@ -8271,8 +8273,6 @@ let _sbToken = null;
             } else if (u.role === 'admin') {
               const al = document.getElementById('admin-portal-link');
               if (al) al.style.display = '';
-              const adminLoginLink = document.getElementById('admin-login-link');
-              if (adminLoginLink) adminLoginLink.style.display = '';
               try { openAdminPanel(); } catch(e) {}
             }
           } else {
@@ -9517,7 +9517,6 @@ function renderAuthState() {
   const adminSection = document.getElementById('admin-sidebar-section');
   const parentLink = document.getElementById('parent-portal-link');
   const adminLink  = document.getElementById('admin-portal-link');
-  const adminLoginLink = document.getElementById('admin-login-link');
 
   if (!authCurrentUser) {
     if (btnWrap)  btnWrap.style.display  = '';
@@ -9526,7 +9525,6 @@ function renderAuthState() {
     if (adminSection) adminSection.style.display = 'none';
     if (studentSection) studentSection.style.display = '';
     if (adminLink) adminLink.style.display = 'none';
-    if (adminLoginLink) adminLoginLink.style.display = 'none';
     document.body.classList.remove('role-parent');
     if (typeof renderNotifBadge === 'function') renderNotifBadge();
     return;
@@ -9557,7 +9555,6 @@ function renderAuthState() {
   if (studentSection) studentSection.style.display = (isParent || isAdmin) ? 'none' : '';
   if (parentLink) parentLink.style.display = isParent ? '' : 'none';
   if (adminLink) adminLink.style.display = isAdmin ? '' : 'none';
-  if (adminLoginLink) adminLoginLink.style.display = isAdmin ? '' : 'none';
   if (el('user-dropdown-email') && isAdmin && !email) el('user-dropdown-email').textContent = '🛡️ Quản trị viên';
   if (el('parent-welcome-msg') && isParent) el('parent-welcome-msg').textContent = 'Xin chào ' + name + '! Theo dõi con học tập.';
 
