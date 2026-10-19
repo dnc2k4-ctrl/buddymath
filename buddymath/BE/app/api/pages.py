@@ -6,7 +6,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from sqlalchemy.orm import Session
 
 from app import plans
@@ -18,6 +18,8 @@ router = APIRouter(tags=["pages"])
 
 
 def _serve(filename: str):
+    if IS_VERCEL:
+        return RedirectResponse(url=f"/{filename}")
     p = FRONTEND_DIR / filename
     if p.exists():
         return FileResponse(p)

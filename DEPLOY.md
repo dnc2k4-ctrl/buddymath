@@ -72,7 +72,8 @@ trong `app/config.py` nếu không đặt. Không bật demo accounts ở produc
   index bằng môi trường local, commit cả hai artifacts rồi redeploy.
 - Các trang HTML và ảnh frontend được đồng bộ từ `buddymath/FE/` sang
   `buddymath/BE/public/` bằng `build.py`; commit các file public để Vercel phục
-  vụ chúng như static assets.
+  vụ chúng như static assets. Trên Vercel, các route trang chính chuyển hướng
+  sang HTML tĩnh tương ứng; môi trường local vẫn phục vụ file trực tiếp.
 - API `/ingest` và `/ingest/reload` trả `501` trên Vercel vì file ghi trên
   Function không tồn tại bền vững.
 - Cron báo cáo chạy một lần/ngày (UTC). Vercel Hobby không thay thế worker
