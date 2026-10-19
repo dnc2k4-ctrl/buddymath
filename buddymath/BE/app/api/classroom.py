@@ -7,9 +7,15 @@ import asyncio
 import logging
 import re
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from sqlalchemy.orm import Session
 
+from app.api.deps import get_optional_user
+from app.core.database import get_db
+from app.models.user import User
 from app.schemas.catalog import ClassroomLessonRequest
+from app.services import chat_history_service, quota_service
+from app.services.email_service import notify_parents_activity_bg
 from app.services.runtime import get_loader, get_pipeline, get_rag
 
 logger = logging.getLogger(__name__)
@@ -52,7 +58,16 @@ async def _complete_with_retry(llm, messages, max_tokens, temperature=0.3, retri
 
 
 @router.post("/classroom/lesson")
-async def classroom_lesson(req: ClassroomLessonRequest):
+async def classroom_lesson(
+    req: ClassroomLessonRequest,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    user: User | None = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    quota_service.enforce_request(
+        db, request, user, metric=quota_service.METRIC_MATH, subject=req.subject
+    )
     rag      = get_rag()
     pipeline = get_pipeline()
 
@@ -98,6 +113,12 @@ TÀI LIỆU ({req.lesson}):
             line.strip() for line in answer.split("\n")
             if re.match(r"^(I{1,3}V?|VI{0,3}|IX|X)\.\s", line.strip())
         ]
+        if user:
+            chat_history_service.save_exchange(
+                db, user.id, f"Bắt đầu bài học {req.lesson}", answer,
+                subject=req.subject, session_id=req.session_id,
+            )
+            background_tasks.add_task(notify_parents_activity_bg, user.id)
         return {"answer": answer, "lesson_outline": outline, "sources": sources, "has_rag": has_rag}
 
     # ── MODE 2: HỎI ĐÁP (RAG search) ──────────────────────────────────────────
@@ -130,4 +151,9 @@ TÀI LIỆU:
         logger.error(f"Classroom Q&A LLM error: {exc}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(exc))
 
+    if user:
+        chat_history_service.save_exchange(
+            db, user.id, req.message, answer, subject=req.subject, session_id=req.session_id,
+        )
+        background_tasks.add_task(notify_parents_activity_bg, user.id)
     return {"answer": answer, "lesson_outline": [], "sources": qa_sources, "has_rag": has_rag}

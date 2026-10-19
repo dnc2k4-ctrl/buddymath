@@ -26,9 +26,23 @@ def _serve(filename: str):
     return JSONResponse({"error": f"Không tìm thấy {filename}"}, status_code=404)
 
 
+def _redirect_legacy_page(destination: str):
+    return RedirectResponse(url=destination, status_code=308)
+
+
 @router.get("/")
 async def root():
     return _serve("login.html")
+
+
+@router.get("/login.html", include_in_schema=False)
+async def legacy_login_page():
+    return _redirect_legacy_page("/")
+
+
+@router.get("/mathbuddy-kids.html", include_in_schema=False)
+async def legacy_app_page():
+    return _redirect_legacy_page("/app")
 
 
 @router.get("/app")
@@ -36,9 +50,19 @@ async def serve_app():
     return _serve("mathbuddy-kids.html")
 
 
+@router.get("/parent.html", include_in_schema=False)
+async def legacy_parent_page():
+    return _redirect_legacy_page("/parent-portal")
+
+
 @router.get("/parent-portal")
 async def serve_parent():
     return _serve("parent.html")
+
+
+@router.get("/admin.html", include_in_schema=False)
+async def legacy_admin_page():
+    return _redirect_legacy_page("/admin")
 
 
 @router.get("/admin")
@@ -47,10 +71,20 @@ async def serve_admin():
     return _serve("admin.html")
 
 
+@router.get("/terms.html", include_in_schema=False)
+async def legacy_terms_page():
+    return _redirect_legacy_page("/terms")
+
+
 @router.get("/terms")
 async def serve_terms():
     """Điều khoản sử dụng (bắt buộc cho sản phẩm công khai)."""
     return _serve("terms.html")
+
+
+@router.get("/privacy.html", include_in_schema=False)
+async def legacy_privacy_page():
+    return _redirect_legacy_page("/privacy")
 
 
 @router.get("/privacy")

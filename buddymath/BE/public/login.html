@@ -297,6 +297,7 @@ body{
             <button class="role-btn active" id="role-student" type="button" onclick="setRole('student')">🎒 Học sinh</button>
             <button class="role-btn" id="role-parent" type="button" onclick="setRole('parent')">👨‍👩‍👧 Phụ huynh</button>
           </div>
+          <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:7px;line-height:1.5;">Nếu gia đình dùng chung email, chỉ cần một tài khoản. Nâng cấp Standard hoặc Premium để mở thêm khu vực phụ huynh trên tài khoản đó.</div>
         </div>
 
         <div class="field">
@@ -489,7 +490,7 @@ async function doLogin(){
     localStorage.setItem('sb_token', data.token);
     localStorage.setItem('sb_user',  JSON.stringify(data.user));
     showOk('login-ok', `Chào mừng ${data.user.username}! Đang chuyển hướng...`);
-    setTimeout(()=>{ window.location.href = data.user.role === 'parent' ? '/parent-portal' : '/app'; }, 800);
+    setTimeout(()=>{ window.location.href = data.user.role === 'parent' ? (data.user.parent_access ? '/parent-portal' : '/app?upgrade=parent') : '/app'; }, 800);
   }catch(e){ showErr('login-err','Không kết nối được server. Hãy kiểm tra server đang chạy!'); }
   finally{ btn.disabled = false; btn.innerHTML = 'Đăng nhập <span>→</span>'; }
 }
@@ -550,7 +551,7 @@ async function doRegister(){
     localStorage.setItem('sb_token', data.token);
     localStorage.setItem('sb_user',  JSON.stringify(data.user));
     showOk('reg-ok', '🎉 Đăng ký thành công! Đang vào app...');
-    setTimeout(()=>{ window.location.href = data.user.role === 'parent' ? '/parent-portal' : '/app'; }, 1000);
+    setTimeout(()=>{ window.location.href = data.user.role === 'parent' ? (data.user.parent_access ? '/parent-portal' : '/app?upgrade=parent') : '/app'; }, 1000);
   }catch(e){ showErr('reg-err','Không kết nối được server. Hãy kiểm tra server đang chạy!'); btn.disabled=false; btn.innerHTML=old; }
 }
 

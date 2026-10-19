@@ -39,6 +39,14 @@ Hoặc trên Windows: nhấp đôi `run.bat`.
 - Parent: http://localhost:8000/parent-portal
 - Docs:   http://localhost:8000/docs
 
+## Tài khoản và gói học
+
+Mỗi email gắn với một tài khoản duy nhất. Tài khoản miễn phí có 7 ngày trải nghiệm,
+tối đa 10 lượt AI mỗi ngày (lượt gửi ảnh cũng được tính vào hạn mức này). Nâng cấp
+chính tài khoản đó lên Standard hoặc Premium sẽ mở Cổng Phụ huynh mà không cần tạo
+tài khoản trùng email. Standard nhận email tổng hợp hàng tuần; Premium nhận tối đa
+một thông báo hoạt động AI mỗi ngày cho mỗi phụ huynh–học sinh đã liên kết.
+
 ## Deploy lên Vercel
 
 BuddyMath có thể được deploy như một FastAPI Function duy nhất, phục vụ cả API

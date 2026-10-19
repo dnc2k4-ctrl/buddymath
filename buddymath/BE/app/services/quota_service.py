@@ -15,7 +15,7 @@ Gói áp dụng: user.effective_plan() (hết hạn tự về Free); khách → 
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import HTTPException, Request
@@ -121,6 +121,33 @@ def _feature_error(ui_key: str, feature_key: str, plan_id: str, upgrade_to: str)
     )
 
 
+def _trial_expired_error() -> HTTPException:
+    ui = plans.UI_TEXT["limitReached"]["trial"]
+    return HTTPException(
+        status_code=403,
+        detail={
+            "error": "trial_expired",
+            "plan": plans.DEFAULT_PLAN,
+            "upgradeTo": "standard",
+            "title": ui["title"],
+            "message": ui["body"],
+            "cta": ui["cta"],
+        },
+    )
+
+
+def trial_expired(user, now: Optional[datetime] = None) -> bool:
+    """Return whether a free account has used its seven-day trial."""
+    if user is None or plan_for(user) != plans.DEFAULT_PLAN:
+        return False
+    created_at = getattr(user, "created_at", None)
+    trial_days = int(plans.get_plan(plans.DEFAULT_PLAN).get("trialDays", 0))
+    if not created_at or not trial_days:
+        logger.warning("[quota] Tài khoản free thiếu created_at/trialDays; từ chối AI để tránh bỏ qua hạn dùng thử.")
+        return True
+    return (now or datetime.utcnow()) >= created_at + timedelta(days=trial_days)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Đếm usage (DB)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -170,25 +197,38 @@ def enforce_feature(*, plan_id: str, subject: Optional[str]) -> None:
 
 
 def check_and_record(db: Session, *, key: str, plan_id: str, metric: str) -> None:
+    check_and_record_many(db, key=key, plan_id=plan_id, metrics=(metric,))
+
+
+def check_and_record_many(
+    db: Session, *, key: str, plan_id: str, metrics: tuple[str, ...]
+) -> None:
     """
-    Chặn 429 nếu đã đạt giới hạn ngày; nếu còn lượt thì +1.
+    Kiểm tra tất cả hạn mức trước khi ghi usage để một yêu cầu không bị tính dở.
     Gói không giới hạn (Infinity) → không đếm, cho qua luôn.
     DB lỗi → fail-open (log, cho qua) để không chặn oan.
     """
-    limit = plans.get_limit(plan_id, _METRIC_LIMIT_KEY[metric])
-    if plans.is_unlimited(limit):
+    limited = [
+        (metric, plans.get_limit(plan_id, _METRIC_LIMIT_KEY[metric]))
+        for metric in metrics
+        if not plans.is_unlimited(plans.get_limit(plan_id, _METRIC_LIMIT_KEY[metric]))
+    ]
+    if not limited:
         return
     try:
-        used = current_count(db, key, metric)
+        used_counts = {metric: current_count(db, key, metric) for metric, _ in limited}
     except Exception as e:                  # noqa: BLE001
-        logger.warning(f"[quota] đọc usage lỗi ({key}/{metric}): {e} — fail-open")
+        logger.warning(f"[quota] đọc usage lỗi ({key}/{metrics}): {e} — fail-open")
         return
-    if used >= limit:
-        raise _quota_error(metric, plan_id, limit)
-    try:
-        _increment(db, key, metric)
-    except Exception as e:                   # noqa: BLE001
-        logger.warning(f"[quota] ghi usage lỗi ({key}/{metric}): {e} — cho qua")
+    for metric, limit in limited:
+        if used_counts[metric] >= limit:
+            raise _quota_error(metric, plan_id, limit)
+    for metric, _ in limited:
+        try:
+            _increment(db, key, metric)
+        except Exception as e:               # noqa: BLE001
+            logger.warning(f"[quota] ghi usage lỗi ({key}/{metric}): {e} — cho qua")
+            break
 
 
 def enforce_request(
@@ -196,9 +236,12 @@ def enforce_request(
 ) -> None:
     """Gộp: khoá môn (nếu có) + đếm/chặn quota. Endpoint chỉ cần gọi 1 hàm này."""
     plan_id = plan_for(user)
-    if metric == METRIC_MATH:              # môn học chỉ áp cho câu hỏi text
+    if trial_expired(user):
+        raise _trial_expired_error()
+    if metric in (METRIC_MATH, METRIC_IMAGE):
         enforce_feature(plan_id=plan_id, subject=subject)
-    check_and_record(db, key=key_for(request, user), plan_id=plan_id, metric=metric)
+    metrics = (METRIC_MATH, METRIC_IMAGE) if metric == METRIC_IMAGE else (metric,)
+    check_and_record_many(db, key=key_for(request, user), plan_id=plan_id, metrics=metrics)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

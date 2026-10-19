@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app import plans
 from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.llm.client import LLMClient
@@ -25,8 +26,14 @@ router = APIRouter(prefix="/parent", tags=["parent"])
 
 
 def _require_parent(user: User) -> None:
-    if user.role != "parent":
-        raise HTTPException(403, "Chỉ tài khoản phụ huynh mới có quyền này")
+    has_parent_role = user.role in ("student", "parent")
+    parent_access = plans.feature_enabled(user.effective_plan(), "parentPortalEnabled")
+    if not has_parent_role or not parent_access:
+        raise HTTPException(
+            403,
+            "Khu vực phụ huynh đang dành cho tài khoản Standard hoặc Premium. "
+            "Hãy đăng nhập bằng tài khoản hiện có rồi cùng bố mẹ chọn gói phù hợp nhé.",
+        )
 
 
 def _require_link(db: Session, parent_id: str, child_id: str) -> ParentChildLink:
@@ -46,10 +53,10 @@ async def link_child(
     db: Session = Depends(get_db),
 ):
     _require_parent(current_user)
-    child = db.query(User).filter(User.email == req.child_email.lower()).first()
+    child = db.query(User).filter(User.email == req.child_email.strip().lower()).first()
     if not child:
         raise HTTPException(404, "Không tìm thấy tài khoản học sinh với email này")
-    if child.role != "student":
+    if child.id != current_user.id and child.role != "student":
         raise HTTPException(400, "Tài khoản này không phải là học sinh")
     existing = db.query(ParentChildLink).filter(
         ParentChildLink.parent_id == current_user.id,
@@ -432,6 +439,11 @@ async def send_report(
     db: Session = Depends(get_db),
 ):
     _require_parent(current_user)
+    if (
+        plans.get_limit(current_user.effective_plan(), "emailReportFrequency") == "weekly"
+        and req.period != "week"
+    ):
+        raise HTTPException(403, "Gói Standard gửi báo cáo tổng hợp theo tuần. Gói Premium có thông báo hoạt động hằng ngày.")
     _require_link(db, current_user.id, req.child_id)
     child = db.query(User).filter(User.id == req.child_id).first()
     days  = 7 if req.period == "week" else 30

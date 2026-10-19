@@ -42,8 +42,13 @@ class ResetReq(BaseModel):
 async def send_register_otp(req: SendOtpReq, db: Session = Depends(get_db)):
     """Gửi mã OTP xác minh email khi ĐĂNG KÝ."""
     email = req.email.strip().lower()
-    if db.query(User).filter(User.email == email).first():
-        raise HTTPException(400, "Email này đã được đăng ký rồi")
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
+        raise HTTPException(
+            409,
+            "Email này đã có tài khoản. Hãy đăng nhập bằng tài khoản hiện có; "
+            "sau khi nâng cấp Standard hoặc Premium, phụ huynh có thể dùng chính tài khoản đó.",
+        )
     if not smtp_configured():
         raise HTTPException(
             503,
@@ -66,7 +71,11 @@ async def send_register_otp(req: SendOtpReq, db: Session = Depends(get_db)):
 async def register(req: RegisterReq, db: Session = Depends(get_db)):
     email = req.email.strip().lower()
     if db.query(User).filter(User.email == email).first():
-        raise HTTPException(400, "Email này đã được đăng ký rồi")
+        raise HTTPException(
+            409,
+            "Email này đã có tài khoản. Hãy đăng nhập bằng tài khoản hiện có thay vì tạo tài khoản trùng; "
+            "nâng cấp gói sẽ mở thêm khu vực phụ huynh trên cùng tài khoản.",
+        )
     if len(req.password) < 6:
         raise HTTPException(400, "Mật khẩu phải có ít nhất 6 ký tự")
     # BẮT BUỘC xác minh email bằng OTP trước khi tạo tài khoản (chống đăng ký chui/bot).

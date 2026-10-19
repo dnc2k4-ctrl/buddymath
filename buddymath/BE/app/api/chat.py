@@ -6,7 +6,7 @@ from __future__ import annotations
 import base64
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
@@ -20,6 +20,7 @@ from app.llm.smart_buddy import with_core
 from app.models.user import User
 from app.schemas.chat import ChatRequest, ChatResponse, GroqDirectRequest, ImageChatRequest
 from app.services import chat_history_service, quota_service
+from app.services.email_service import notify_parents_activity_bg
 from app.services.runtime import get_pipeline
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,7 @@ MAX_IMAGE_BYTES = 20 * 1024 * 1024  # 20 MB
 async def chat(
     req: ChatRequest,
     request: Request,
+    background_tasks: BackgroundTasks,
     _rl: None = Depends(rate_limit_llm),
     user: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
@@ -80,6 +82,7 @@ async def chat(
                 db, user.id, req.message, result.get("answer", ""),
                 subject=req.subject or "", session_id=req.session_id,
             )
+            background_tasks.add_task(notify_parents_activity_bg, user.id)
         return ChatResponse(
             answer=result["answer"],
             sources=result.get("sources", []),
@@ -96,6 +99,7 @@ async def chat(
 async def chat_stream(
     req: ChatRequest,
     request: Request,
+    background_tasks: BackgroundTasks,
     _rl: None = Depends(rate_limit_llm),
     user: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
@@ -106,6 +110,7 @@ async def chat_stream(
     pipeline = get_pipeline()
 
     async def event_generator():
+        answer_chunks = []
         async for chunk in pipeline.stream(
             message=req.message,
             session_id=req.session_id,
@@ -113,10 +118,18 @@ async def chat_stream(
             subject=req.subject,
             grade=req.grade,
         ):
+            answer_chunks.append(chunk)
             yield f"data: {chunk}\n\n"
+        if user:
+            chat_history_service.save_exchange(
+                db, user.id, req.message, "".join(answer_chunks),
+                subject=req.subject or "", session_id=req.session_id,
+            )
         yield "data: [DONE]\n\n"
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    if user:
+        background_tasks.add_task(notify_parents_activity_bg, user.id)
+    return StreamingResponse(event_generator(), media_type="text/event-stream", background=background_tasks)
 
 
 # ─── Chat với ảnh đính kèm ────────────────────────────────────────────────────
@@ -124,6 +137,7 @@ async def chat_stream(
 async def chat_with_image(
     req: ImageChatRequest,
     request: Request,
+    background_tasks: BackgroundTasks,
     _rl: None = Depends(rate_limit_llm),
     user: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
@@ -165,6 +179,13 @@ async def chat_with_image(
     except Exception as exc:
         logger.error(f"Image chat error: {exc}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(exc))
+
+    if user:
+        chat_history_service.save_exchange(
+            db, user.id, message, result.get("answer", ""),
+            subject=req.subject or "", session_id=req.session_id,
+        )
+        background_tasks.add_task(notify_parents_activity_bg, user.id)
 
     return ChatResponse(
         answer=result["answer"],
@@ -215,6 +236,7 @@ def _normalize_content(content, model_supports_vision: bool):
 async def groq_proxy(
     req: GroqDirectRequest,
     request: Request,
+    background_tasks: BackgroundTasks,
     _rl: None = Depends(rate_limit_llm),
     user: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
@@ -319,13 +341,15 @@ async def groq_proxy(
 
     # Lưu lịch sử — CHỈ hội thoại thật của học sinh (use_core=True). Lệnh tạo đề/chấm bài
     # (use_core=False) KHÔNG lưu để lịch sử không bị rác + báo cáo phụ huynh đếm đúng số câu hỏi.
-    if user and req.use_core:
-        chat_history_service.save_exchange(
-            db, user.id,
-            _last_user_text(req.messages), reply,
-            subject=getattr(req, "subject", "") or "",
-            session_id=getattr(req, "session_id", None),
-        )
+    if user:
+        if req.use_core:
+            chat_history_service.save_exchange(
+                db, user.id,
+                _last_user_text(req.messages), reply,
+                subject=getattr(req, "subject", "") or "",
+                session_id=getattr(req, "session_id", None),
+            )
+        background_tasks.add_task(notify_parents_activity_bg, user.id)
 
     return {
         "content": [{"type": "text", "text": reply}],

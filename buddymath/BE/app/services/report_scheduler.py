@@ -2,9 +2,9 @@
 report_scheduler.py – Gửi email báo cáo cho phụ huynh THEO LỊCH của gói.
 
 Tần suất đọc từ app/plans.py (emailReportFrequency):
-  • free      → None        → KHÔNG gửi theo lịch
-  • standard  → "weekly"    → gửi HÀNG TUẦN (module này lo)
-  • premium   → "per_lesson"→ gửi sau MỖI bài (đã lo ở email_service.notify_parents)
+  • free      → None             → KHÔNG gửi
+  • standard  → "weekly"         → tổng hợp HÀNG TUẦN
+  • premium   → "daily_activity" → thông báo khi con học (đã lo ở email_service)
 
 Chống gửi trùng: mỗi cặp phụ huynh–con lưu `last_report_at`; chỉ gửi khi tới kỳ.
 Được gọi bởi: (1) vòng lặp nền trong lifespan; (2) endpoint /tasks/run-scheduled-reports (cron).
@@ -41,9 +41,8 @@ def send_due_reports(db: Session) -> dict:
         if not (parent and child and parent.email):
             continue
 
-        freq = plans.get_limit(child.effective_plan(), "emailReportFrequency")
-        # Chỉ gửi theo lịch cho tần suất định kỳ (hiện là 'weekly'). per_lesson lo ở notify_parents,
-        # None (free) = không gửi.
+        freq = plans.get_limit(parent.effective_plan(), "emailReportFrequency")
+        # Gói của phụ huynh quyết định email; daily_activity được gửi khi con học.
         if freq not in _PERIOD_DAYS:
             continue
 

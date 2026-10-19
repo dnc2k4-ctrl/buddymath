@@ -4,7 +4,8 @@ user.py – ORM models cho người dùng và liên kết phụ huynh–học si
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+import math
+from datetime import datetime, timedelta
 from typing import Optional
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
@@ -41,6 +42,18 @@ class User(Base):
         return plans.effective_plan(self.plan, self.plan_expires_at, now)
 
     def to_dict(self) -> dict:
+        now = datetime.utcnow()
+        plan = self.effective_plan(now)
+        trial_days = int(plans.get_plan("free").get("trialDays", 0))
+        trial_ends_at = self.created_at + timedelta(days=trial_days) if self.created_at and trial_days else None
+        remaining_seconds = (trial_ends_at - now).total_seconds() if trial_ends_at else 0
+        subscription_plan = self.plan if (
+            self.plan in ("standard", "premium") and self.plan_expires_at
+        ) else None
+        subscription_days_remaining = (
+            math.ceil((self.plan_expires_at - now).total_seconds() / 86400)
+            if subscription_plan else None
+        )
         return {
             "id":       self.id,
             "email":    self.email,
@@ -49,8 +62,13 @@ class User(Base):
             "role":     self.role,
             "grade":    self.grade,
             "avatar":   self.avatar,
-            "plan":            self.effective_plan(),
+            "plan":            plan,
+            "subscription_plan": subscription_plan,
             "plan_expires_at": self.plan_expires_at.isoformat() if self.plan_expires_at else None,
+            "subscription_days_remaining": subscription_days_remaining,
+            "trial_ends_at": trial_ends_at.isoformat() if plan == plans.DEFAULT_PLAN and trial_ends_at else None,
+            "trial_days_remaining": max(0, math.ceil(remaining_seconds / 86400)) if plan == plans.DEFAULT_PLAN else None,
+            "parent_access": self.role in ("student", "parent") and plans.feature_enabled(plan, "parentPortalEnabled"),
         }
 
 
@@ -63,3 +81,5 @@ class ParentChildLink(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     # Lần gửi báo cáo THEO LỊCH gần nhất (chống gửi trùng trong 1 kỳ).
     last_report_at = Column(DateTime, nullable=True)
+    # Premium: lần gửi thông báo hoạt động AI trong ngày gần nhất.
+    last_activity_email_at = Column(DateTime, nullable=True)

@@ -41,6 +41,7 @@ def init_db() -> None:
         "ALTER TABLE users ADD COLUMN plan VARCHAR DEFAULT 'free'",
         "ALTER TABLE users ADD COLUMN plan_expires_at TIMESTAMP",
         "ALTER TABLE parent_child_links ADD COLUMN last_report_at TIMESTAMP",
+        "ALTER TABLE parent_child_links ADD COLUMN last_activity_email_at TIMESTAMP",
     ]
     for ddl in _migrations:
         try:

@@ -50,6 +50,16 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 .user-role{font-size:10px;font-weight:700;color:rgba(255,255,255,0.85);}
 .logout-btn{background:rgba(255,255,255,0.18);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:12px;padding:8px 13px;font-family:'Nunito',Arial;font-size:12.5px;font-weight:900;cursor:pointer;transition:all .15s;box-shadow:0 3px 0 rgba(0,0,0,0.12);}
 .logout-btn:hover{background:rgba(255,255,255,0.32);transform:translateY(-1px);}
+@keyframes sbHelpBackdropIn{from{opacity:0}to{opacity:1}}
+@keyframes sbHelpPopupIn{from{opacity:0;transform:scale(.88) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes sbHelpPopupOut{to{opacity:0;transform:scale(.84) translateY(12px)}}
+.parent-help-overlay{position:fixed;inset:0;z-index:10030;display:flex;align-items:center;justify-content:center;overflow-y:auto;overscroll-behavior:contain;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:rgba(16,31,51,.58);animation:sbHelpBackdropIn .18s ease-out;}
+.parent-help-card{width:min(600px,100%);max-height:min(88vh,760px);max-height:min(88dvh,760px);min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;background:#fff;border-radius:22px;padding:clamp(16px,4vw,24px);box-shadow:0 24px 70px rgba(0,0,0,.28);animation:sbHelpPopupIn .22s cubic-bezier(.2,.8,.2,1);}
+.parent-help-overlay.parent-help-closing{animation:sbHelpBackdropIn .16s ease-in reverse;}
+.parent-help-closing .parent-help-card{animation:sbHelpPopupOut .16s ease-in forwards;}
+#parent-help-launcher{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:10024;width:50px;height:50px;border:2px solid #CDEEE4;border-radius:50%;background:#fff;color:#11917A;box-shadow:0 6px 20px rgba(18,49,74,.22);font-size:23px;cursor:pointer;align-items:center;justify-content:center;transition:transform .18s ease,box-shadow .18s ease;}
+#parent-help-launcher:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(18,49,74,.28);}
+@media(prefers-reduced-motion:reduce){.parent-help-overlay,.parent-help-card{animation-duration:.01ms!important;}}
 .site-nav-panel{display:flex;gap:7px;flex-wrap:wrap;}
 .site-nav-panel a{flex:1 1 110px;text-align:center;padding:8px 10px;border:1.5px solid #CDEEE4;border-radius:10px;background:#fff;color:var(--teal-d);font-size:12px;font-weight:900;text-decoration:none;}
 .site-nav-panel a:hover{background:#EAFBF5;}
@@ -223,6 +233,15 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 
 @media(max-width:1000px){.charts-grid{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:760px){.layout{grid-template-columns:1fr;}.sidebar{max-height:34vh;}}
+@media(max-width:640px){
+  .header{height:auto;min-height:60px;padding:8px 12px;gap:8px;flex-wrap:wrap;}
+  .logo{flex:1 1 auto;min-width:0;}
+  .badge-pill{padding:4px 9px;font-size:10px;}
+  .header-right{width:100%;margin-left:0;gap:8px;flex-wrap:wrap;}
+  .user-pill{flex:1 1 auto;min-width:0;}
+  .logout-btn{padding:7px 9px;font-size:11.5px;}
+}
+@media(max-width:360px){.logo-sub{display:none;}.logo-txt{font-size:17px;}}
 
 /* ── Thu nhỏ + đơn giản hoá giao diện chính ── */
 .main{max-width:1120px;margin:0 auto;width:100%;padding:16px 20px;gap:14px;}
@@ -300,6 +319,17 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
   </div>
 </header>
 
+<div id="parent-plan-expiry-notice" role="alert" aria-live="assertive" style="display:none;position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:10015;width:min(760px,calc(100vw - 24px));padding:14px 16px;border:2px solid #FFE0A3;border-radius:16px;background:#FFF8E9;box-shadow:0 10px 30px rgba(30,50,70,.2);color:#5A4318;">
+  <div style="display:flex;align-items:flex-start;gap:12px;">
+    <div style="flex:1;min-width:0;">
+      <div id="parent-plan-expiry-title" style="font-weight:900;font-size:15px;line-height:1.4;"></div>
+      <div id="parent-plan-expiry-message" style="margin-top:3px;font-size:13px;line-height:1.5;overflow-wrap:anywhere;"></div>
+      <div id="parent-plan-expiry-actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
+    </div>
+    <button type="button" onclick="dismissParentPlanExpiryNotice()" aria-label="Đóng thông báo gia hạn" style="flex:0 0 auto;border:0;background:transparent;color:#765D2B;font-size:20px;cursor:pointer;">×</button>
+  </div>
+</div>
+
 <div class="layout">
   <!-- Sidebar -->
   <div class="sidebar">
@@ -311,10 +341,11 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
     <div class="sidebar-title">👨‍👩‍👧 Con em tôi</div>
     <div id="children-list"><div class="loading-spinner"></div></div>
 
-    <div class="sidebar-title" style="margin-top:4px;">➕ Thêm tài khoản con</div>
+    <div class="sidebar-title" style="margin-top:4px;">➕ Liên kết tài khoản học sinh</div>
     <div class="link-box">
-      <div class="link-title">🔗 Liên kết tài khoản học sinh</div>
-      <input class="link-input" id="child-email-input" type="email" placeholder="Email của con em...">
+      <div class="link-title">🔗 Dùng email học sinh</div>
+      <div style="font-size:11px;color:var(--text2);font-weight:700;line-height:1.5;margin-bottom:8px;">Nếu một email dùng cho cả học sinh và phụ huynh, hãy nhập lại email đang đăng nhập.</div>
+      <input class="link-input" id="child-email-input" type="email" placeholder="Email tài khoản học sinh...">
       <button class="link-btn" onclick="linkChild()">➕ Liên kết</button>
       <div id="link-msg" style="font-size:12px;margin-top:8px;font-weight:700;color:var(--teal-d);display:none;"></div>
     </div>
@@ -390,6 +421,42 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 
 <div class="toast" id="toast"></div>
 
+<button id="parent-help-launcher" type="button" aria-label="Mở hướng dẫn và mẹo" title="Mở hướng dẫn và mẹo" onclick="openLastParentHelp()" style="display:none;">🔍</button>
+
+<div id="parent-tip-overlay" class="parent-help-overlay" role="presentation" aria-hidden="true" onclick="if(event.target===this)closeParentTip()" style="display:none;">
+  <section class="parent-help-card" role="dialog" aria-modal="true" aria-labelledby="parent-tip-title">
+    <button type="button" aria-label="Đóng mẹo" onclick="closeParentTip()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button>
+    <div style="font-size:12px;font-weight:900;color:var(--teal-d);letter-spacing:.08em;">🔍 MẸO THEO CHỨC NĂNG</div>
+    <h2 id="parent-tip-title" style="font-family:'Baloo 2',cursive;font-size:23px;line-height:1.25;margin:5px 42px 10px 0;">Mẹo nhanh</h2>
+    <p id="parent-tip-text" style="color:var(--text2);font-size:14px;line-height:1.7;overflow-wrap:anywhere;"></p>
+    <button type="button" onclick="closeParentTip()" style="margin-top:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#11917A);color:#fff;padding:10px 16px;font:900 14px Nunito,Arial;cursor:pointer;">Đã rõ</button>
+  </section>
+</div>
+
+<div id="parent-guide-overlay" class="parent-help-overlay" role="presentation" aria-hidden="true" onclick="if(event.target===this)closeParentGuide()" style="display:none;">
+  <section class="parent-help-card" role="dialog" aria-modal="true" aria-labelledby="parent-guide-title">
+    <button type="button" aria-label="Đóng hướng dẫn" onclick="closeParentGuide()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button>
+    <div style="font-size:12px;font-weight:900;color:var(--teal-d);letter-spacing:.08em;">🔍 SMARTBUDDY · HƯỚNG DẪN PHỤ HUYNH</div>
+    <h2 id="parent-guide-title" style="font-family:'Baloo 2',cursive;font-size:23px;margin:4px 42px 8px 0;">Cùng con học thật vui</h2>
+    <p style="color:var(--text2);font-size:13px;line-height:1.6;">Cổng này giúp xem tiến độ học tập, đọc nhận xét và tham khảo gợi ý từ AI Cố vấn. Hãy dùng các báo cáo để trò chuyện tích cực với con.</p>
+    <div style="padding:12px 14px;margin:12px 0;border-radius:13px;background:#F0FBF7;border:1px solid #D7F1E8;">
+      <b>📚 Gói và hạn mức tài khoản</b>
+      <div id="parent-guide-plan" style="margin-top:5px;font-size:13px;"></div>
+      <div id="parent-guide-trial" style="margin-top:4px;font-size:13px;"></div>
+      <div id="parent-guide-quota" style="margin-top:4px;font-size:13px;"></div>
+      <div id="parent-guide-error" style="margin-top:4px;color:#A05A00;font-size:12px;"></div>
+    </div>
+    <ul style="padding-left:20px;color:var(--text2);font-size:13px;line-height:1.7;">
+      <li>Liên kết học sinh bằng email; nếu dùng chung một email, nhập lại email tài khoản hiện tại.</li>
+      <li>Chọn học sinh để xem báo cáo 7 hoặc 30 ngày; mở tab AI Cố vấn để đặt câu hỏi dựa trên tiến độ.</li>
+      <li id="parent-guide-email-cadence">Đang tải quyền lợi email theo gói…</li>
+      <li>Học sinh Free có thời gian dùng thử và giới hạn câu hỏi mỗi ngày; khuyến khích nghỉ ngắn sau mỗi chặng học.</li>
+    </ul>
+    <button type="button" onclick="closeParentGuide()" style="margin-top:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#11917A);color:#fff;padding:11px 18px;font:900 14px Nunito,Arial;cursor:pointer;">Đã hiểu</button>
+  </section>
+</div>
+
+<script src="/config/plans.js"></script>
 <script>
 // ── Bubbles nền (đã bỏ để giao diện gọn hơn — giữ guard cho an toàn) ──
 (function(){
@@ -424,9 +491,190 @@ const SUBJ_STYLE = {
 const PALETTE=['#1FCBA6','#1E90FF','#FF6B35','#A55EEA','#FF6EB4','#FFCB45'];
 function subjStyle(name,i){return SUBJ_STYLE[name]||{icon:'📚',color:PALETTE[i%PALETTE.length]};}
 
+let _parentHelpKind='guide';
+let _parentTipKind='overview';
+function showParentHelpLauncher(){
+  const launcher=document.getElementById('parent-help-launcher');
+  if(launcher&&user?.id) launcher.style.display='flex';
+}
+function _hideParentHelpLauncher(){
+  const launcher=document.getElementById('parent-help-launcher');
+  if(launcher) launcher.style.display='none';
+}
+function _hideParentHelpOverlay(overlay){
+  if(!overlay) return;
+  if(overlay._closeTimer){ clearTimeout(overlay._closeTimer); overlay._closeTimer=null; }
+  overlay.style.display='none';
+  overlay.style.pointerEvents='';
+  overlay.classList.remove('parent-help-closing');
+  overlay.setAttribute('aria-hidden','true');
+  document.body.style.overflow=overlay.dataset.previousOverflow||'';
+}
+function _showParentHelpOverlay(overlay,kind){
+  if(!overlay) return;
+  const other=overlay.id==='parent-guide-overlay'
+    ?document.getElementById('parent-tip-overlay')
+    :document.getElementById('parent-guide-overlay');
+  if(other?.style.display==='flex') _hideParentHelpOverlay(other);
+  if(overlay._closeTimer){ clearTimeout(overlay._closeTimer); overlay._closeTimer=null; }
+  overlay.classList.remove('parent-help-closing');
+  overlay.style.pointerEvents='';
+  overlay.setAttribute('aria-hidden','false');
+  overlay.dataset.previousOverflow=document.body.style.overflow==='hidden'
+    ?(overlay.dataset.previousOverflow||'')
+    :document.body.style.overflow;
+  document.body.style.overflow='hidden';
+  overlay.style.display='flex';
+  _parentHelpKind=kind;
+  _hideParentHelpLauncher();
+  overlay.querySelector('button[aria-label^="Đóng"]')?.focus();
+}
+function _closeParentHelpOverlay(overlay){
+  if(!overlay||overlay.style.display==='none'||overlay._closeTimer) return;
+  overlay.setAttribute('aria-hidden','true');
+  overlay.style.pointerEvents='none';
+  overlay.classList.add('parent-help-closing');
+  overlay._closeTimer=setTimeout(()=>{
+    overlay.style.display='none';
+    overlay.style.pointerEvents='';
+    overlay.classList.remove('parent-help-closing');
+    overlay._closeTimer=null;
+    document.body.style.overflow=overlay.dataset.previousOverflow||'';
+    showParentHelpLauncher();
+  },170);
+}
+function openLastParentHelp(){
+  if(_parentHelpKind==='tip') showParentTip(_parentTipKind);
+  else openParentGuide();
+}
+function closeParentGuide(){
+  _closeParentHelpOverlay(document.getElementById('parent-guide-overlay'));
+  if(user?.id){
+    try{ localStorage.setItem(`sb_guide_seen_${user.id}_parent_portal`,'1'); }catch(e){}
+  }
+}
+function closeParentTip(){ _closeParentHelpOverlay(document.getElementById('parent-tip-overlay')); }
+document.addEventListener('keydown',event=>{
+  if(event.key!=='Escape') return;
+  if(document.getElementById('parent-guide-overlay').style.display==='flex') closeParentGuide();
+  else closeParentTip();
+});
+async function openParentGuide(){
+  const overlay=document.getElementById('parent-guide-overlay');
+  _showParentHelpOverlay(overlay,'guide');
+  document.getElementById('parent-guide-plan').textContent='Đang tải thông tin gói…';
+  document.getElementById('parent-guide-trial').textContent='';
+  document.getElementById('parent-guide-quota').textContent='Đang kiểm tra hạn mức hôm nay…';
+  document.getElementById('parent-guide-error').textContent='';
+  const table=window.SB_PLANS?.plans||window.SB_PLANS||{};
+  try{
+    const res=await authFetch('/billing/usage');
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    const planId=data.plan||user?.plan||'free';
+    const plan=table[planId]||{};
+    document.getElementById('parent-guide-plan').textContent=`Gói hiện tại: ${plan.name||planId}.`;
+    const cadenceLabel=value=>value==='weekly'?'tổng hợp hàng tuần'
+      :value==='daily_activity'?'thông báo hoạt động hàng ngày'
+      :value?'theo quyền lợi gói':'không có báo cáo email';
+    document.getElementById('parent-guide-email-cadence').textContent=
+      `Standard: ${cadenceLabel(table.standard?.limits?.emailReportFrequency)}; Premium: ${cadenceLabel(table.premium?.limits?.emailReportFrequency)}.`;
+    if(planId==='free'){
+      const days=Number.isFinite(user?.trial_days_remaining)?user.trial_days_remaining:null;
+      document.getElementById('parent-guide-trial').textContent=days===null
+        ?`Thời gian dùng thử tối đa ${table.free?.trialDays||'theo gói hiện tại'} ngày.`
+        :days>0?`Còn ${days} ngày dùng thử.`:'Thời gian dùng thử đã kết thúc; cần nâng cấp để tiếp tục dùng AI.';
+    }else{
+      document.getElementById('parent-guide-trial').textContent='Tài khoản đang dùng gói trả phí.';
+    }
+    const math=data.usage?.math||{};
+    const limit=math.limit??(planId==='free'?table.free?.limits?.mathQuestionsPerDay:null);
+    document.getElementById('parent-guide-quota').textContent=math.unlimited||limit==null
+      ?'Câu hỏi AI hôm nay: không giới hạn theo gói.'
+      :`Câu hỏi AI hôm nay: đã dùng ${math.used||0}/${limit}, còn ${math.remaining??Math.max(0,limit-(math.used||0))} lượt.`;
+  }catch(error){
+    console.error('Không tải được hạn mức trong hướng dẫn phụ huynh:',error);
+    document.getElementById('parent-guide-error').textContent='Chưa tải được số lượt hiện tại. Hạn mức sẽ được kiểm tra lại khi gửi câu hỏi.';
+  }
+}
+function showParentTip(kind){
+  const tips={
+    overview:'Chọn học sinh để xem báo cáo; nếu dùng chung một email cho hai giao diện, hãy liên kết lại chính email đang đăng nhập.',
+    report:'Báo cáo 7 ngày phù hợp theo dõi thường xuyên; chuyển 30 ngày để nhìn xu hướng dài hơn.',
+    advisor:'Đặt câu hỏi cụ thể về môn học hoặc cách động viên con. AI Cố vấn chỉ đưa gợi ý tham khảo.',
+    link:'Tài khoản trả phí có thể liên kết email học sinh; nhập email hiện tại nếu đây là tài khoản dùng chung.'
+  };
+  const titles={overview:'Bắt đầu tại Cổng Phụ huynh',report:'Đọc báo cáo học tập',advisor:'Dùng AI Cố vấn',link:'Liên kết tài khoản học sinh'};
+  _parentTipKind=tips[kind]?kind:'overview';
+  const overlay=document.getElementById('parent-tip-overlay');
+  document.getElementById('parent-tip-title').textContent=titles[_parentTipKind];
+  document.getElementById('parent-tip-text').textContent=tips[_parentTipKind];
+  _showParentHelpOverlay(overlay,'tip');
+}
+function dismissParentPlanExpiryNotice(){
+  const notice=document.getElementById('parent-plan-expiry-notice');
+  if(notice){
+    notice.style.display='none';
+    if(notice.__positionNotice) window.removeEventListener('resize',notice.__positionNotice);
+  }
+  try{
+    if(user?.id&&user?.plan_expires_at){
+      sessionStorage.setItem(`sb_plan_notice_closed_${user.id}_${user.plan_expires_at}`,'1');
+    }
+  }catch(e){ console.error('Không lưu được trạng thái thông báo gia hạn:',e); }
+}
+function goToPlanCheckout(action,plan){
+  if(!['renew','upgrade'].includes(action)||!['standard','premium'].includes(plan)) return;
+  const params=new URLSearchParams({plan_action:action,plan});
+  window.location.href='/app?'+params.toString();
+}
+function showParentPlanExpiryNotice(account){
+  const planId=account?.subscription_plan||(['standard','premium'].includes(account?.plan)?account.plan:null);
+  if(!planId||!account?.plan_expires_at) return;
+  let days=Number.isFinite(account.subscription_days_remaining)?account.subscription_days_remaining:null;
+  if(days===null){
+    const expires=Date.parse(account.plan_expires_at);
+    if(!Number.isFinite(expires)) return;
+    days=Math.ceil((expires-Date.now())/86400000);
+  }
+  if(days>7) return;
+  try{
+    if(sessionStorage.getItem(`sb_plan_notice_closed_${account.id}_${account.plan_expires_at}`)) return;
+  }catch(e){ console.error('Không đọc được trạng thái thông báo gia hạn:',e); }
+  const plan=(window.SB_PLANS?.plans||window.SB_PLANS||{})[planId];
+  const planName=plan?.name||(planId==='premium'?'Premium':'Standard');
+  const notice=document.getElementById('parent-plan-expiry-notice');
+  document.getElementById('parent-plan-expiry-title').textContent=days<=0
+    ?`Gói ${planName} đã hết hạn`
+    :`Gói ${planName} còn ${days} ngày`;
+  document.getElementById('parent-plan-expiry-message').textContent=days<=0
+    ?'Quyền lợi gói đã tạm dừng. Gia hạn để tiếp tục sử dụng khu vực phụ huynh và các tính năng đã đăng ký.'
+    :`Gói sẽ hết hạn trong ${days} ngày. Gia hạn trước ngày hết hạn để tiếp tục dùng các quyền lợi hiện tại.`;
+  const actions=document.getElementById('parent-plan-expiry-actions');
+  actions.replaceChildren();
+  const addAction=(label,action,target,primary)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent=label;
+    button.style.cssText=`flex:1 1 180px;min-width:0;padding:9px 12px;border:0;border-radius:10px;background:${primary?'#11917A':'#fff'};color:${primary?'#fff':'#11917A'};font:900 13px/1.35 Nunito,Arial;cursor:pointer;overflow-wrap:anywhere;`;
+    button.addEventListener('click',()=>goToPlanCheckout(action,target));
+    actions.appendChild(button);
+  };
+  addAction(`Gia hạn gói ${planName}`,'renew',planId,true);
+  if(planId==='standard') addAction('Nâng cấp lên Premium','upgrade','premium',false);
+  const positionNotice=()=>{
+    const header=document.querySelector('.header');
+    notice.style.top=`${Math.round(header?.getBoundingClientRect().bottom||60)+10}px`;
+  };
+  notice.__positionNotice=positionNotice;
+  positionNotice();
+  window.addEventListener('resize',positionNotice,{passive:true});
+  notice.style.display='block';
+}
+
 // Auth guard
 if(!token || !user){ window.location.href='/'; }
-if(user && user.role!=='parent'){ window.location.href='/app'; }
+if(user && (!['student','parent'].includes(user.role) || !user.parent_access)){ window.location.href='/app?upgrade=parent'; }
 document.getElementById('parent-name').textContent = user?.username || 'Phụ huynh';
 document.getElementById('hero-name').textContent   = user?.username || 'Phụ huynh';
 
@@ -437,7 +685,7 @@ async function loadChildren(){
     const children=await res.json();
     const list=document.getElementById('children-list');
     if(!children.length){
-      list.innerHTML=`<div style="font-size:13px;color:var(--text3);font-weight:600;text-align:center;padding:12px;">Chưa có con em nào được liên kết.<br>Thêm email con em bên dưới!</div>`;
+      list.innerHTML=`<div style="font-size:13px;color:var(--text3);font-weight:600;text-align:center;padding:12px;">Chưa có tài khoản học sinh được liên kết.<br>Nếu dùng chung email, hãy liên kết lại email đang đăng nhập.</div>`;
       return;
     }
     list.innerHTML=children.map(c=>`
@@ -456,6 +704,7 @@ async function loadChildren(){
 // ── Select child ──
 async function selectChild(id){
   selectedChild={id};
+  showParentTip('report');
   document.querySelectorAll('.child-card').forEach(c=>c.classList.remove('active'));
   document.getElementById('child-'+id)?.classList.add('active');
   // Reset advisor cho con mới
@@ -606,6 +855,7 @@ function switchTab(tab){
   document.getElementById('tab-advisor').classList.toggle('active',tab==='advisor');
   document.getElementById('view-report').style.display=tab==='report'?'flex':'none';
   document.getElementById('view-advisor').style.display=tab==='advisor'?'block':'none';
+  showParentTip(tab==='advisor'?'advisor':'report');
 }
 
 // ── Set period ──
@@ -756,6 +1006,13 @@ function logout(){
 }
 
 loadChildren();
+showParentPlanExpiryNotice(user);
+if(user?.id){
+  try{
+    if(!localStorage.getItem(`sb_guide_seen_${user.id}_parent_portal`)) setTimeout(openParentGuide,500);
+    else showParentHelpLauncher();
+  }catch(e){ console.error('Không kiểm tra được trạng thái hướng dẫn phụ huynh:',e); showParentHelpLauncher(); }
+}
 </script>
 </body>
 </html>

@@ -6,6 +6,14 @@
       "maxDuration": 60
     }
   },
+  "redirects": [
+    { "source": "/login.html", "destination": "/", "permanent": true },
+    { "source": "/mathbuddy-kids.html", "destination": "/app", "permanent": true },
+    { "source": "/parent.html", "destination": "/parent-portal", "permanent": true },
+    { "source": "/admin.html", "destination": "/admin", "permanent": true },
+    { "source": "/terms.html", "destination": "/terms", "permanent": true },
+    { "source": "/privacy.html", "destination": "/privacy", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/", "destination": "/login.html" },
     { "source": "/app", "destination": "/mathbuddy-kids.html" },

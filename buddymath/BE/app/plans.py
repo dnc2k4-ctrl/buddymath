@@ -28,11 +28,13 @@ PLANS: dict[str, dict[str, Any]] = {
         "name": "Miễn phí",
         "price": 0,
         "billingCycle": None,
+        "trialDays": 7,
         "limits": {
             "mathQuestionsPerDay": 10,
             "imageSolvesPerDay": 2,
             "englishEnabled": False,
             "lifeSkillsEnabled": False,
+            "parentPortalEnabled": False,
             "emailReportFrequency": None,   # không có báo cáo email
             "aiDebateDepth": "none",        # AI phản biện/đạo đức
         },
@@ -47,6 +49,7 @@ PLANS: dict[str, dict[str, Any]] = {
             "imageSolvesPerDay": 15,
             "englishEnabled": True,
             "lifeSkillsEnabled": False,
+            "parentPortalEnabled": True,
             "emailReportFrequency": "weekly",
             "aiDebateDepth": "basic",
         },
@@ -61,7 +64,8 @@ PLANS: dict[str, dict[str, Any]] = {
             "imageSolvesPerDay": UNLIMITED,
             "englishEnabled": True,
             "lifeSkillsEnabled": True,
-            "emailReportFrequency": "per_lesson",  # sau mỗi bài học
+            "parentPortalEnabled": True,
+            "emailReportFrequency": "daily_activity",
             "aiDebateDepth": "full",
         },
     },
@@ -76,8 +80,9 @@ FEATURE_ROWS: list[dict[str, Any]] = [
     {"key": "imageSolvesPerDay",   "label": "Giải bài bằng ảnh",      "type": "count", "unit": "ảnh/ngày"},
     {"key": "englishEnabled",      "label": "Môn Tiếng Anh",          "type": "bool"},
     {"key": "lifeSkillsEnabled",   "label": "Môn Kỹ năng sống",       "type": "bool"},
+    {"key": "parentPortalEnabled", "label": "Cổng phụ huynh",          "type": "bool"},
     {"key": "emailReportFrequency", "label": "Báo cáo email cho phụ huynh", "type": "enum",
-     "enumLabels": {"none": "—", "weekly": "Hàng tuần", "per_lesson": "Sau mỗi bài học"}},
+     "enumLabels": {"none": "—", "weekly": "Tổng hợp hàng tuần", "daily_activity": "Thông báo hoạt động hàng ngày"}},
     {"key": "aiDebateDepth",       "label": "AI phản biện / đạo đức", "type": "enum",
      "enumLabels": {"none": "—", "basic": "Cơ bản", "full": "Đầy đủ"}},
 ]
@@ -90,7 +95,7 @@ UI_TEXT: dict[str, Any] = {
     "cta": {"free": "Bắt đầu miễn phí", "paid": "Nâng cấp ngay"},
     "compareTitle": "So sánh các gói",
     "pricingTitle": "Chọn gói học cùng Smart Buddy",
-    "pricingSubtitle": "Nâng cấp để học không giới hạn và mở khoá thêm môn ✨",
+    "pricingSubtitle": "Miễn phí trải nghiệm 7 ngày, tối đa 10 câu hỏi mỗi ngày. Nâng cấp để học thêm nhé! ✨",
     # Thông báo khi user Free chạm giới hạn (BƯỚC 5) — giọng khích lệ, hợp trẻ 3–9
     "limitReached": {
         "math": {
@@ -104,13 +109,23 @@ UI_TEXT: dict[str, Any] = {
             "cta": "Xem các gói",
         },
         "english": {
-            "title": "Môn Tiếng Anh có ở gói Standard 🇬🇧",
-            "body": "Nâng cấp lên Standard để cùng Buddy học Tiếng Anh nhé!",
+            "title": "Mình cùng mở khóa Tiếng Anh nhé! 🇬🇧",
+            "body": "Môn Tiếng Anh có trong gói Standard. Khi sẵn sàng, em có thể nhờ bố mẹ nâng cấp để học cùng Buddy nhé!",
             "cta": "Xem các gói",
         },
         "lifeSkills": {
-            "title": "Môn Kỹ năng sống có ở gói Premium 🌱",
-            "body": "Nâng cấp lên Premium để khám phá các bài Kỹ năng sống cùng Buddy nhé!",
+            "title": "Mình cùng khám phá thêm nhé! 🌱",
+            "body": "Môn Kỹ năng sống có trong gói Premium. Bố mẹ có thể xem các lựa chọn nâng cấp để mở khóa môn học này.",
+            "cta": "Xem các gói",
+        },
+        "trial": {
+            "title": "Kỳ trải nghiệm của em đã khép lại 🌱",
+            "body": "Cảm ơn em đã học cùng Buddy! Để tiếp tục đặt câu hỏi, em có thể nhờ bố mẹ chọn gói phù hợp nhé.",
+            "cta": "Cùng bố mẹ xem gói",
+        },
+        "parent": {
+            "title": "Cùng mở khu vực phụ huynh nhé! 👨‍👩‍👧",
+            "body": "Khu vực phụ huynh có trong các gói trả phí. Hãy đăng nhập bằng tài khoản hiện có rồi cùng bố mẹ chọn gói phù hợp nhé.",
             "cta": "Xem các gói",
         },
     },

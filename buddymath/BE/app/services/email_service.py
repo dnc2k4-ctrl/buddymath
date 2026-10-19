@@ -3,16 +3,19 @@ email_service.py – Gửi email báo cáo cho phụ huynh (SMTP) + template HTM
 """
 from __future__ import annotations
 
+import html
 import json
 import logging
 import re
 import smtplib
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import httpx
 from sqlalchemy.orm import Session
 
+from app import plans
 from app.config import (
     BREVO_API_KEY,
     FROM_EMAIL,
@@ -24,6 +27,7 @@ from app.config import (
 )
 from app.models.score import ScoreRecord
 from app.models.user import ParentChildLink, User
+from app.services import chat_history_service
 
 logger = logging.getLogger(__name__)
 
@@ -110,25 +114,75 @@ def send_otp_email(to: str, code: str, purpose: str = "reset") -> None:
     smtp_send(to, f"[SmartBuddy] Mã {title}: {code}", html)
 
 
-def notify_parents(student: User, rec: ScoreRecord, db: Session) -> None:
-    """Gửi email báo cáo (kèm đánh giá chi tiết) tới MỌI phụ huynh đã liên kết với con."""
-    # Trước đây chặn theo SMTP_USER → khi cấu hình email bằng Brevo (production) thì
-    # SMTP_USER rỗng nên tính năng tự động bị TẮT âm thầm. Dùng smtp_configured() để
-    # hoạt động với cả 2 kênh (Brevo HTTP API hoặc SMTP).
+def notify_parents(student: User, rec: ScoreRecord | None, db: Session) -> None:
+    """Gửi tối đa một email hoạt động AI mỗi ngày cho phụ huynh Premium."""
     if not smtp_configured():
-        logger.info("Bỏ qua báo cáo phụ huynh: chưa cấu hình email (BREVO_API_KEY hoặc SMTP_USER/PASS).")
+        logger.info("Bỏ qua thông báo phụ huynh: chưa cấu hình email.")
         return
+    now = datetime.utcnow()
     links = db.query(ParentChildLink).filter(ParentChildLink.child_id == student.id).all()
-    if not links:
-        return  # con chưa liên kết phụ huynh nào → không có ai để gửi
     for link in links:
         parent = db.query(User).filter(User.id == link.parent_id).first()
-        if parent and parent.email:
-            try:
-                _send_score_email(parent.email, parent.username, student, rec)
-                logger.info(f"✅ Đã tự động gửi báo cáo tới phụ huynh {parent.email} (bài {rec.subject}).")
-            except Exception as e:
-                logger.warning(f"Không gửi được email tới phụ huynh {parent.email}: {e}")
+        if not (
+            parent and parent.email
+            and plans.get_limit(parent.effective_plan(), "emailReportFrequency") == "daily_activity"
+        ):
+            continue
+        if link.last_activity_email_at and link.last_activity_email_at.date() == now.date():
+            continue
+        activity = chat_history_service.activity_summary(db, student.id, days=1)
+        subjects = activity.get("by_subject") or {}
+        subject_text = ", ".join(
+            f"{html.escape(str(subject))}: {int(count)} câu"
+            for subject, count in subjects.items()
+        ) or "chưa có câu hỏi được lưu trong 24 giờ qua"
+        activity_text = (
+            f"Trong 24 giờ qua, con đã đặt <strong>{int(activity.get('questions_asked', 0))} câu hỏi</strong>. "
+            f"Môn học: {subject_text}."
+            if activity.get("questions_asked", 0)
+            else "Đây là thông báo cho biết con đã sử dụng một tính năng AI học tập trong 24 giờ qua."
+        )
+        safe_name = html.escape(student.username or "con")
+        safe_parent = html.escape(parent.username or "Phụ huynh")
+        body = f"""
+        <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#1A2340;">
+          <div style="background:linear-gradient(135deg,#A55EEA,#3F7FD6);padding:24px;text-align:center;border-radius:16px 16px 0 0;color:white;">
+            <div style="font-size:38px;">🌟</div>
+            <h2 style="margin:8px 0;">Hoạt động học tập hôm nay</h2>
+            <div>SmartBuddy · thông báo Premium</div>
+          </div>
+          <div style="background:white;padding:22px;border:1px solid #E9EEF5;border-radius:0 0 16px 16px;">
+            <p>Kính gửi <strong>{safe_parent}</strong>,</p>
+            <p><strong>{safe_name}</strong> đã hoàn thành một lượt học cùng Buddy.</p>
+            <p>{activity_text}</p>
+            <p style="font-size:13px;color:#5A6890;">Xem thêm trong
+              <a href="{PUBLIC_BASE_URL}/parent-portal">Cổng Phụ Huynh</a>.</p>
+          </div>
+        </div>"""
+        try:
+            smtp_send(parent.email, f"🌟 Hoạt động học tập hôm nay của {student.username}", body)
+            link.last_activity_email_at = now
+            db.commit()
+            logger.info(f"Đã gửi thông báo hoạt động trong ngày tới {parent.email}.")
+        except Exception as exc:
+            logger.warning(f"Không gửi được thông báo hoạt động tới {parent.email}: {exc}")
+            db.rollback()
+
+
+def notify_parents_activity_bg(student_id: str) -> None:
+    """Gửi email hoạt động bằng DB session riêng sau khi một lượt AI hoàn tất."""
+    if not smtp_configured():
+        return
+    from app.core.database import SessionLocal
+    db = SessionLocal()
+    try:
+        student = db.query(User).filter(User.id == student_id).first()
+        if student:
+            notify_parents(student, None, db)
+    except Exception as exc:
+        logger.warning(f"notify_parents_activity_bg lỗi: {exc}")
+    finally:
+        db.close()
 
 
 def notify_parents_bg(student_id: str, rec_id: str) -> None:
@@ -363,22 +417,19 @@ def build_report_html(current_user: User, child: User, recs: list[ScoreRecord], 
           </div>
         </div>"""
 
-    # ── Ưu đãi nâng gói (nếu con chưa ở gói Premium) ──
+    # ── Gợi ý nâng cấp dựa trên gói của phụ huynh (không phải gói của con) ──
     offer_block = ""
-    try:
-        cur_plan = child.effective_plan()
-    except Exception:
-        cur_plan = "free"
+    cur_plan = current_user.effective_plan()
     if cur_plan != "premium":
         if cur_plan == "free":
-            tier, price, benefit = "Standard", "199.000đ/tháng", "học Toán không giới hạn, mở khoá môn Tiếng Anh và nhận báo cáo hàng tuần"
+            tier, price, benefit = "Standard", "199.000đ/tháng", "mở cổng phụ huynh và nhận báo cáo tổng hợp hàng tuần"
         else:
-            tier, price, benefit = "Premium", "299.000đ/tháng", "mở thêm môn Kỹ năng sống, giải bài bằng ảnh không giới hạn và nhận báo cáo sau mỗi bài học"
+            tier, price, benefit = "Premium", "299.000đ/tháng", "nhận thông báo hoạt động AI của con hàng ngày và mở thêm tính năng"
         offer_block = f"""
         <div style="background:linear-gradient(135deg,#FFF7E6,#FFFBF0);border-radius:12px;padding:16px;border:1.5px solid #FFE29A;margin-bottom:16px;">
-          <div style="font-weight:900;color:#B45309;margin-bottom:4px;">✨ Ưu đãi dành cho {child.username}</div>
+          <div style="font-weight:900;color:#B45309;margin-bottom:4px;">✨ Quyền lợi dành cho gia đình</div>
           <div style="font-size:13.5px;color:#7C4A03;line-height:1.6;">
-            Nâng cấp gói <b>{tier}</b> ({price}) để con {benefit}.
+            Nâng cấp tài khoản phụ huynh lên <b>{tier}</b> ({price}) để {benefit}.
             <div style="margin-top:10px;">
               <a href="{PUBLIC_BASE_URL}/app" style="display:inline-block;background:linear-gradient(135deg,#F39C12,#FF8A3D);color:#fff;text-decoration:none;font-weight:900;padding:9px 18px;border-radius:10px;font-size:13px;">Xem các gói →</a>
             </div>

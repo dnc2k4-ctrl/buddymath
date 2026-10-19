@@ -21,9 +21,34 @@ _same-origin_, không tách host, không CORS.
 | `/robots.txt` · `/sitemap.xml` | sinh động | Bot tìm kiếm | — |
 | `/docs` · `/redoc` | FastAPI tự sinh | API docs (nên chặn/khoá khi lên production) | 🚫 disallow |
 
+Các URL file cũ như `/mathbuddy-kids.html` tự chuyển hướng sang URL gọn `/app`;
+tương tự với đăng nhập, phụ huynh, quản trị và các trang chính sách.
+
 ---
 
-## 2. Sơ đồ cây trang
+## 2. Bản đồ file giao diện
+
+Mỗi trang HTML vẫn là một route riêng theo vai trò; phần CSS và JavaScript lớn của app học sinh
+được tách khỏi `mathbuddy-kids.html` để trang HTML gọn hơn, dễ chỉnh sửa và cache độc lập:
+
+| File nguồn | Vai trò |
+|------------|---------|
+| `FE/login.html` | Đăng nhập, đăng ký và luồng OTP email |
+| `FE/mathbuddy-kids.html` | Khung trang app học sinh (`/app`) |
+| `FE/assets/mathbuddy-base.css` | Quy tắc responsive cơ bản, tải sớm |
+| `FE/assets/mathbuddy-kids.css` | CSS giao diện app học sinh |
+| `FE/assets/mathbuddy-kids.js` | JavaScript tương tác và các panel của app học sinh |
+| `FE/parent.html` | Cổng phụ huynh (`/parent-portal`) |
+| `FE/admin.html` | Quản trị (`/admin`) |
+| `FE/terms.html`, `FE/privacy.html` | Điều khoản và chính sách bảo mật |
+
+`build.py` đồng bộ toàn bộ `FE/` sang `BE/public/` khi build; chỉ sửa file trong `FE/`.
+Các tài nguyên CSS/JavaScript được phục vụ cùng domain, không tạo route nội dung mới và không
+được liệt kê trong sitemap SEO (`/sitemap.xml`).
+
+---
+
+## 3. Sơ đồ cây trang
 
 ```mermaid
 graph TD
@@ -67,7 +92,7 @@ graph TD
 
 ---
 
-## 3. Phân quyền theo vai trò
+## 4. Phân quyền theo vai trò
 
 | Khu vực | 🎒 Student | 👨‍👩‍👧 Parent | 🛡️ Admin |
 |---------|:---------:|:-----------:|:--------:|
@@ -82,7 +107,7 @@ graph TD
 
 ---
 
-## 4. Các mục trong app học sinh (`/app`)
+## 5. Các mục trong app học sinh (`/app`)
 
 Sidebar là bản đồ điều hướng chính (SPA — chuyển panel, không tải lại trang):
 
