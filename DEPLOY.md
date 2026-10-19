@@ -34,8 +34,11 @@ quyền truy cập trước; đừng khởi chạy production bằng database tr
 
 1. Vercel Dashboard → **Add New → Project** → import Git repository
    `dnc2k4-ctrl/buddymath`.
-2. Để **Root Directory** là repository root (không đặt `buddymath/BE`).
-   Entrypoint Python và các dependency đã được cấu hình từ root.
+2. Đặt **Root Directory** là `buddymath/BE`. Đây là thư mục gốc của Vercel
+   project hiện tại; giữ **Output Directory** mặc định để Vercel phục vụ các
+   file trong `public/`. Build Command `python ../../build.py` đồng bộ frontend
+   từ `buddymath/FE/`; các file trong `buddymath/BE/public/` được commit để
+   Vercel thu thập trực tiếp.
 3. Thêm biến môi trường dưới đây cho **Production**, rồi deploy nhánh `main`.
 
 | Biến | Bắt buộc | Ghi chú |
@@ -67,6 +70,9 @@ trong `app/config.py` nếu không đặt. Không bật demo accounts ở produc
 - `faiss.index` và `metadata.pkl` được đóng gói read-only trong deploy. Hai file
   này đã được cho phép theo dõi trong Git. Để thêm/sửa tài liệu RAG, cập nhật
   index bằng môi trường local, commit cả hai artifacts rồi redeploy.
+- Các trang HTML và ảnh frontend được đồng bộ từ `buddymath/FE/` sang
+  `buddymath/BE/public/` bằng `build.py`; commit các file public để Vercel phục
+  vụ chúng như static assets.
 - API `/ingest` và `/ingest/reload` trả `501` trên Vercel vì file ghi trên
   Function không tồn tại bền vững.
 - Cron báo cáo chạy một lần/ngày (UTC). Vercel Hobby không thay thế worker
