@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Res
 from sqlalchemy.orm import Session
 
 from app import plans
-from app.config import ACTIVE_TEXT_MODEL, ACTIVE_VISION_MODEL, FRONTEND_DIR, LLM_PROVIDER, SCHEDULER_TOKEN
+from app.config import ACTIVE_TEXT_MODEL, ACTIVE_VISION_MODEL, FRONTEND_DIR, IS_VERCEL, LLM_PROVIDER, SCHEDULER_TOKEN
 from app.core.database import get_db
 from app.services import report_scheduler, runtime
 
@@ -124,7 +124,7 @@ async def sitemap(request: Request):
 
 @router.get("/health")
 async def health():
-    docs = len(runtime.rag_engine._documents) if runtime.rag_engine else 0
+    docs = runtime.rag_engine.document_count if runtime.rag_engine else 0
     return {
         "status":       "ok",
         "service":      "BuddyMath API",
@@ -139,15 +139,19 @@ async def health():
     }
 
 
-@router.post("/tasks/run-scheduled-reports")
+@router.api_route("/tasks/run-scheduled-reports", methods=["GET", "POST"])
 async def run_scheduled_reports(request: Request, db: Session = Depends(get_db)):
     """
     Gửi email báo cáo THEO LỊCH của gói (Standard = hàng tuần). Idempotent nhờ last_report_at
     → gọi nhiều lần trong kỳ cũng không gửi trùng. Dành cho cron/hosting gọi mỗi ngày.
-    Bảo vệ bằng SCHEDULER_TOKEN (gửi header 'X-Task-Token' hoặc query '?token=').
+    Bảo vệ bằng SCHEDULER_TOKEN (X-Task-Token, Bearer token hoặc query '?token=').
     """
-    if SCHEDULER_TOKEN:
-        tok = request.headers.get("x-task-token") or request.query_params.get("token")
+    if SCHEDULER_TOKEN or IS_VERCEL:
+        tok = (
+            request.headers.get("x-task-token")
+            or request.query_params.get("token")
+            or request.headers.get("authorization", "").removeprefix("Bearer ")
+        )
         if tok != SCHEDULER_TOKEN:
             raise HTTPException(401, "Unauthorized")
     return report_scheduler.send_due_reports(db)

@@ -16,7 +16,7 @@ from typing import Any, Protocol
 
 import numpy as np
 
-from app.config import INDEX_PATH, META_PATH
+from app.config import INDEX_PATH, IS_VERCEL, META_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +43,8 @@ def _default_embedder() -> Embedder:
         logger.info(f"Dùng embedder: {emb}")
         return emb
     except Exception as exc:
+        if IS_VERCEL:
+            raise RuntimeError(f"Không khởi tạo được JinaEmbedder trên Vercel: {exc}") from exc
         logger.warning(f"Không khởi tạo được JinaEmbedder: {exc}. Dùng fallback random.")
 
         class _FallbackEmbedder:
@@ -93,6 +95,10 @@ class RetrievedChunk:
 class RAGEngine:
     """Quản lý embedding model và vector index cho BuddyMath."""
 
+    @property
+    def document_count(self) -> int:
+        return len(self._documents)
+
     def __init__(
         self,
         embedder: Embedder | None = None,
@@ -113,6 +119,8 @@ class RAGEngine:
     # ── Index ────────────────────────────────────────────────────────────────
     def _load_or_create_index(self):
         if not _FAISS_AVAILABLE:
+            if IS_VERCEL:
+                raise RuntimeError("faiss-cpu is required to load the packaged Vercel RAG index.")
             return None
         if self.index_path.exists():
             try:
@@ -125,6 +133,8 @@ class RAGEngine:
                 logger.info(f"Tải FAISS index từ {self.index_path}")
                 return idx
             except Exception as exc:
+                if IS_VERCEL:
+                    raise RuntimeError(f"Không tải được FAISS index trên Vercel: {exc}") from exc
                 logger.warning(f"Không tải được FAISS index: {exc}. Tạo mới.")
         logger.info("Tạo FAISS IndexFlatIP mới (inner product = cosine sau normalize).")
         return faiss.IndexFlatIP(self.embedding_dim)
@@ -144,6 +154,8 @@ class RAGEngine:
                     self._documents = pickle.load(f)
                 logger.info(f"Tải {len(self._documents)} document entries.")
             except Exception as exc:
+                if IS_VERCEL:
+                    raise RuntimeError(f"Không tải được RAG metadata trên Vercel: {exc}") from exc
                 logger.warning(f"Không tải được metadata: {exc}")
 
     # ── Embedding ────────────────────────────────────────────────────────────

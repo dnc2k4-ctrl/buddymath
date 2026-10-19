@@ -50,6 +50,15 @@ ADMIN_PASSWORD       = os.environ.get("ADMIN_PASSWORD", "")
 ENABLE_DEMO_ACCOUNTS = os.environ.get("ENABLE_DEMO_ACCOUNTS", "").lower() in ("1", "true", "yes")
 
 DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{(BE_DIR / 'smartbuddy.db').as_posix()}")
+IS_VERCEL = os.environ.get("VERCEL") == "1"
+if IS_VERCEL and not os.environ.get("DATABASE_URL"):
+    raise RuntimeError("DATABASE_URL must point to a persistent PostgreSQL database on Vercel.")
+if IS_VERCEL and not DATABASE_URL.startswith(
+    ("postgres://", "postgresql://", "postgresql+psycopg2://")
+):
+    raise RuntimeError("Vercel requires DATABASE_URL to use PostgreSQL; SQLite is not persistent.")
+if IS_VERCEL and not os.environ.get("SECRET_KEY"):
+    raise RuntimeError("SECRET_KEY must be configured in the Vercel project environment.")
 # Render/Heroku cấp Postgres dưới scheme cũ "postgres://" — SQLAlchemy cần "postgresql://"
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
@@ -167,7 +176,7 @@ PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000")
 
 # Token bảo vệ endpoint tác vụ nền (gửi báo cáo theo lịch). Cron gửi header X-Task-Token.
 # Bỏ trống ở local (endpoint mở); production NÊN đặt để tránh người ngoài gọi.
-SCHEDULER_TOKEN = os.environ.get("SCHEDULER_TOKEN", "")
+SCHEDULER_TOKEN = os.environ.get("SCHEDULER_TOKEN") or os.environ.get("CRON_SECRET", "")
 
 
 # ─── Thanh toán: VietQR + SePay (đối soát chuyển khoản tự động) ────────────────

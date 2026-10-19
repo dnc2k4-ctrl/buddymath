@@ -13,11 +13,12 @@ env/
 # Databases
 *.db
 *.sqlite3
+buddymath.dump
 
-# RAG artifacts (regenerated khi ingest) — khớp ở mọi thư mục
-faiss.index
-metadata.pkl
+# Runtime manifest is local; Vercel ships the prebuilt index and metadata.
 .ingested_manifest.json
+!buddymath/BE/data/faiss.index
+!buddymath/BE/data/metadata.pkl
 
 # Node
 node_modules/

@@ -39,6 +39,19 @@ Hoặc trên Windows: nhấp đôi `run.bat`.
 - Parent: http://localhost:8000/parent-portal
 - Docs:   http://localhost:8000/docs
 
+## Deploy lên Vercel
+
+BuddyMath có thể được deploy như một FastAPI Function duy nhất, phục vụ cả API
+lẫn frontend. Xem hướng dẫn đầy đủ ở [DEPLOY.md](../../DEPLOY.md).
+
+- Vercel project phải dùng repository root làm **Root Directory**.
+- Cần đặt `DATABASE_URL` trỏ tới PostgreSQL bền vững; SQLite không dùng được
+  trên Vercel.
+- Hai RAG artifacts `data/faiss.index` và `data/metadata.pkl` được đóng gói
+  cùng deploy. Vercel chỉ đọc chúng; cập nhật index rồi redeploy để đổi dữ liệu.
+- Cần cấu hình `SECRET_KEY`, `GROQ_API_KEY`, `JINA_API_KEY` và `CRON_SECRET`
+  trong Project Environment Variables.
+
 ## Biến môi trường chính
 
 | Biến | Bắt buộc | Mô tả |

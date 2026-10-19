@@ -27,7 +27,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.api import auth, billing, catalog, chat, classroom, pages, parent, scores
-from app.config import FRONTEND_DIR, IMAGES_DIR
+from app.config import FRONTEND_DIR, IMAGES_DIR, IS_VERCEL
 from app.core.database import init_db
 from app.services import runtime
 from app.services.auth_service import seed_demo_accounts
@@ -89,14 +89,25 @@ async def lifespan(app: FastAPI):
     init_db()
     seed_demo_accounts()
 
-    # Nạp RAG ở nền → khởi động xong tức thì, health check không còn timeout.
-    ingest_task = asyncio.create_task(_background_ingest())
-    scheduler_task = asyncio.create_task(_report_scheduler_loop())   # gửi báo cáo theo lịch của gói
+    if IS_VERCEL:
+        summary = await asyncio.to_thread(runtime.init_runtime)
+        logger.info(
+            "✅ BuddyMath sẵn sàng trên Vercel: "
+            f"{summary['total_chunks']} chunks RAG đã nạp."
+        )
+        ingest_task = scheduler_task = None
+    else:
+        # Nạp RAG ở nền → khởi động xong tức thì, health check không còn timeout.
+        ingest_task = asyncio.create_task(_background_ingest())
+        scheduler_task = asyncio.create_task(_report_scheduler_loop())
 
-    logger.info("✅ BuddyMath sẵn sàng (RAG đang nạp ở nền).")
+    if not IS_VERCEL:
+        logger.info("✅ BuddyMath sẵn sàng (RAG đang nạp ở nền).")
     yield
-    ingest_task.cancel()
-    scheduler_task.cancel()
+    if ingest_task:
+        ingest_task.cancel()
+    if scheduler_task:
+        scheduler_task.cancel()
     logger.info("🛑 Đang tắt BuddyMath backend.")
 
 
@@ -150,6 +161,8 @@ def create_app() -> FastAPI:
     # Routers
     for module in (pages, auth, billing, scores, parent, chat, catalog, classroom):
         app.include_router(module.router)
+
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR)), name="frontend")
 
     # 404 thân thiện: trả trang HTML cho trình duyệt, JSON cho lời gọi API.
     @app.exception_handler(404)

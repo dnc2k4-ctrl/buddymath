@@ -8,6 +8,7 @@ from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 
+from app.config import IS_VERCEL
 from app.rag.chunking import DocumentChunker
 from app.schemas.catalog import IngestRequest, IngestResponse, SynthesisRequest
 from app.services import runtime
@@ -129,6 +130,11 @@ async def get_topic_chunks(subject: str, topic: str):
 # ─── Ingest ───────────────────────────────────────────────────────────────────
 @router.post("/ingest", response_model=IngestResponse)
 async def ingest_document(req: IngestRequest):
+    if IS_VERCEL:
+        raise HTTPException(
+            status_code=501,
+            detail="RAG data is read-only on Vercel. Update the packaged index and redeploy.",
+        )
     rag = get_rag()
     try:
         chunks = DocumentChunker().chunk_file(
@@ -152,6 +158,11 @@ async def ingest_document(req: IngestRequest):
 @router.post("/ingest/reload")
 async def reload_data(background_tasks: BackgroundTasks, force: bool = False):
     """Scan lại data/ và ingest file mới/đã sửa (background). ?force=true → re-ingest toàn bộ."""
+    if IS_VERCEL:
+        raise HTTPException(
+            status_code=501,
+            detail="RAG data is read-only on Vercel. Update the packaged index and redeploy.",
+        )
     rag    = get_rag()
     loader = get_loader()
 
