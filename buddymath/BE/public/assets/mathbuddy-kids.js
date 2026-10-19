@@ -2495,9 +2495,9 @@ function showHomeScreen() {
         <div style="display:flex;flex-direction:column;">
           <div style="background:#fff;border:1px solid #E7F1EE;border-radius:22px;box-shadow:0 14px 34px rgba(18,49,74,.12);overflow:hidden;flex:1;display:flex;flex-direction:column;">
             <!-- Hero banner (đầu khung) — phóng nhẹ + cắt viền bo tròn có sẵn của ảnh để nền mint liền mạch với khung -->
-            <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#DEF2EC,#EAF5FF);">
+            <div class="home-hero-banner" style="position:relative;overflow:hidden;background:linear-gradient(135deg,#DEF2EC,#EAF5FF);">
               <img loading="lazy"src="/images/anhtrangchu.png" alt="SmartBuddy" style="width:100%;height:auto;margin:-32px 0;display:block;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.background='linear-gradient(120deg,#E9F9F3,#F2FBFF)';this.parentNode.style.minHeight='130px';this.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
-              <button onclick="quickStartBuddy()" style="position:absolute;left:16px;bottom:14px;padding:9px 16px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;font-size:13px;box-shadow:0 6px 14px rgba(27,184,147,.35);transition:.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💬 Hỏi ngay với Buddy</button>
+              <button class="home-hero-cta" onclick="quickStartBuddy()" style="position:absolute;left:16px;bottom:14px;padding:9px 16px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;font-size:13px;box-shadow:0 6px 14px rgba(27,184,147,.35);transition:.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💬 Hỏi ngay với Buddy</button>
             </div>
             <!-- Phần chọn danh mục — cùng khung, nền hơi mint để 4 nút trắng nổi khối rõ -->
             <div style="padding:18px 18px 22px;flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#F4FBF9,#FFFFFF 60%);">
@@ -6744,7 +6744,7 @@ function loginSuccess(acct) {
   showAuthToast(`🎉 Chào mừng, ${acct.name}! Cùng học Toán thôi!`, '#2ED573');
 }
 
-function logoutUser() {
+function logoutUser(mode='logout') {
   try{ sbPlaySound('logout'); }catch(e){}
   // Ghi thông báo đăng xuất vào kho của người dùng trước khi xóa phiên (toast do dòng dưới lo)
   if (authCurrentUser) {
@@ -6760,9 +6760,10 @@ function logoutUser() {
   } catch(e) {}
   toggleUserMenu(true);
   renderAuthState();
-  showAuthToast('👋 Đã đăng xuất. Hẹn gặp lại!', '#FF6B35');
-  setTimeout(() => { openAuthModal('login'); }, 900);
+  showAuthToast(mode==='switch'?'🔄 Đã đăng xuất. Mời bạn đăng nhập tài khoản khác.':'👋 Đã đăng xuất. Hẹn gặp lại!', '#FF6B35');
+  setTimeout(() => { openAuthModal('login'); }, mode==='switch'?350:900);
 }
+function switchAccountUser() { logoutUser('switch'); }
 
 function renderAuthState() {
   const btnWrap  = document.getElementById('auth-btn-wrap');
@@ -6838,12 +6839,22 @@ const id = s => document.getElementById(s);
 
 function toggleUserMenu(forceClose) {
   const dd = document.getElementById('user-dropdown');
-  if (forceClose) { dd.style.display = 'none'; return; }
-  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+  const trigger = document.querySelector('.user-avatar-pill');
+  const open = forceClose ? false : dd.style.display === 'none';
+  dd.style.display = open ? 'block' : 'none';
+  trigger?.setAttribute('aria-expanded', String(open));
 }
 document.addEventListener('click', function(e) {
   const wrap = document.getElementById('user-info-wrap');
   if (wrap && !wrap.contains(e.target)) toggleUserMenu(true);
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  const dd = document.getElementById('user-dropdown');
+  if (dd && dd.style.display !== 'none') {
+    toggleUserMenu(true);
+    document.querySelector('.user-avatar-pill')?.focus();
+  }
 });
 
 // ── Sidebar dạng ngăn kéo trên điện thoại ──────────────────

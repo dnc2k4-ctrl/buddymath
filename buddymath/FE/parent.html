@@ -293,6 +293,101 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 .detail-box .q-txt{color:var(--text1);font-weight:600;flex:1;min-width:120px;}
 .detail-box .q-fix{font-weight:800;color:var(--red);white-space:nowrap;font-size:11.5px;}
 .detail-box .q-fix b{color:var(--text1);}
+
+.mobile-parent-bar,.advisor-back-btn{display:none;}
+.parent-account-wrap{position:relative;margin-left:auto;}
+.parent-account-trigger{display:flex;align-items:center;gap:7px;max-width:190px;padding:6px 10px;border:1.5px solid rgba(255,255,255,.42);border-radius:13px;background:rgba(255,255,255,.2);color:#fff;font:900 12px Nunito,Arial;cursor:pointer;}
+.parent-account-trigger:hover,.parent-account-trigger[aria-expanded="true"]{background:rgba(255,255,255,.32);}
+.parent-account-icon{font-size:15px;line-height:1;}
+.parent-portal-label{white-space:nowrap;}
+.parent-account-chevron{font-size:11px;transition:transform .16s ease;}
+.parent-account-trigger[aria-expanded="true"] .parent-account-chevron{transform:rotate(180deg);}
+.parent-account-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:250;width:min(250px,calc(100vw - 20px));padding:8px;background:#fff;border:1px solid #E3EEE9;border-radius:14px;box-shadow:0 12px 30px rgba(18,49,74,.2);}
+.parent-account-menu[hidden]{display:none;}
+.parent-account-menu [hidden]{display:none !important;}
+.parent-account-menu-head{padding:8px 10px 9px;border-bottom:1px solid #EDF2F0;margin-bottom:5px;}
+.parent-account-menu-name{font-size:13px;font-weight:900;color:var(--text1);overflow-wrap:anywhere;}
+.parent-account-menu-email{margin-top:2px;font-size:11px;color:var(--text3);overflow-wrap:anywhere;}
+.parent-account-menu a,.parent-account-menu button{display:flex;align-items:center;gap:9px;width:100%;min-height:36px;padding:7px 9px;border:0;border-radius:9px;background:transparent;color:#44586B;text-align:left;text-decoration:none;font:800 12px/1.35 Nunito,Arial;cursor:pointer;}
+.parent-account-menu a:hover,.parent-account-menu button:hover,.parent-account-menu a:focus-visible,.parent-account-menu button:focus-visible{background:#EAF8F4;color:var(--teal-d);}
+.parent-account-menu a:focus-visible,.parent-account-menu button:focus-visible{outline:2px solid var(--teal);outline-offset:1px;}
+@media(max-width:760px){
+  body{height:100dvh;min-height:0;}
+  .header{height:56px;min-height:56px;padding:0 10px;gap:8px;flex-wrap:nowrap;}
+  .logo{min-width:0;gap:7px;}
+  .logo-chip{width:36px;height:36px;border-radius:11px;}
+  .logo-txt{font-size:17px;}
+  .logo-sub,.badge-pill,.user-avatar,.user-role{display:none;}
+  .header-right{width:auto;margin-left:auto;gap:6px;flex-wrap:nowrap;}
+  .parent-account-trigger{max-width:158px;padding:5px 8px;gap:5px;border-radius:11px;font-size:11.5px;}
+  .layout{display:flex;min-height:0;flex:1;overflow:hidden;}
+  .sidebar{display:none;}
+  .main{display:flex;flex:1;min-height:0;max-width:none;width:100%;margin:0;padding:12px;gap:12px;overflow-y:auto;overscroll-behavior:contain;}
+  .hero{display:none;}
+  .mobile-parent-bar{display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid #E3EEE9;border-radius:14px;padding:10px;}
+  .mobile-parent-controls{display:flex;gap:8px;min-width:0;}
+  #mobile-parent-child{min-width:0;flex:1;padding:9px 10px;border:1px solid #D7E9E2;border-radius:10px;background:#F8FCFA;color:var(--text1);font:800 13px Nunito,Arial;}
+  .mobile-ai-btn{flex:0 0 auto;padding:9px 11px;border:0;border-radius:10px;background:#11917A;color:#fff;font:900 12px Nunito,Arial;white-space:nowrap;}
+  .mobile-ai-btn:disabled{background:#AAB8B2;cursor:not-allowed;}
+  .mobile-link-details{font-size:12px;color:var(--teal-d);font-weight:800;}
+  .mobile-link-details summary{width:max-content;max-width:100%;cursor:pointer;}
+  .mobile-link-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin-top:8px;}
+  .mobile-link-form .link-input{min-width:0;margin:0;padding:9px 10px;font-size:16px;}
+  .mobile-link-form .link-btn{width:auto;padding:8px 12px;font-size:12px;}
+  #mobile-link-msg{grid-column:1/-1;overflow-wrap:anywhere;}
+  .empty-state{min-height:0;flex:1;padding:26px 12px;gap:10px;background:#fff;border:1px solid #EAF1EE;border-radius:14px;}
+  .empty-mascot{display:none;}
+  #child-view{min-height:0;flex:1;gap:10px !important;}
+  .report-header{display:flex;gap:8px;padding:10px;border:1px solid #EAF1EE;border-radius:14px;box-shadow:none;}
+  .rh-avatar{display:none;}
+  .rh-name{font-size:17px;}
+  .rh-meta{font-size:11px;}
+  .rh-actions{width:100%;margin:0;justify-content:flex-start;}
+  .period-toggle{border-width:1px;}
+  .period-btn{padding:7px 11px;}
+  .send-report-btn{display:none;}
+  .tab-nav{display:none;}
+  #view-report{gap:10px;}
+  .stats-row{gap:8px;}
+  .stat-card{padding:10px 7px;border-width:1px;box-shadow:none;}
+  .stat-label{font-size:10px;line-height:1.25;}
+  .charts-grid{gap:9px;}
+  .chart-card,.subj-section{padding:11px;border-width:1px;box-shadow:none;}
+  .chart-title{font-size:13px;}
+  .donut-wrap{gap:10px;}
+  .donut{width:92px;height:92px;}
+  .donut::after{inset:19px;}
+  .donut-num{font-size:19px;}
+  .dl-item{font-size:11px;}
+  .score-row{gap:7px;padding:8px;font-size:12px;}
+  .score-topic{min-width:0;flex-basis:100%;}
+  .score-bar-bg{min-width:48px;}
+  .advisor-back-btn{display:block;flex:0 0 auto;width:max-content;padding:9px 12px;border:1px solid #D7E9E2;border-radius:10px;background:#fff;color:var(--teal-d);font:900 13px Nunito,Arial;cursor:pointer;}
+  #view-advisor{display:none !important;flex:1;flex-direction:column;min-height:0;gap:8px;}
+  #advisor-assessment{display:none;}
+  .advisor-card{flex:1;min-height:0;margin:0;border:0;border-radius:12px;box-shadow:none;}
+  .advisor-head{flex:0 0 auto;padding:11px 13px;}
+  .advisor-head img,.advisor-head .ah-emoji,.advisor-head .ah-sub{display:none;}
+  .advisor-head .ah-title{font-size:15px;}
+  .advisor-messages{flex:1;min-height:0;max-height:none;padding:12px;gap:10px;}
+  .msg-row{max-width:94%;gap:7px;}
+  .avatar{width:30px;height:30px;font-size:15px;}
+  .bubble{padding:9px 11px;font-size:13px;}
+  .advisor-quick{flex:0 0 auto;flex-wrap:nowrap;overflow-x:auto;padding:0 10px 8px;scrollbar-width:none;}
+  .advisor-quick::-webkit-scrollbar{display:none;}
+  .qp{flex:0 0 auto;font-size:11px;padding:7px 10px;}
+  .advisor-input-row{flex:0 0 auto;gap:8px;padding:9px 10px max(10px,env(safe-area-inset-bottom));border-top:1px solid #F0F5F3;}
+  .advisor-input{min-height:44px;padding:10px 12px;font-size:16px;border-width:1px;border-radius:12px;}
+  .send-btn{width:44px;height:44px;border-radius:12px;box-shadow:none;}
+  body.parent-chat-open .main{padding:8px;gap:0;overflow:hidden;}
+  body.parent-chat-open .mobile-parent-bar,
+  body.parent-chat-open #empty-state,
+  body.parent-chat-open .report-header{display:none !important;}
+  body.parent-chat-open #child-view{display:flex !important;gap:0 !important;}
+  body.parent-chat-open #view-report{display:none !important;}
+  body.parent-chat-open #view-advisor{display:flex !important;}
+}
+@media(max-width:360px){.parent-account-icon{display:none;}}
 </style>
 </head>
 <body>
@@ -306,16 +401,21 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
       <div class="logo-sub">HỌC THÔNG MINH · TIẾN VỮNG VÀNG</div>
     </div>
   </div>
-  <span class="badge-pill">Cổng Phụ Huynh</span>
-  <div class="header-right">
-    <div class="user-pill">
-      <div class="user-avatar">👨‍👩‍👧</div>
-      <div>
-        <div class="user-name" id="parent-name">Phụ huynh</div>
-        <div class="user-role">Phụ huynh của Buddy</div>
+  <div class="parent-account-wrap" id="parent-account-wrap">
+    <button class="parent-account-trigger" id="parent-account-trigger" type="button" aria-label="Mở menu cổng phụ huynh và tài khoản" aria-haspopup="menu" aria-expanded="false" onclick="toggleParentAccountMenu()">
+      <span class="parent-account-icon" aria-hidden="true">👨‍👩‍👧</span>
+      <span class="parent-portal-label" id="parent-name">Cổng Phụ Huynh</span>
+      <span class="parent-account-chevron" aria-hidden="true">▼</span>
+    </button>
+    <div class="parent-account-menu" id="parent-account-menu" role="menu" aria-label="Menu tài khoản phụ huynh" hidden>
+      <div class="parent-account-menu-head">
+        <div class="parent-account-menu-name" id="parent-menu-name">Phụ huynh</div>
+        <div class="parent-account-menu-email" id="parent-menu-email"></div>
       </div>
+      <a href="/app" id="parent-student-portal-link" role="menuitem" hidden>🎒 Chuyển sang giao diện học sinh</a>
+      <button type="button" onclick="switchParentAccount()" role="menuitem">🔄 Chuyển tài khoản</button>
+      <button type="button" onclick="logout()" role="menuitem">🚪 Đăng xuất</button>
     </div>
-    <button class="logout-btn" onclick="logout()">🚪 Đăng xuất</button>
   </div>
 </header>
 
@@ -359,6 +459,22 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 
   <!-- Main content -->
   <div class="main" id="main-content">
+    <div class="mobile-parent-bar">
+      <div class="mobile-parent-controls">
+        <select id="mobile-parent-child" aria-label="Chọn học sinh để xem báo cáo" onchange="if(this.value)selectChild(this.value)">
+          <option value="">Chọn học sinh</option>
+        </select>
+        <button class="mobile-ai-btn" id="mobile-ai-btn" type="button" disabled onclick="switchTab('advisor')">💬 Hỏi AI</button>
+      </div>
+      <details class="mobile-link-details" id="mobile-link-details">
+        <summary>＋ Liên kết tài khoản học sinh</summary>
+        <div class="mobile-link-form">
+          <input class="link-input" id="mobile-child-email-input" type="email" placeholder="Email tài khoản học sinh">
+          <button class="link-btn" type="button" onclick="linkChild('mobile-child-email-input','mobile-link-msg')">Liên kết</button>
+          <div id="mobile-link-msg" style="display:none;"></div>
+        </div>
+      </details>
+    </div>
     <div class="hero">
       <img class="hero-mascot" src="/images/mascot/waving.png" alt="" onerror="this.style.display='none'">
       <div>
@@ -398,6 +514,7 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
       <div id="view-report"><div class="loading-spinner"></div></div>
 
       <div id="view-advisor" style="display:none;">
+        <button class="advisor-back-btn" type="button" onclick="switchTab('report')">← Quay lại báo cáo</button>
         <div id="advisor-assessment"></div>
         <div class="advisor-card">
           <div class="advisor-head">
@@ -544,7 +661,7 @@ function _closeParentHelpOverlay(overlay){
   },170);
 }
 function openLastParentHelp(){
-  if(_parentHelpKind==='tip') showParentTip(_parentTipKind);
+  if(_parentHelpKind==='tip') showParentTip(_parentTipKind,true);
   else openParentGuide();
 }
 function closeParentGuide(){
@@ -597,7 +714,7 @@ async function openParentGuide(){
     document.getElementById('parent-guide-error').textContent='Chưa tải được số lượt hiện tại. Hạn mức sẽ được kiểm tra lại khi gửi câu hỏi.';
   }
 }
-function showParentTip(kind){
+function showParentTip(kind,force=false){
   const tips={
     overview:'Chọn học sinh để xem báo cáo; nếu dùng chung một email cho hai giao diện, hãy liên kết lại chính email đang đăng nhập.',
     report:'Báo cáo 7 ngày phù hợp theo dõi thường xuyên; chuyển 30 ngày để nhìn xu hướng dài hơn.',
@@ -606,6 +723,8 @@ function showParentTip(kind){
   };
   const titles={overview:'Bắt đầu tại Cổng Phụ huynh',report:'Đọc báo cáo học tập',advisor:'Dùng AI Cố vấn',link:'Liên kết tài khoản học sinh'};
   _parentTipKind=tips[kind]?kind:'overview';
+  _parentHelpKind='tip';
+  if(!force&&window.matchMedia('(max-width:760px)').matches) return;
   const overlay=document.getElementById('parent-tip-overlay');
   document.getElementById('parent-tip-title').textContent=titles[_parentTipKind];
   document.getElementById('parent-tip-text').textContent=tips[_parentTipKind];
@@ -675,8 +794,32 @@ function showParentPlanExpiryNotice(account){
 // Auth guard
 if(!token || !user){ window.location.href='/'; }
 if(user && (!['student','parent'].includes(user.role) || !user.parent_access)){ window.location.href='/app?upgrade=parent'; }
-document.getElementById('parent-name').textContent = user?.username || 'Phụ huynh';
+document.getElementById('parent-menu-name').textContent = user?.username || 'Phụ huynh';
+document.getElementById('parent-menu-email').textContent = user?.email || '';
 document.getElementById('hero-name').textContent   = user?.username || 'Phụ huynh';
+document.getElementById('parent-student-portal-link').hidden = user?.role !== 'student';
+
+function toggleParentAccountMenu(forceClose=false){
+  const menu=document.getElementById('parent-account-menu');
+  const trigger=document.getElementById('parent-account-trigger');
+  const open=typeof forceClose==='boolean'&&forceClose
+    ?false
+    :menu.hidden;
+  menu.hidden=!open;
+  trigger.setAttribute('aria-expanded',String(open));
+}
+document.addEventListener('click',event=>{
+  const wrap=document.getElementById('parent-account-wrap');
+  if(wrap&&!wrap.contains(event.target)) toggleParentAccountMenu(true);
+});
+document.addEventListener('keydown',event=>{
+  if(event.key!=='Escape') return;
+  const menu=document.getElementById('parent-account-menu');
+  if(menu&&!menu.hidden){
+    toggleParentAccountMenu(true);
+    document.getElementById('parent-account-trigger').focus();
+  }
+});
 
 // ── Load children ──
 async function loadChildren(){
@@ -684,6 +827,12 @@ async function loadChildren(){
     const res=await authFetch('/parent/children');
     const children=await res.json();
     const list=document.getElementById('children-list');
+    const mobileSelector=document.getElementById('mobile-parent-child');
+    const currentId=selectedChild?.id||mobileSelector.value;
+    mobileSelector.replaceChildren(new Option('Chọn học sinh',''));
+    children.forEach(c=>mobileSelector.add(new Option(`${c.username} · Lớp ${c.grade}`,c.id)));
+    mobileSelector.value=children.some(c=>String(c.id)===String(currentId))?currentId:'';
+    document.getElementById('mobile-ai-btn').disabled=!selectedChild;
     if(!children.length){
       list.innerHTML=`<div style="font-size:13px;color:var(--text3);font-weight:600;text-align:center;padding:12px;">Chưa có tài khoản học sinh được liên kết.<br>Nếu dùng chung email, hãy liên kết lại email đang đăng nhập.</div>`;
       return;
@@ -705,6 +854,9 @@ async function loadChildren(){
 async function selectChild(id){
   selectedChild={id};
   showParentTip('report');
+  const mobileSelector=document.getElementById('mobile-parent-child');
+  mobileSelector.value=String(id);
+  document.getElementById('mobile-ai-btn').disabled=false;
   document.querySelectorAll('.child-card').forEach(c=>c.classList.remove('active'));
   document.getElementById('child-'+id)?.classList.add('active');
   // Reset advisor cho con mới
@@ -855,6 +1007,7 @@ function switchTab(tab){
   document.getElementById('tab-advisor').classList.toggle('active',tab==='advisor');
   document.getElementById('view-report').style.display=tab==='report'?'flex':'none';
   document.getElementById('view-advisor').style.display=tab==='advisor'?'block':'none';
+  document.body.classList.toggle('parent-chat-open',tab==='advisor'&&window.matchMedia('(max-width:760px)').matches);
   showParentTip(tab==='advisor'?'advisor':'report');
 }
 
@@ -965,17 +1118,20 @@ function fmt(text){
 }
 
 // ── Link child ──
-async function linkChild(){
-  const email=document.getElementById('child-email-input').value.trim();
+async function linkChild(inputId='child-email-input',messageId='link-msg'){
+  const input=document.getElementById(inputId);
+  const msgEl=document.getElementById(messageId);
+  const email=input.value.trim();
   if(!email) return;
-  const msgEl=document.getElementById('link-msg');
   msgEl.style.display='block'; msgEl.style.color='var(--text2)'; msgEl.textContent='🔄 Đang liên kết...';
   try{
     const res=await authFetch('/parent/link-child','POST',{child_email:email});
     const data=await res.json();
     if(!res.ok){ msgEl.style.color='var(--red)'; msgEl.textContent='⚠️ '+data.detail; return; }
     msgEl.style.color='var(--teal-d)'; msgEl.textContent=`✅ Đã liên kết với ${data.child.username}!`;
-    document.getElementById('child-email-input').value=''; loadChildren();
+    input.value='';
+    if(inputId==='mobile-child-email-input') document.getElementById('mobile-link-details').open=false;
+    loadChildren();
   }catch(e){ msgEl.style.color='var(--red)'; msgEl.textContent='❌ Lỗi kết nối'; }
 }
 
@@ -1002,7 +1158,13 @@ function showToast(msg,duration=2500){
   setTimeout(()=>t.classList.remove('show'),duration);
 }
 function logout(){
-  localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); window.location.href='/';
+  localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); localStorage.removeItem('mb_user'); window.location.href='/';
+}
+function switchParentAccount(){
+  localStorage.removeItem('sb_token');
+  localStorage.removeItem('sb_user');
+  localStorage.removeItem('mb_user');
+  window.location.href='/login';
 }
 
 loadChildren();

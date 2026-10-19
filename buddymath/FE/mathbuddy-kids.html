@@ -98,21 +98,22 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
       </button>
     </div>
     <div id="user-info-wrap" style="display:none;">
-      <div class="user-avatar-pill" onclick="toggleUserMenu()" role="button" tabindex="0" aria-label="Mở menu tài khoản" aria-haspopup="menu" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUserMenu();}">
+      <button class="user-avatar-pill" type="button" onclick="toggleUserMenu()" aria-label="Mở menu tài khoản" aria-haspopup="menu" aria-expanded="false">
         <span id="user-avatar-letter" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;">?</span>
         <span id="user-display-name">Bạn ơi</span>
         <span style="font-size:10px;opacity:0.8;">▼</span>
-      </div>
+      </button>
       <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="Menu tài khoản" style="display:none;">
         <div class="user-dropdown-name" id="user-dropdown-name">--</div>
         <div class="user-dropdown-email" id="user-dropdown-email">--</div>
         <hr style="border:none;border-top:1px solid #F0EEFF;margin:8px 0;">
         <a class="user-dropdown-item" href="/" role="menuitem"><span class="user-dropdown-item-icon" aria-hidden="true">🏠</span><span>Về trang chủ</span></a>
-        <a class="user-dropdown-item" href="/parent-portal" role="menuitem"><span class="user-dropdown-item-icon" aria-hidden="true">👨‍👩‍👧</span><span>Cổng phụ huynh</span></a>
+        <a class="user-dropdown-item" href="/parent-portal" role="menuitem"><span class="user-dropdown-item-icon" aria-hidden="true">👨‍👩‍👧</span><span>Chuyển sang cổng phụ huynh</span></a>
         <a class="user-dropdown-item" href="/admin" role="menuitem"><span class="user-dropdown-item-icon" aria-hidden="true">🛡️</span><span>Đăng nhập quản trị</span></a>
         <button class="user-dropdown-item" onclick="openAdminPanel()" id="admin-portal-link" role="menuitem" style="display:none;"><span class="user-dropdown-item-icon" aria-hidden="true">🛡️</span><span>Quản lý người dùng</span></button>
         <button class="user-dropdown-item" onclick="openParentPortal()" id="parent-portal-link" role="menuitem" style="display:none;"><span class="user-dropdown-item-icon" aria-hidden="true">👨‍👩‍👧</span><span>Bảng kiểm soát phụ huynh</span></button>
         <button class="user-dropdown-item" onclick="showScoreHistory()" role="menuitem"><span class="user-dropdown-item-icon" aria-hidden="true">📊</span><span>Lịch sử điểm số</span></button>
+        <button class="user-dropdown-item" onclick="switchAccountUser()" role="menuitem"><span class="user-dropdown-item-icon" aria-hidden="true">🔄</span><span>Chuyển tài khoản</span></button>
         <button class="user-dropdown-item" onclick="logoutUser()" role="menuitem"><span class="user-dropdown-item-icon" aria-hidden="true">🚪</span><span>Đăng xuất</span></button>
       </div>
     </div>
