@@ -693,8 +693,6 @@ const FEATURE_GUIDES = {
 
 let _learningGuideEscapeHandler = null;
 let _featureGuideEscapeHandler = null;
-let _lastHelpKind = 'guide';
-let _lastFeatureTopic = null;
 
 function _ensureHelpMotionStyles() {
   if (document.getElementById('sb-help-motion-styles')) return;
@@ -702,32 +700,6 @@ function _ensureHelpMotionStyles() {
   style.id = 'sb-help-motion-styles';
   style.textContent = '@keyframes sbHelpBackdropIn{from{opacity:0}to{opacity:1}}@keyframes sbHelpPopupIn{from{opacity:0;transform:scale(.88) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}@keyframes sbHelpPopupOut{to{opacity:0;transform:scale(.84) translateY(12px)}}.sb-help-overlay{position:fixed;inset:0;z-index:10030;display:flex;align-items:center;justify-content:center;overflow-y:auto;overscroll-behavior:contain;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:rgba(16,31,51,.58);animation:sbHelpBackdropIn .18s ease-out}.sb-help-card{width:min(620px,100%);max-height:min(88vh,760px);max-height:min(88dvh,760px);min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;background:#fff;border-radius:22px;padding:clamp(16px,4vw,24px);box-shadow:0 24px 70px rgba(0,0,0,.28);animation:sbHelpPopupIn .22s cubic-bezier(.2,.8,.2,1)}.sb-help-overlay.sb-help-closing{animation:sbHelpBackdropIn .16s ease-in reverse}.sb-help-closing .sb-help-card{animation:sbHelpPopupOut .16s ease-in forwards}@media(prefers-reduced-motion:reduce){.sb-help-overlay,.sb-help-card{animation-duration:.01ms!important}}';
   document.head.appendChild(style);
-}
-
-function _ensureHelpLauncher() {
-  if (!authCurrentUser || !['student', 'parent'].includes(authCurrentUser.role)
-      || (authCurrentUser.role === 'parent' && !authCurrentUser.parent_access)) return;
-  let launcher = document.getElementById('sb-help-launcher');
-  if (!launcher) {
-    launcher = document.createElement('button');
-    launcher.id = 'sb-help-launcher';
-    launcher.type = 'button';
-    launcher.setAttribute('aria-label', 'Mở hướng dẫn và mẹo');
-    launcher.title = 'Mở hướng dẫn và mẹo';
-    launcher.textContent = '🔍';
-    launcher.style.cssText = 'position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:10024;width:50px;height:50px;border:2px solid #CDEEE4;border-radius:50%;background:#fff;color:#11917A;box-shadow:0 6px 20px rgba(18,49,74,.22);font-size:23px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .18s ease,box-shadow .18s ease;';
-    launcher.addEventListener('click', () => {
-      if (_lastHelpKind === 'feature' && _lastFeatureTopic) showFeatureGuide(_lastFeatureTopic);
-      else openLearningGuide(false);
-    });
-    document.body.appendChild(launcher);
-  }
-  launcher.style.display = 'flex';
-}
-
-function _hideHelpLauncher() {
-  const launcher = document.getElementById('sb-help-launcher');
-  if (launcher) launcher.style.display = 'none';
 }
 
 function _removeFeatureGuideNow() {
@@ -755,7 +727,6 @@ function closeFeatureGuide() {
   setTimeout(() => {
     overlay.remove();
     document.body.style.overflow = overlay.dataset.previousOverflow || '';
-    _ensureHelpLauncher();
   }, 170);
 }
 
@@ -766,16 +737,13 @@ function showFeatureGuide(topic) {
   if (!guide) return;
   if (document.getElementById('sb-learning-guide')) return;
   _ensureHelpMotionStyles();
-  _lastHelpKind = 'feature';
-  _lastFeatureTopic = topic;
-  _hideHelpLauncher();
   _removeFeatureGuideNow();
 
   const overlay = document.createElement('div');
   overlay.id = 'sb-feature-guide';
   overlay.className = 'sb-help-overlay';
   overlay.setAttribute('role', 'presentation');
-  overlay.innerHTML = '<section class="sb-help-card" role="dialog" aria-modal="true" aria-labelledby="sb-feature-guide-title"><button type="button" aria-label="Đóng mẹo" onclick="closeFeatureGuide()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button><div style="font-size:12px;font-weight:900;color:#11917A;text-transform:uppercase;letter-spacing:.08em;">🔍 Mẹo theo chức năng</div><h2 id="sb-feature-guide-title" style="margin:5px 44px 12px 0;font:800 23px/1.25 \'Baloo 2\',Nunito,Arial;color:#1A2340;"></h2><div style="font-size:14px;line-height:1.65;color:#1A2340;"><div><b>Để làm gì:</b> <span id="sb-feature-guide-purpose"></span></div><div style="margin-top:8px;"><b>Cách dùng:</b> <span id="sb-feature-guide-how"></span></div><div style="margin-top:8px;color:#5A6890;"><b>Mẹo:</b> <span id="sb-feature-guide-tip"></span></div></div><button type="button" onclick="openLearningGuide(true)" style="margin-top:16px;border:0;border-radius:10px;background:#EAFBF5;color:#11917A;padding:9px 12px;font:800 13px Nunito,Arial;cursor:pointer;">Xem hướng dẫn đầy đủ</button></section>';
+  overlay.innerHTML = '<section class="sb-help-card" role="dialog" aria-modal="true" aria-labelledby="sb-feature-guide-title"><button type="button" aria-label="Đóng mẹo" onclick="closeFeatureGuide()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button><div style="font-size:12px;font-weight:900;color:#11917A;text-transform:uppercase;letter-spacing:.08em;">💡 Mẹo theo chức năng</div><h2 id="sb-feature-guide-title" style="margin:5px 44px 12px 0;font:800 23px/1.25 \'Baloo 2\',Nunito,Arial;color:#1A2340;"></h2><div style="font-size:14px;line-height:1.65;color:#1A2340;"><div><b>Để làm gì:</b> <span id="sb-feature-guide-purpose"></span></div><div style="margin-top:8px;"><b>Cách dùng:</b> <span id="sb-feature-guide-how"></span></div><div style="margin-top:8px;color:#5A6890;"><b>Mẹo:</b> <span id="sb-feature-guide-tip"></span></div></div><button type="button" onclick="openLearningGuide(true)" style="margin-top:16px;border:0;border-radius:10px;background:#EAFBF5;color:#11917A;padding:9px 12px;font:800 13px Nunito,Arial;cursor:pointer;">Xem hướng dẫn đầy đủ</button></section>';
   overlay.querySelector('#sb-feature-guide-title').textContent = guide.title;
   overlay.querySelector('#sb-feature-guide-purpose').textContent = guide.purpose;
   overlay.querySelector('#sb-feature-guide-how').textContent = guide.how;
@@ -5252,7 +5220,6 @@ function closeLearningGuide() {
   setTimeout(() => {
     overlay.remove();
     document.body.style.overflow = overlay.dataset.previousOverflow || '';
-    _ensureHelpLauncher();
   }, 170);
 }
 
@@ -5261,15 +5228,13 @@ async function openLearningGuide(markSeen = true) {
   if (authCurrentUser.role === 'parent' && !authCurrentUser.parent_access) return;
   if (document.getElementById('sb-learning-guide')) return;
   _ensureHelpMotionStyles();
-  _lastHelpKind = 'guide';
   _removeFeatureGuideNow();
-  _hideHelpLauncher();
 
   const overlay = document.createElement('div');
   overlay.id = 'sb-learning-guide';
   overlay.className = 'sb-help-overlay';
   overlay.setAttribute('role', 'presentation');
-  overlay.innerHTML = `<section class="sb-help-card" role="dialog" aria-modal="true" aria-labelledby="sb-guide-title" style="font:600 14px/1.6 Nunito,Arial,sans-serif;color:#1A2340;"><button type="button" aria-label="Đóng hướng dẫn" onclick="closeLearningGuide()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button><div style="font-size:12px;font-weight:900;color:#11917A;text-transform:uppercase;letter-spacing:.08em;">🔍 SmartBuddy · Hướng dẫn nhanh</div><h2 id="sb-guide-title" style="margin:4px 40px 8px 0;font-size:24px;line-height:1.25;color:#1A2340;">Chào mừng bạn!</h2><p id="sb-guide-intro" style="margin:0 0 14px;color:#5A6890;"></p><div style="padding:13px 15px;border-radius:14px;background:#F0FBF7;border:1px solid #D7F1E8;"><b>📚 Gói và hạn mức hôm nay</b><div id="sb-guide-plan" style="margin-top:5px;overflow-wrap:anywhere;"></div><div id="sb-guide-trial" style="margin-top:4px;overflow-wrap:anywhere;"></div><div id="sb-guide-quota" style="margin-top:4px;overflow-wrap:anywhere;"></div><div id="sb-guide-data-error" style="margin-top:4px;color:#A05A00;overflow-wrap:anywhere;"></div></div><div id="sb-guide-role-tips" style="margin:14px 0;padding:13px 15px;border-radius:14px;background:#F7F8FF;border:1px solid #E3E7F5;overflow-wrap:anywhere;"></div><div id="sb-guide-parent-plan" style="margin-bottom:14px;padding:13px 15px;border-radius:14px;background:#FFF8EC;border:1px solid #F6E4BF;overflow-wrap:anywhere;"></div><p style="margin:0 0 16px;color:#5A6890;font-size:12px;">Mẹo nhỏ: nếu chưa hiểu câu trả lời, hãy yêu cầu Buddy giải thích lại bằng ví dụ phù hợp với lớp của em. Không nhập mật khẩu, địa chỉ hoặc thông tin riêng tư vào khung chat.</p><div style="display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;"><button type="button" onclick="closeLearningGuide()" style="border:0;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#11917A);color:#fff;padding:11px 18px;font:900 14px Nunito,Arial;cursor:pointer;">Đã hiểu, bắt đầu thôi</button></div></section>`;
+  overlay.innerHTML = `<section class="sb-help-card" role="dialog" aria-modal="true" aria-labelledby="sb-guide-title" style="font:600 14px/1.6 Nunito,Arial,sans-serif;color:#1A2340;"><button type="button" aria-label="Đóng hướng dẫn" onclick="closeLearningGuide()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button><div style="font-size:12px;font-weight:900;color:#11917A;text-transform:uppercase;letter-spacing:.08em;">📘 SmartBuddy · Hướng dẫn nhanh</div><h2 id="sb-guide-title" style="margin:4px 40px 8px 0;font-size:24px;line-height:1.25;color:#1A2340;">Chào mừng bạn!</h2><p id="sb-guide-intro" style="margin:0 0 14px;color:#5A6890;"></p><div style="padding:13px 15px;border-radius:14px;background:#F0FBF7;border:1px solid #D7F1E8;"><b>📚 Gói và hạn mức hôm nay</b><div id="sb-guide-plan" style="margin-top:5px;overflow-wrap:anywhere;"></div><div id="sb-guide-trial" style="margin-top:4px;overflow-wrap:anywhere;"></div><div id="sb-guide-quota" style="margin-top:4px;overflow-wrap:anywhere;"></div><div id="sb-guide-data-error" style="margin-top:4px;color:#A05A00;overflow-wrap:anywhere;"></div></div><div id="sb-guide-role-tips" style="margin:14px 0;padding:13px 15px;border-radius:14px;background:#F7F8FF;border:1px solid #E3E7F5;overflow-wrap:anywhere;"></div><div id="sb-guide-parent-plan" style="margin-bottom:14px;padding:13px 15px;border-radius:14px;background:#FFF8EC;border:1px solid #F6E4BF;overflow-wrap:anywhere;"></div><p style="margin:0 0 16px;color:#5A6890;font-size:12px;">Mẹo nhỏ: nếu chưa hiểu câu trả lời, hãy yêu cầu Buddy giải thích lại bằng ví dụ phù hợp với lớp của em. Không nhập mật khẩu, địa chỉ hoặc thông tin riêng tư vào khung chat.</p><div style="display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;"><button type="button" onclick="closeLearningGuide()" style="border:0;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#11917A);color:#fff;padding:11px 18px;font:900 14px Nunito,Arial;cursor:pointer;">Đã hiểu, bắt đầu thôi</button></div></section>`;
   overlay.addEventListener('click', event => {
     if (event.target === overlay) closeLearningGuide();
   });
@@ -5359,7 +5324,6 @@ function maybeShowLearningWelcome(user) {
   if (user.role === 'parent' && !user.parent_access) return;
   try {
     if (localStorage.getItem(`sb_guide_seen_${user.id}_${user.role}`)) {
-      _ensureHelpLauncher();
       return;
     }
   } catch(e) {}
@@ -5488,7 +5452,13 @@ function processPendingPlanAction(user) {
         .then(r => r.ok ? r.json() : null)
         .then(u => {
           if (u) {
-            authCurrentUser = u;
+                if (u.role === 'parent' && u.parent_access) {
+                  localStorage.removeItem('sb_token');
+                  localStorage.removeItem('sb_user');
+                  window.location.replace('/?portal=parent');
+                  return;
+                }
+                authCurrentUser = u;
             localStorage.setItem('sb_user', JSON.stringify(u));
             renderAuthState();
             // Chào mừng quay lại — mỗi phiên trình duyệt 1 lần, im lặng để đỡ làm phiền
@@ -5504,10 +5474,7 @@ function processPendingPlanAction(user) {
             showMascotMood();
             showPlanExpiryNotice(u);
             processPendingPlanAction(u);
-            if (u.role === 'parent' && u.parent_access) {
-              // Phụ huynh: mở thẳng Bảng kiểm soát (không hiện panel học sinh)
-              try { openParentPortal(); } catch(e) {}
-            } else if (u.role === 'parent') {
+            if (u.role === 'parent') {
               showAuthToast('Khu vực phụ huynh sẽ mở khi tài khoản được nâng cấp nhé! 🌱', 'var(--teal)');
             } else if (u.role === 'admin') {
               const al = document.getElementById('admin-portal-link');
@@ -5634,6 +5601,11 @@ async function doModalLogin() {
     });
     if (res.ok) {
       const data = await res.json();
+      if (data.user?.role === 'parent') {
+        _authShowErr('auth-login-err', 'Đây là tài khoản phụ huynh. Hãy đăng nhập riêng tại Cổng Phụ huynh; phiên này không đổi sang tài khoản khác.');
+        _authSetBtn('auth-login-btn', false, '🚀 Đăng nhập');
+        return;
+      }
       _sbToken = data.token || data.access_token;
       authCurrentUser = data.user || data;
       localStorage.setItem('sb_token', _sbToken);
@@ -5646,17 +5618,7 @@ async function doModalLogin() {
       pushNotification('login', 'Đăng nhập thành công 👋',
         'Xin chào ' + uName + '! Chúc em một buổi học thật vui và hiệu quả.', { sound:'login' });
       showMascotMood && showMascotMood();
-      // Auto-open portal theo vai trò
-      if (authCurrentUser.role === 'parent' && authCurrentUser.parent_access) {
-        setMascotPoseById('buddy-sprite-auth', 1);
-        setTimeout(() => { closeAuthModal(); openParentPortal(); maybeShowLearningWelcome(authCurrentUser); }, 800);
-      } else if (authCurrentUser.role === 'parent') {
-        setTimeout(() => {
-          closeAuthModal();
-          showAuthToast('Khu vực phụ huynh sẽ mở khi tài khoản được nâng cấp nhé! 🌱', 'var(--teal)');
-          openPremium();
-        }, 800);
-      } else if (authCurrentUser.role === 'admin') {
+      if (authCurrentUser.role === 'admin') {
         setMascotPoseById('buddy-sprite-auth', 1);
         setTimeout(() => { closeAuthModal(); openAdminPanel(); }, 800);
       } else {
@@ -5709,27 +5671,6 @@ function doQuickDemo() {
   renderAuthState();
   showAuthToast && showAuthToast('👋 Xin chào ' + name + '! Đang dùng chế độ thử.', 'var(--teal)');
   closeAuthModal();
-}
-
-function openParentPortal() {
-  toggleUserMenu(true);
-  if (!authCurrentUser?.parent_access) {
-    showAuthToast('Khu vực phụ huynh có trong gói Standard hoặc Premium nhé! 🌱', 'var(--teal)');
-    openPremium();
-    return;
-  }
-  const btn = document.querySelector('.topic-btn[data-topic="parent-home"]');
-  if (btn) {
-    selectTopic(btn);
-    loadParentDashboard();
-  } else {
-    // sidebar parent section may not be visible yet — force open
-    const fakeBtn = document.createElement('button');
-    fakeBtn.dataset.topic = 'parent-home';
-    fakeBtn.classList.add('topic-btn');
-    selectTopic(fakeBtn);
-    loadParentDashboard();
-  }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -6744,7 +6685,7 @@ function loginSuccess(acct) {
   showAuthToast(`🎉 Chào mừng, ${acct.name}! Cùng học Toán thôi!`, '#2ED573');
 }
 
-function logoutUser(mode='logout') {
+function logoutUser() {
   try{ sbPlaySound('logout'); }catch(e){}
   // Ghi thông báo đăng xuất vào kho của người dùng trước khi xóa phiên (toast do dòng dưới lo)
   if (authCurrentUser) {
@@ -6760,10 +6701,9 @@ function logoutUser(mode='logout') {
   } catch(e) {}
   toggleUserMenu(true);
   renderAuthState();
-  showAuthToast(mode==='switch'?'🔄 Đã đăng xuất. Mời bạn đăng nhập tài khoản khác.':'👋 Đã đăng xuất. Hẹn gặp lại!', '#FF6B35');
-  setTimeout(() => { openAuthModal('login'); }, mode==='switch'?350:900);
+  showAuthToast('👋 Đã đăng xuất. Hẹn gặp lại!', '#FF6B35');
+  setTimeout(() => { openAuthModal('login'); }, 900);
 }
-function switchAccountUser() { logoutUser('switch'); }
 
 function renderAuthState() {
   const btnWrap  = document.getElementById('auth-btn-wrap');
@@ -6771,7 +6711,6 @@ function renderAuthState() {
   const parentSection = document.getElementById('parent-sidebar-section');
   const studentSection = document.getElementById('student-sidebar-section');
   const adminSection = document.getElementById('admin-sidebar-section');
-  const parentPortalSwitchLink = document.getElementById('parent-portal-switch-link');
   const studentHistoryLink = document.getElementById('student-history-link');
   const adminLink  = document.getElementById('admin-portal-link');
 
@@ -6807,13 +6746,11 @@ function renderAuthState() {
   const isStudent = u.role === 'student';
   const isParent = u.role === 'parent';
   const isAdmin  = u.role === 'admin';
-  const hasParentAccess = !!u.parent_access && !isAdmin;
   const hasStudentAccess = isStudent;
   document.body.classList.toggle('role-parent', isParent);
-  if (parentSection) parentSection.style.display = isParent && hasParentAccess ? '' : 'none';
+  if (parentSection) parentSection.style.display = 'none';
   if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';
   if (studentSection) studentSection.style.display = hasStudentAccess ? '' : 'none';
-  if (parentPortalSwitchLink) parentPortalSwitchLink.style.display = isStudent ? '' : 'none';
   if (studentHistoryLink) studentHistoryLink.style.display = hasStudentAccess ? '' : 'none';
   if (adminLink) adminLink.style.display = isAdmin ? '' : 'none';
   if (el('user-dropdown-email') && isAdmin && !email) el('user-dropdown-email').textContent = '🛡️ Quản trị viên';

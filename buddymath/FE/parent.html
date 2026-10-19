@@ -57,8 +57,6 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 .parent-help-card{width:min(600px,100%);max-height:min(88vh,760px);max-height:min(88dvh,760px);min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;background:#fff;border-radius:22px;padding:clamp(16px,4vw,24px);box-shadow:0 24px 70px rgba(0,0,0,.28);animation:sbHelpPopupIn .22s cubic-bezier(.2,.8,.2,1);}
 .parent-help-overlay.parent-help-closing{animation:sbHelpBackdropIn .16s ease-in reverse;}
 .parent-help-closing .parent-help-card{animation:sbHelpPopupOut .16s ease-in forwards;}
-#parent-help-launcher{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:10024;width:50px;height:50px;border:2px solid #CDEEE4;border-radius:50%;background:#fff;color:#11917A;box-shadow:0 6px 20px rgba(18,49,74,.22);font-size:23px;cursor:pointer;align-items:center;justify-content:center;transition:transform .18s ease,box-shadow .18s ease;}
-#parent-help-launcher:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(18,49,74,.28);}
 @media(prefers-reduced-motion:reduce){.parent-help-overlay,.parent-help-card{animation-duration:.01ms!important;}}
 .site-nav-panel{display:flex;gap:7px;flex-wrap:wrap;}
 .site-nav-panel a{flex:1 1 110px;text-align:center;padding:8px 10px;border:1.5px solid #CDEEE4;border-radius:10px;background:#fff;color:var(--teal-d);font-size:12px;font-weight:900;text-decoration:none;}
@@ -412,8 +410,7 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
         <div class="parent-account-menu-name" id="parent-menu-name">Phụ huynh</div>
         <div class="parent-account-menu-email" id="parent-menu-email"></div>
       </div>
-      <a href="/app" id="parent-student-portal-link" role="menuitem" hidden>🎒 Chuyển sang giao diện học sinh</a>
-      <button type="button" onclick="switchParentAccount()" role="menuitem">🔄 Chuyển tài khoản</button>
+      <button type="button" onclick="openParentGuide()" role="menuitem">📘 Hướng dẫn và mẹo</button>
       <button type="button" onclick="logout()" role="menuitem">🚪 Đăng xuất</button>
     </div>
   </div>
@@ -433,10 +430,6 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 <div class="layout">
   <!-- Sidebar -->
   <div class="sidebar">
-    <nav class="site-nav-panel" aria-label="Các khu vực SmartBuddy">
-      <a href="/">🏠 Trang chủ</a>
-      <a href="/app">🎒 Học sinh</a>
-    </nav>
     <div class="sidebar-title">👨‍👩‍👧 Con em tôi</div>
     <div id="children-list"><div class="loading-spinner"></div></div>
 
@@ -537,12 +530,10 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 
 <div class="toast" id="toast"></div>
 
-<button id="parent-help-launcher" type="button" aria-label="Mở hướng dẫn và mẹo" title="Mở hướng dẫn và mẹo" onclick="openLastParentHelp()" style="display:none;">🔍</button>
-
 <div id="parent-tip-overlay" class="parent-help-overlay" role="presentation" aria-hidden="true" onclick="if(event.target===this)closeParentTip()" style="display:none;">
   <section class="parent-help-card" role="dialog" aria-modal="true" aria-labelledby="parent-tip-title">
     <button type="button" aria-label="Đóng mẹo" onclick="closeParentTip()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button>
-    <div style="font-size:12px;font-weight:900;color:var(--teal-d);letter-spacing:.08em;">🔍 MẸO THEO CHỨC NĂNG</div>
+    <div style="font-size:12px;font-weight:900;color:var(--teal-d);letter-spacing:.08em;">💡 MẸO THEO CHỨC NĂNG</div>
     <h2 id="parent-tip-title" style="font-family:'Baloo 2',cursive;font-size:23px;line-height:1.25;margin:5px 42px 10px 0;">Mẹo nhanh</h2>
     <p id="parent-tip-text" style="color:var(--text2);font-size:14px;line-height:1.7;overflow-wrap:anywhere;"></p>
     <button type="button" onclick="closeParentTip()" style="margin-top:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#1FCBA6,#11917A);color:#fff;padding:10px 16px;font:900 14px Nunito,Arial;cursor:pointer;">Đã rõ</button>
@@ -552,7 +543,7 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 <div id="parent-guide-overlay" class="parent-help-overlay" role="presentation" aria-hidden="true" onclick="if(event.target===this)closeParentGuide()" style="display:none;">
   <section class="parent-help-card" role="dialog" aria-modal="true" aria-labelledby="parent-guide-title">
     <button type="button" aria-label="Đóng hướng dẫn" onclick="closeParentGuide()" style="float:right;border:0;background:#F2FBF9;color:#5A6890;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;">×</button>
-    <div style="font-size:12px;font-weight:900;color:var(--teal-d);letter-spacing:.08em;">🔍 SMARTBUDDY · HƯỚNG DẪN PHỤ HUYNH</div>
+    <div style="font-size:12px;font-weight:900;color:var(--teal-d);letter-spacing:.08em;">📘 SMARTBUDDY · HƯỚNG DẪN PHỤ HUYNH</div>
     <h2 id="parent-guide-title" style="font-family:'Baloo 2',cursive;font-size:23px;margin:4px 42px 8px 0;">Cùng con học thật vui</h2>
     <p style="color:var(--text2);font-size:13px;line-height:1.6;">Cổng này giúp xem tiến độ học tập, đọc nhận xét và tham khảo gợi ý từ AI Cố vấn. Hãy dùng các báo cáo để trò chuyện tích cực với con.</p>
     <div style="padding:12px 14px;margin:12px 0;border-radius:13px;background:#F0FBF7;border:1px solid #D7F1E8;">
@@ -591,8 +582,8 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
 const API = (location.protocol !== 'file:' && location.hostname)
   ? location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
   : 'http://localhost:8000';
-let token         = localStorage.getItem('sb_token');
-let user          = JSON.parse(localStorage.getItem('sb_user') || 'null');
+let token         = localStorage.getItem('sb_parent_token');
+let user          = JSON.parse(localStorage.getItem('sb_parent_user') || 'null');
 let selectedChild = null;
 let currentPeriod = 'week';
 let currentReport = null;
@@ -607,16 +598,7 @@ const SUBJ_STYLE = {
 const PALETTE=['#1FCBA6','#1E90FF','#FF6B35','#A55EEA','#FF6EB4','#FFCB45'];
 function subjStyle(name,i){return SUBJ_STYLE[name]||{icon:'📚',color:PALETTE[i%PALETTE.length]};}
 
-let _parentHelpKind='guide';
 let _parentTipKind='overview';
-function showParentHelpLauncher(){
-  const launcher=document.getElementById('parent-help-launcher');
-  if(launcher&&user?.id) launcher.style.display='flex';
-}
-function _hideParentHelpLauncher(){
-  const launcher=document.getElementById('parent-help-launcher');
-  if(launcher) launcher.style.display='none';
-}
 function _hideParentHelpOverlay(overlay){
   if(!overlay) return;
   if(overlay._closeTimer){ clearTimeout(overlay._closeTimer); overlay._closeTimer=null; }
@@ -626,7 +608,7 @@ function _hideParentHelpOverlay(overlay){
   overlay.setAttribute('aria-hidden','true');
   document.body.style.overflow=overlay.dataset.previousOverflow||'';
 }
-function _showParentHelpOverlay(overlay,kind){
+function _showParentHelpOverlay(overlay){
   if(!overlay) return;
   const other=overlay.id==='parent-guide-overlay'
     ?document.getElementById('parent-tip-overlay')
@@ -641,8 +623,6 @@ function _showParentHelpOverlay(overlay,kind){
     :document.body.style.overflow;
   document.body.style.overflow='hidden';
   overlay.style.display='flex';
-  _parentHelpKind=kind;
-  _hideParentHelpLauncher();
   overlay.querySelector('button[aria-label^="Đóng"]')?.focus();
 }
 function _closeParentHelpOverlay(overlay){
@@ -656,12 +636,7 @@ function _closeParentHelpOverlay(overlay){
     overlay.classList.remove('parent-help-closing');
     overlay._closeTimer=null;
     document.body.style.overflow=overlay.dataset.previousOverflow||'';
-    showParentHelpLauncher();
   },170);
-}
-function openLastParentHelp(){
-  if(_parentHelpKind==='tip') showParentTip(_parentTipKind,true);
-  else openParentGuide();
 }
 function closeParentGuide(){
   _closeParentHelpOverlay(document.getElementById('parent-guide-overlay'));
@@ -677,7 +652,7 @@ document.addEventListener('keydown',event=>{
 });
 async function openParentGuide(){
   const overlay=document.getElementById('parent-guide-overlay');
-  _showParentHelpOverlay(overlay,'guide');
+  _showParentHelpOverlay(overlay);
   document.getElementById('parent-guide-plan').textContent='Đang tải thông tin gói…';
   document.getElementById('parent-guide-trial').textContent='';
   document.getElementById('parent-guide-quota').textContent='Đang kiểm tra hạn mức hôm nay…';
@@ -727,7 +702,7 @@ function showParentTip(kind,force=false){
   const overlay=document.getElementById('parent-tip-overlay');
   document.getElementById('parent-tip-title').textContent=titles[_parentTipKind];
   document.getElementById('parent-tip-text').textContent=tips[_parentTipKind];
-  _showParentHelpOverlay(overlay,'tip');
+  _showParentHelpOverlay(overlay);
 }
 function dismissParentPlanExpiryNotice(){
   const notice=document.getElementById('parent-plan-expiry-notice');
@@ -743,8 +718,133 @@ function dismissParentPlanExpiryNotice(){
 }
 function goToPlanCheckout(action,plan){
   if(!['renew','upgrade'].includes(action)||!['standard','premium'].includes(plan)) return;
-  const params=new URLSearchParams({plan_action:action,plan});
-  window.location.href='/app?'+params.toString();
+  openParentCheckout(plan);
+}
+function _parentCheckoutModal(){
+  let modal=document.getElementById('parent-checkout-modal');
+  if(modal) return modal;
+  modal=document.createElement('div');
+  modal.id='parent-checkout-modal';
+  modal.setAttribute('role','presentation');
+  modal.style.cssText='position:fixed;inset:0;z-index:13000;background:rgba(18,49,74,.58);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px;overflow:auto;';
+  modal.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="parent-checkout-title" style="position:relative;background:#fff;border-radius:20px;max-width:420px;width:100%;padding:22px;box-shadow:0 30px 70px rgba(0,0,0,.3);"><button type="button" id="parent-checkout-close" aria-label="Đóng thanh toán" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:#EAF4F1;color:#42605A;font-size:20px;cursor:pointer;">×</button><h2 id="parent-checkout-title" style="margin:0 38px 8px 0;font:900 20px/1.3 Nunito,Arial;color:#244B49;">Thanh toán gói phụ huynh</h2><div id="parent-checkout-content" style="text-align:center;color:#536C68;line-height:1.6;">Đang tạo mã thanh toán…</div></section>';
+  modal.addEventListener('click',event=>{if(event.target===modal) closeParentCheckout();});
+  modal.querySelector('#parent-checkout-close').addEventListener('click',closeParentCheckout);
+  document.body.appendChild(modal);
+  return modal;
+}
+function closeParentCheckout(){
+  const modal=document.getElementById('parent-checkout-modal');
+  if(modal) modal.style.display='none';
+  if(window._parentOrderPollTimer){
+    clearInterval(window._parentOrderPollTimer);
+    window._parentOrderPollTimer=null;
+  }
+}
+function _parentCheckoutMessage(text,showRetry=false,plan='standard'){
+  const content=document.getElementById('parent-checkout-content');
+  if(!content) return;
+  content.replaceChildren();
+  const message=document.createElement('p');
+  message.textContent=text;
+  message.style.cssText='margin:12px 0;overflow-wrap:anywhere;';
+  content.appendChild(message);
+  if(showRetry){
+    const retry=document.createElement('button');
+    retry.type='button';
+    retry.textContent='Tạo mã mới';
+    retry.style.cssText='margin-top:8px;padding:10px 18px;border:0;border-radius:11px;background:#11917A;color:#fff;font:900 14px Nunito,Arial;cursor:pointer;';
+    retry.addEventListener('click',()=>openParentCheckout(plan));
+    content.appendChild(retry);
+  }
+}
+async function openParentCheckout(plan){
+  if(!['standard','premium'].includes(plan)) return;
+  closeParentCheckout();
+  const modal=_parentCheckoutModal();
+  modal.style.display='flex';
+  _parentCheckoutMessage('Đang tạo mã thanh toán…');
+  try{
+    const response=await authFetch('/billing/create-order','POST',{plan,months:1});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.detail||'Chưa tạo được đơn thanh toán.');
+    const content=document.getElementById('parent-checkout-content');
+    content.replaceChildren();
+    const planName=(window.SB_PLANS?.plans||window.SB_PLANS||{})[plan]?.name||plan;
+    const code=data.transfer_content||(data.order&&data.order.code)||'';
+    const amount=data.amount||(data.order&&data.order.amount)||0;
+    const summary=document.createElement('p');
+    summary.textContent=`Gói ${planName} · ${Number(amount).toLocaleString('vi-VN')}đ/tháng`;
+    summary.style.cssText='margin:0 0 12px;font-size:14px;';
+    content.appendChild(summary);
+    const qr=document.createElement('img');
+    qr.src=data.qr_url;
+    qr.alt='Mã QR thanh toán';
+    qr.loading='lazy';
+    qr.style.cssText='display:block;width:min(210px,70vw);height:auto;aspect-ratio:1;object-fit:contain;margin:0 auto 12px;border:1px solid #E1F0EB;border-radius:14px;';
+    content.appendChild(qr);
+    const bank=data.bank||{};
+    const details=document.createElement('div');
+    details.style.cssText='padding:12px;text-align:left;background:#F6FBF9;border:1px solid #E1F0EB;border-radius:12px;font-size:13px;line-height:1.8;overflow-wrap:anywhere;';
+    [
+      ['Ngân hàng',bank.bank_code],
+      ['Số tài khoản',bank.account_number],
+      ['Chủ tài khoản',bank.account_name],
+      ['Số tiền',`${Number(amount).toLocaleString('vi-VN')}đ`],
+      ['Nội dung chuyển khoản',code]
+    ].forEach(([label,value])=>{
+      const row=document.createElement('div');
+      const name=document.createElement('span');
+      const detail=document.createElement('b');
+      name.textContent=`${label}: `;
+      detail.textContent=value||'';
+      row.append(name,detail);
+      details.appendChild(row);
+    });
+    content.appendChild(details);
+    const note=document.createElement('p');
+    note.textContent='Chuyển đúng số tiền và giữ nguyên nội dung chuyển khoản để hệ thống kích hoạt gói.';
+    note.style.cssText='margin:12px 0 4px;padding:10px;border-radius:10px;background:#FFF7E6;color:#8A5A08;font-size:12px;';
+    content.appendChild(note);
+    const status=document.createElement('div');
+    status.id='parent-checkout-status';
+    status.setAttribute('role','status');
+    status.textContent='Đang chờ xác nhận thanh toán…';
+    status.style.cssText='margin-top:12px;font-size:13px;font-weight:800;';
+    content.appendChild(status);
+    window._parentOrderPollTimer=setInterval(()=>checkParentOrder(code,plan),4000);
+  }catch(error){
+    console.error('Không tạo được đơn thanh toán phụ huynh:',error);
+    _parentCheckoutMessage(error.message||'Chưa tạo được đơn thanh toán. Vui lòng thử lại.',true,plan);
+  }
+}
+async function checkParentOrder(code,plan){
+  const modal=document.getElementById('parent-checkout-modal');
+  if(!modal||modal.style.display==='none'){closeParentCheckout();return;}
+  try{
+    const response=await authFetch(`/billing/order-status?code=${encodeURIComponent(code)}`);
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.detail||`HTTP ${response.status}`);
+    if(data.status==='paid'&&data.user){
+      clearInterval(window._parentOrderPollTimer);
+      window._parentOrderPollTimer=null;
+      user=data.user;
+      localStorage.setItem('sb_parent_user',JSON.stringify(user));
+      document.getElementById('parent-menu-name').textContent=user.username||'Phụ huynh';
+      document.getElementById('hero-name').textContent=user.username||'Phụ huynh';
+      _parentCheckoutMessage('Thanh toán thành công! Gói mới đã được kích hoạt.');
+      showToast('🎉 Thanh toán thành công! Gói đã được kích hoạt.');
+      setTimeout(()=>window.location.reload(),1200);
+    }else if(data.status==='expired'){
+      clearInterval(window._parentOrderPollTimer);
+      window._parentOrderPollTimer=null;
+      _parentCheckoutMessage('Mã thanh toán đã hết hạn.',true,plan);
+    }
+  }catch(error){
+    console.error('Không kiểm tra được trạng thái thanh toán phụ huynh:',error);
+    const status=document.getElementById('parent-checkout-status');
+    if(status) status.textContent='Chưa kiểm tra được thanh toán; hệ thống sẽ thử lại trong giây lát.';
+  }
 }
 function showParentPlanExpiryNotice(account){
   const planId=account?.subscription_plan||(['standard','premium'].includes(account?.plan)?account.plan:null);
@@ -791,12 +891,15 @@ function showParentPlanExpiryNotice(account){
 }
 
 // Auth guard
-if(!token || !user){ window.location.href='/'; }
-if(user && (!['student','parent'].includes(user.role) || !user.parent_access)){ window.location.href='/app?upgrade=parent'; }
+if(!token || !user){ window.location.href='/?portal=parent'; }
+if(user && (!['student','parent'].includes(user.role) || !user.parent_access)){
+  localStorage.removeItem('sb_parent_token');
+  localStorage.removeItem('sb_parent_user');
+  window.location.href='/?portal=parent&upgrade=parent';
+}
 document.getElementById('parent-menu-name').textContent = user?.username || 'Phụ huynh';
 document.getElementById('parent-menu-email').textContent = user?.email || '';
 document.getElementById('hero-name').textContent   = user?.username || 'Phụ huynh';
-document.getElementById('parent-student-portal-link').hidden = user?.role !== 'student';
 
 function toggleParentAccountMenu(forceClose=false){
   const menu=document.getElementById('parent-account-menu');
@@ -1157,13 +1260,9 @@ function showToast(msg,duration=2500){
   setTimeout(()=>t.classList.remove('show'),duration);
 }
 function logout(){
-  localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); localStorage.removeItem('mb_user'); window.location.href='/';
-}
-function switchParentAccount(){
-  localStorage.removeItem('sb_token');
-  localStorage.removeItem('sb_user');
-  localStorage.removeItem('mb_user');
-  window.location.href='/login';
+  localStorage.removeItem('sb_parent_token');
+  localStorage.removeItem('sb_parent_user');
+  window.location.href='/?portal=parent';
 }
 
 loadChildren();
@@ -1171,8 +1270,7 @@ showParentPlanExpiryNotice(user);
 if(user?.id){
   try{
     if(!localStorage.getItem(`sb_guide_seen_${user.id}_parent_portal`)) setTimeout(openParentGuide,500);
-    else showParentHelpLauncher();
-  }catch(e){ console.error('Không kiểm tra được trạng thái hướng dẫn phụ huynh:',e); showParentHelpLauncher(); }
+  }catch(e){ console.error('Không kiểm tra được trạng thái hướng dẫn phụ huynh:',e); }
 }
 </script>
 </body>

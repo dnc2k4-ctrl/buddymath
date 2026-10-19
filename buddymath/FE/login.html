@@ -378,6 +378,7 @@ body{
 const API = (location.protocol !== 'file:' && location.hostname)
   ? location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
   : 'http://localhost:8000';
+const _parentPortalLogin = new URLSearchParams(location.search).get('portal') === 'parent';
 let selectedRole  = 'student';
 let selectedGrade = 5;
 let otpSent = false;   // đã gửi OTP đăng ký hay chưa
@@ -392,6 +393,7 @@ function togglePass(id, btn){
 
 // ── Chuyển qua lại giữa thẻ Đăng nhập và Đăng ký (chỉ hiện 1 thẻ tại một thời điểm) ──
 function switchAuth(which){
+  if (_parentPortalLogin && which === 'register') return;
   const login = document.getElementById('card-login');
   const reg   = document.getElementById('card-register');
   const toReg = which === 'register';
@@ -483,13 +485,23 @@ async function doLogin(){
     const res = await fetch(`${API}/auth/login`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
     const data = await res.json();
     if (!res.ok){ showErr('login-err', data.detail || 'Đăng nhập thất bại'); return; }
+    if (_parentPortalLogin && (!data.user.parent_access || !['student','parent'].includes(data.user.role))) {
+      showErr('login-err', 'Tài khoản này chưa có quyền vào Cổng Phụ huynh. Hãy nâng cấp gói phù hợp rồi đăng nhập lại tại cổng này nhé.');
+      return;
+    }
     // Ghi nhớ đăng nhập → lưu email để lần sau điền sẵn
     if (document.getElementById('login-remember').checked) localStorage.setItem('sb_saved_email', email);
     else localStorage.removeItem('sb_saved_email');
-    localStorage.setItem('sb_token', data.token);
-    localStorage.setItem('sb_user',  JSON.stringify(data.user));
+    const parentSession = _parentPortalLogin || (data.user.role === 'parent' && data.user.parent_access);
+    const tokenKey = parentSession ? 'sb_parent_token' : 'sb_token';
+    const userKey = parentSession ? 'sb_parent_user' : 'sb_user';
+    localStorage.setItem(tokenKey, data.token);
+    localStorage.setItem(userKey, JSON.stringify(data.user));
     showOk('login-ok', `Chào mừng ${data.user.username}! Đang chuyển hướng...`);
-    setTimeout(()=>{ window.location.href = data.user.role === 'parent' ? (data.user.parent_access ? '/parent-portal' : '/app?upgrade=parent') : '/app'; }, 800);
+    setTimeout(()=>{
+      window.location.href = parentSession ? '/parent-portal'
+        : data.user.role === 'parent' ? '/app?upgrade=parent' : '/app';
+    }, 800);
   }catch(e){ showErr('login-err','Không kết nối được server. Hãy kiểm tra server đang chạy!'); }
   finally{ btn.disabled = false; btn.innerHTML = 'Đăng nhập <span>→</span>'; }
 }
@@ -536,6 +548,10 @@ async function sendRegisterOtp(isResend){
 }
 
 async function doRegister(){
+  if (_parentPortalLogin) {
+    showErr('login-err', 'Cổng Phụ huynh dùng thông tin của tài khoản đã đăng ký. Hãy đăng ký tài khoản ở luồng học sinh trước nhé.');
+    return;
+  }
   const v = _validateReg(); if (!v) return;
   const code  = document.getElementById('reg-code').value.trim();
   if (!code){ showErr('reg-err','Vui lòng nhập mã xác minh đã gửi tới email.'); return; }
@@ -577,18 +593,41 @@ document.addEventListener('keydown', e => {
 const savedEmail = localStorage.getItem('sb_saved_email');
 if (savedEmail) document.getElementById('login-email').value = savedEmail;
 
+if (_parentPortalLogin) {
+  document.querySelector('#login-view .card-title').textContent = 'Đăng nhập Cổng Phụ huynh';
+  document.querySelector('#login-view .card-sub').textContent = 'Đăng nhập riêng vào cổng phụ huynh bằng email đã đăng ký. Phiên này độc lập với cổng học sinh.';
+  document.querySelector('#login-view .switch-line').style.display = 'none';
+  document.getElementById('card-register').style.display = 'none';
+}
 // Deep-link: mở thẳng thẻ đăng ký nếu URL có #register / #dangky
-if (location.hash === '#register' || location.hash === '#dangky') switchAuth('register');
+if (!_parentPortalLogin && (location.hash === '#register' || location.hash === '#dangky')) switchAuth('register');
 
 // Đã đăng nhập → chuyển thẳng vào app.
 // Trừ khi thêm ?stay (hoặc ?preview) trên URL để xem trước giao diện đăng nhập.
 const _stayOnLogin = /[?&](stay|preview)/.test(location.search);
-const existing = _stayOnLogin ? null : localStorage.getItem('sb_token');
+const existingTokenKey = _parentPortalLogin ? 'sb_parent_token' : 'sb_token';
+const existing = _stayOnLogin ? null : localStorage.getItem(existingTokenKey);
 if (existing){
   fetch(`${API}/auth/me`, {headers:{'Authorization':'Bearer '+existing}})
     .then(r => r.ok ? r.json() : null)
-    .then(u => { if (u) window.location.href = u.role === 'parent' ? '/parent-portal' : '/app'; })
+    .then(u => {
+      if (_parentPortalLogin) {
+        if (u?.parent_access && ['student','parent'].includes(u.role)) window.location.href = '/parent-portal';
+        else {
+          localStorage.removeItem('sb_parent_token');
+          localStorage.removeItem('sb_parent_user');
+          showErr('login-err', 'Tài khoản này chưa có quyền vào Cổng Phụ huynh. Hãy nâng cấp gói phù hợp rồi đăng nhập lại tại cổng này nhé.');
+        }
+      } else if (u?.role === 'parent') {
+        localStorage.removeItem('sb_token');
+        localStorage.removeItem('sb_user');
+        showErr('login-err', 'Đây là tài khoản phụ huynh. Vui lòng đăng nhập riêng từ Cổng Phụ huynh.');
+      } else if (u) window.location.href = '/app';
+    })
     .catch(()=>{});
+}
+if (_parentPortalLogin && new URLSearchParams(location.search).get('upgrade') === 'parent') {
+  showErr('login-err', 'Cổng Phụ huynh chưa được mở cho tài khoản này. Hãy đăng nhập ở cổng học sinh để nâng cấp, sau đó quay lại đăng nhập riêng tại đây nhé.');
 }
 </script>
 </body>
