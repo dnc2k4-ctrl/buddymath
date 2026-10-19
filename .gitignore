@@ -22,7 +22,6 @@ buddymath.dump
 
 # Node
 node_modules/
-/public/
 
 # Backup / thư mục trùng lặp (không đưa lên repo)
 FE - Copy/
