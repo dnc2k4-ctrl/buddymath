@@ -42,8 +42,7 @@ def is_vision_model(model_name: str) -> bool:
 
 
 if ACTIVE_API_KEY:
-    _k = ACTIVE_API_KEY
-    logger.info(f"LLM key loaded: {_k[:8]}…{_k[-4:]} (len={len(_k)})")
+    logger.info("LLM API key configured.")
 else:
     logger.warning("Chưa cấu hình API key LLM (GROQ_API_KEY / GEMINI_API_KEY) — chat sẽ lỗi.")
 logger.info(
