@@ -6700,7 +6700,11 @@ function renderAuthState() {
     if (infoWrap) infoWrap.style.display = 'none';
     if (parentSection) parentSection.style.display = 'none';
     if (adminSection) adminSection.style.display = 'none';
-    if (studentSection) studentSection.style.display = '';
+    if (studentSection) {
+      studentSection.style.display = 'flex';
+      studentSection.style.flex = '1 1 auto';
+      studentSection.style.minHeight = '0';
+    }
     if (adminLink) adminLink.style.display = 'none';
     document.body.classList.remove('role-parent');
     if (typeof renderNotifBadge === 'function') renderNotifBadge();
@@ -6729,9 +6733,18 @@ function renderAuthState() {
   const isAdmin  = u.role === 'admin';
   const hasStudentAccess = isStudent || (isParent && !!u.parent_access);
   document.body.classList.toggle('role-parent', isParent);
-  if (parentSection) parentSection.style.display = u.parent_access ? '' : 'none';
+  if (parentSection) {
+    parentSection.style.display = u.parent_access ? 'flex' : 'none';
+    parentSection.style.flexDirection = 'column';
+    parentSection.style.flex = '0 0 auto';
+  }
   if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';
-  if (studentSection) studentSection.style.display = hasStudentAccess ? '' : 'none';
+  if (studentSection) {
+    studentSection.style.display = hasStudentAccess ? 'flex' : 'none';
+    // Keep both portal menus in normal document flow when a parent has student access.
+    studentSection.style.flex = isParent ? '0 0 auto' : '1 1 auto';
+    studentSection.style.minHeight = isParent ? 'max-content' : '0';
+  }
   if (studentHistoryLink) studentHistoryLink.style.display = hasStudentAccess ? '' : 'none';
   if (adminLink) adminLink.style.display = isAdmin ? '' : 'none';
   if (el('user-dropdown-email') && isAdmin && !email) el('user-dropdown-email').textContent = '🛡️ Quản trị viên';
