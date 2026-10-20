@@ -2401,3 +2401,68 @@ body:not(.role-parent) .layout {
     height: 64px !important;
   }
 }
+
+/* Keep sidebar chrome fixed while the student menu scrolls inside its own area. */
+@media (min-width: 761px) {
+  body:not(.role-parent) .sidebar {
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+  body:not(.role-parent) .sb-side-logo {
+    flex: 0 0 154px !important;
+    height: 154px !important;
+    min-height: 154px !important;
+    overflow: hidden;
+  }
+  body:not(.role-parent) .sb-side-logo img {
+    display: block;
+    width: 144px !important;
+    height: 144px !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+  }
+  body:not(.role-parent) #student-sidebar-section {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  body:not(.role-parent) #student-sidebar-section::-webkit-scrollbar {
+    display: none;
+  }
+  body:not(.role-parent) .sidebar::after {
+    flex: 0 0 66px;
+    min-height: 66px;
+    margin-top: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  /* Reduce excess card height so the whole dashboard fits common laptop screens. */
+  #intro-welcome-screen .home-greet { margin-bottom: 10px !important; }
+  #intro-welcome-screen .home-main-col { gap: 10px !important; }
+  #intro-welcome-screen .home-category-card { padding: 12px 14px 14px !important; }
+  #intro-welcome-screen .home-category-title { margin-bottom: 8px !important; }
+  #intro-welcome-screen .home-cats {
+    grid-auto-rows: minmax(158px, 1fr) !important;
+    gap: 10px !important;
+  }
+  #intro-welcome-screen .home-cats > div {
+    min-height: 158px;
+    padding: 10px 8px 11px !important;
+  }
+  #intro-welcome-screen .home-cats > div img { height: 78px !important; }
+  #intro-welcome-screen .home-cats > div > div:nth-of-type(1) { margin-top: 5px !important; }
+  #intro-welcome-screen .home-side-col { gap: 10px !important; }
+  #intro-welcome-screen .home-motivation-card {
+    min-height: 142px;
+    padding: 6px 12px !important;
+  }
+  #intro-welcome-screen .home-motivation-card img {
+    width: 128px !important;
+    height: 128px !important;
+  }
+}

@@ -2588,7 +2588,7 @@ function fitHomeContent() {
     wrap.style.zoom = '1';
     const cs = getComputedStyle(host);
     const availW = host.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) - 8;
-    const availH = host.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0) - 8;
+    const availH = host.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0) - 16;
     const needW = Math.max(wrap.scrollWidth, Math.ceil(wrap.getBoundingClientRect().width));
     const needH = Math.max(wrap.scrollHeight, Math.ceil(wrap.getBoundingClientRect().height));
     if (!needW || !needH) {
@@ -7692,6 +7692,9 @@ if (document.readyState === 'loading') {
     logo.onclick = function () { if (typeof goHome === 'function') goHome(); };
     logo.innerHTML = '<img loading="lazy"src="/images/logogiaodienmoi.jpg" alt="SmartBuddy" onerror="this.style.display=\'none\'">';
     sidebar.insertBefore(logo, sidebar.firstChild);
+    sidebar.scrollTop = 0;
+    const studentSection = document.getElementById('student-sidebar-section');
+    if (studentSection) studentSection.scrollTop = 0;
     // 2) Controls sang góc phải vùng nội dung
     const bar = document.createElement('div');
     bar.id = 'content-topbar';
