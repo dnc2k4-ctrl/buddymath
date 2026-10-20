@@ -54,14 +54,14 @@
   };
 
   /* ═══════════════ 2. TRANG CHỦ ═══════════════ */
-  window.sbHomeCat = function (topic, plate, title, sub, bg, arrow) {
-    return `<button type="button" class="sb-cat" style="--cbg:${bg};--carr:${arrow}" onclick="homeOpen('${topic}')">
-      <img loading="lazy" class="sb-cat__plate" src="${plate}" alt="">
+  window.sbHomeCat = function (topic, ico, title, sub, bg, c, arr) {
+    return `<button type="button" class="sb-cat" style="--cbg:${bg};--c:${c};--carr:${arr || c}" onclick="homeOpen('${topic}')">
+      <span class="sb-cat__ico"><span data-i="${ico}"></span></span>
       <span class="sb-cat__text">
         <span class="sb-cat__name">${title}</span>
         <span class="sb-cat__sub">${sub}</span>
       </span>
-      <span class="sb-cat__arrow">→</span>
+      <span class="sb-cat__arrow"><span data-i="arrow"></span></span>
     </button>`;
   };
 
@@ -91,29 +91,37 @@
       </div>
       <div class="sb-home__grid">
         <div class="sb-home__main">
-          <div class="sb-home__hero">
-            <img loading="lazy" src="/images/anhtrangchu.png" alt="SmartBuddy"
-              onload="typeof fitHomeContent==='function'&&fitHomeContent()"
-              onerror="this.parentNode.style.background='linear-gradient(120deg,#E9F9F3,#F2FBFF)';this.style.display='none'">
-            <button class="sb-home__hero-cta" onclick="quickStartBuddy()">💬 Hỏi ngay với Buddy</button>
-          </div>
+          <section class="sb-hero-scene">
+            <div class="sb-hero-scene__art">
+              <img loading="lazy" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.style.display='none'">
+            </div>
+            <div class="sb-hero-scene__copy">
+              <div class="sb-brand-word">Smart<span>Buddy</span></div>
+              <div class="sb-brand-tag">Học thông minh – Tiến vững vàng</div>
+              <button class="sb-hero-scene__cta" onclick="quickStartBuddy()"><span data-i="chat"></span> Hỏi ngay với Buddy</button>
+            </div>
+            <span class="sb-hero-scene__float" style="right:7%;top:10%;width:clamp(18px,3.2vh,34px);height:clamp(18px,3.2vh,34px);color:#4E8CFF;"><span data-i="books"></span></span>
+            <span class="sb-hero-scene__float" style="right:20%;top:22%;width:clamp(12px,2.2vh,24px);height:clamp(12px,2.2vh,24px);color:#FFB020;"><span data-i="star"></span></span>
+            <span class="sb-hero-scene__float" style="right:12%;bottom:14%;width:clamp(16px,2.6vh,28px);height:clamp(16px,2.6vh,28px);color:#A55EEA;"><span data-i="plane"></span></span>
+            <span class="sb-hero-scene__float" style="right:32%;top:8%;width:clamp(14px,2.4vh,26px);height:clamp(14px,2.4vh,26px);color:#2FCBA6;"><span data-i="sparkle"></span></span>
+          </section>
           <section class="sb-card sb-home__cats">
             <div class="sb-home__cats-head">
-              <h2 class="sb-home__cats-title">📚 Chọn danh mục học tập</h2>
+              <h2 class="sb-home__cats-title"><span data-i="books"></span> Chọn danh mục học tập</h2>
               <button class="sb-home__link" onclick="if(typeof showAuthToast==='function')showAuthToast('Chọn một danh mục bên dưới nhé! 😊','var(--mint-500)')">Xem tất cả →</button>
             </div>
             <div class="sb-cats">
-              ${sbHomeCat('math_hub', '/images/v2/cat-math-plate.png', 'Toán học', 'Học chủ đề + kiểm tra', '#E9F9F2', '#2FCBA6')}
-              ${sbHomeCat('english_hub', '/images/v2/cat-english-plate.png', 'Tiếng Anh', 'Từ vựng · hội thoại', '#EAF2FF', '#4E8CFF')}
-              ${sbHomeCat('life_skills', '/images/v2/cat-life-plate.png', 'Kỹ năng sống', 'Tư duy &amp; cảm xúc', '#F3ECFF', '#A55EEA')}
-              ${sbHomeCat('prompt-playground', '/images/v2/cat-think-plate.png', 'Tư duy đặt câu hỏi', 'Học cách hỏi hay', '#FFF7E3', '#FFB020')}
+              ${sbHomeCat('math_hub', 'math', 'Toán học', 'Học chủ đề + kiểm tra', '#E9F9F2', '#12A98D', '#2FCBA6')}
+              ${sbHomeCat('english_hub', 'globe', 'Tiếng Anh', 'Từ vựng · hội thoại', '#EAF2FF', '#2F74D0', '#4E8CFF')}
+              ${sbHomeCat('life_skills', 'sun', 'Kỹ năng sống', 'Tư duy &amp; cảm xúc', '#F3ECFF', '#7B3EAE', '#A55EEA')}
+              ${sbHomeCat('prompt-playground', 'bulb', 'Tư duy đặt câu hỏi', 'Học cách hỏi hay', '#FFF7E3', '#C98A00', '#FFB020')}
             </div>
           </section>
         </div>
         <aside class="sb-home__side">
           <section class="sb-sidecard">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-              <h2 class="sb-sidecard__title">📊 Tiến độ học tập</h2>
+              <h2 class="sb-sidecard__title"><span data-i="chart"></span> Tiến độ học tập</h2>
               <button class="sb-home__link" onclick="openAchievements()">Xem chi tiết →</button>
             </div>
             <div class="sb-progress">
@@ -129,12 +137,12 @@
           </section>
           <section class="sb-sidecard">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-              <h2 class="sb-sidecard__title">🏆 Thành tích nổi bật</h2>
+              <h2 class="sb-sidecard__title"><span data-i="trophy"></span> Thành tích nổi bật</h2>
               <button class="sb-home__link" onclick="openAchievements()">Xem tất cả →</button>
             </div>
-            ${sbAchRow('/images/v2/ic-star3d.png', 'Điểm số', _score, 'home-ach-score')}
-            ${sbAchRow('/images/v2/ic-target3d.png', 'Bài đã làm hôm nay', _done + '/10', 'home-ach-done')}
-            ${sbAchRow('/images/v2/ic-flame3d.png', 'Tinh thần học tập', 'Cố lên!')}
+            ${sbAchRow('star', 'Điểm số', _score, 'home-ach-score', '#C98A00')}
+            ${sbAchRow('target', 'Bài đã làm hôm nay', _done + '/10', 'home-ach-done', '#2F74D0')}
+            ${sbAchRow('flame', 'Tinh thần học tập', 'Cố lên!', '', '#E06A2B')}
           </section>
           <section class="sb-sidecard sb-motiv" onclick="quickStartBuddy()" title="Cùng học với Buddy nào!">
             <img loading="lazy" src="/images/mascot/reading.png" alt="Buddy đang đọc sách" onerror="this.style.display='none'">
@@ -151,9 +159,9 @@
     try { if (typeof fitHomeContent === 'function') fitHomeContent(); } catch (e) { }
   };
 
-  window.sbAchRow = function (img, label, value, valId) {
+  window.sbAchRow = function (ico, label, value, valId, color) {
     return `<div class="sb-achrow">
-      <span class="sb-achrow__icon"><img src="${img}" alt="" loading="lazy"></span>
+      <span class="sb-achrow__icon" style="color:${color || 'var(--mint-700)'}"><span data-i="${ico}"></span></span>
       <span class="sb-achrow__val"${valId ? ` id="${valId}"` : ''}>${value}</span>
       <span class="sb-achrow__label">${label}</span>
     </div>`;

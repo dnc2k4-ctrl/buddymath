@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script src="/assets/stage-loader.js?v=1"></script>
+<script src="/assets/icons.js?v=1"></script>
 <style>body{visibility:hidden}html[data-student-auth-ready="1"] body{visibility:visible}</style>
 <script>
 try { if (!localStorage.getItem('sb_token')) location.replace('/?portal=student'); }
@@ -40,7 +41,7 @@ catch (_) { location.replace('/?portal=student'); }
 <script src="/config/plans.js"></script>
 <link rel="stylesheet" href="/assets/mathbuddy-kids.css?v=11">
 <link rel="stylesheet" href="/assets/mint-v2.css?v=2">
-<link rel="stylesheet" href="/assets/app-v2.css?v=13">
+<link rel="stylesheet" href="/assets/app-v2.css?v=14">
 
 <!-- CHỐNG NHÁY: áp phẳng nav + mint header/nền NGAY từ <head> (trước khi body vẽ) để không lộ style hộp-màu cũ -->
 
@@ -253,22 +254,22 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
 
     <!-- ══ ĐIỀU HƯỚNG (giao diện mới — tone mint đồng nhất) ══ -->
     <button class="topic-btn nav-new" data-nav="home" onclick="goHome();setNavActive(this)">
-      <span class="nav-ic-em">🏠</span> Trang chủ
+      <span class="nav-ic-em"><span data-i="home"></span></span> Trang chủ
     </button>
     <button class="topic-btn nav-new" data-color="buddy" data-topic="buddy" onclick="selectTopic(this)">
-      <span class="nav-ic-em">💬</span> Hỏi đáp với Buddy
+      <span class="nav-ic-em"><span data-i="chat"></span></span> Hỏi đáp với Buddy
     </button>
     <button class="topic-btn nav-new" data-nav="prompt-playground" onclick="setNavActive(this); homeOpen('prompt-playground');">
-      <span class="nav-ic-em">🧠</span> Tư duy đặt câu hỏi
+      <span class="nav-ic-em"><span data-i="brain"></span></span> Tư duy đặt câu hỏi
     </button>
     <button class="topic-btn nav-new nav-group-header" data-color="blue" data-topic="math_hub" onclick="selectTopic(this)">
-      <span class="nav-ic-em">📐</span> Toán học
+      <span class="nav-ic-em"><span data-i="math"></span></span> Toán học
     </button>
     <button class="topic-btn nav-new nav-group-header" data-color="green" data-topic="english_hub" onclick="selectTopic(this)">
-      <span class="nav-ic-em">🌏</span> Tiếng Anh
+      <span class="nav-ic-em"><span data-i="globe"></span></span> Tiếng Anh
     </button>
     <button class="topic-btn nav-new nav-group-header" data-color="orange" id="life-skills-nav-btn" data-topic="life_skills" onclick="selectTopic(this)">
-      <span class="nav-ic-em">🌟</span> Kỹ năng sống
+      <span class="nav-ic-em"><span data-i="sun"></span></span> Kỹ năng sống
     </button>
     <div class="subtopic-list" id="navgrp-life">
       <button class="topic-btn sub-btn" onclick="openLifeSkillNav('Ra quyết định','🤔','Học cách suy nghĩ và ra quyết định đúng đắn.')">
@@ -288,19 +289,19 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
       </button>
     </div>
     <button class="topic-btn nav-new" data-color="buddy" data-topic="score_history" onclick="selectTopic(this)">
-      <span class="nav-ic-em">🕐</span> Lịch sử học tập
+      <span class="nav-ic-em"><span data-i="clock"></span></span> Lịch sử học tập
     </button>
     <button class="topic-btn nav-new" data-nav="achievements" onclick="openAchievements();setNavActive(this)">
-      <span class="nav-ic-em">🏆</span> Thành tích
+      <span class="nav-ic-em"><span data-i="trophy"></span></span> Thành tích
     </button>
     <button class="topic-btn nav-new" data-nav="profile" onclick="openProfile();setNavActive(this)">
-      <span class="nav-ic-em">👤</span> Hồ sơ cá nhân
+      <span class="nav-ic-em"><span data-i="user"></span></span> Hồ sơ cá nhân
     </button>
     <button class="topic-btn nav-new" data-nav="settings" onclick="openSettings();setNavActive(this)">
-      <span class="nav-ic-em">⚙️</span> Cài đặt
+      <span class="nav-ic-em"><span data-i="gear"></span></span> Cài đặt
     </button>
     <button class="topic-btn nav-new" onclick="openLearningGuide(true)">
-      <span class="nav-ic-em">📘</span> Hướng dẫn & mẹo học
+      <span class="nav-ic-em"><span data-i="book"></span></span> Hướng dẫn & mẹo học
     </button>
 
     <!-- Đã bỏ thẻ "Cố lên Buddy" theo yêu cầu — giữ ID tiến độ ở dạng ẩn để JS không lỗi -->
@@ -737,6 +738,9 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
           </div>
           <div class="sb-chat__art">
             <img loading="lazy" class="sb-chat__art-img" src="/images/mascot/reading.png" alt="SmartBuddy" onerror="this.style.display='none'">
+            <span class="sb-chat__float" style="left:-4%;top:8%;width:clamp(20px,3.4vh,38px);height:clamp(20px,3.4vh,38px);color:#4E8CFF;"><span data-i="books"></span></span>
+            <span class="sb-chat__float" style="right:0%;top:20%;width:clamp(16px,2.8vh,30px);height:clamp(16px,2.8vh,30px);color:#FFB020;"><span data-i="star"></span></span>
+            <span class="sb-chat__float" style="right:8%;top:-2%;width:clamp(16px,2.6vh,28px);height:clamp(16px,2.6vh,28px);color:#2FCBA6;"><span data-i="sparkle"></span></span>
           </div>
         </div>
 
@@ -1483,7 +1487,7 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
 </div>
 
 <script src="/assets/mathbuddy-kids.js?v=11"></script>
-<script src="/assets/app-v2.js?v=9"></script>
+<script src="/assets/app-v2.js?v=10"></script>
 
 <!-- Floating mascot đã được gỡ bỏ theo yêu cầu -->
 
