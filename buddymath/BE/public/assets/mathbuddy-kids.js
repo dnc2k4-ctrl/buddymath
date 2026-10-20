@@ -6731,20 +6731,14 @@ function renderAuthState() {
   const isStudent = u.role === 'student';
   const isParent = u.role === 'parent';
   const isAdmin  = u.role === 'admin';
-  const hasStudentAccess = isStudent || (isParent && !!u.parent_access);
+  const hasStudentAccess = isStudent;
   document.body.classList.toggle('role-parent', isParent);
   if (parentSection) {
-    parentSection.style.display = u.parent_access ? 'flex' : 'none';
+    parentSection.style.display = (isParent && !!u.parent_access) ? 'flex' : 'none';
     parentSection.style.flexDirection = 'column';
-    parentSection.style.flex = '0 0 auto';
   }
   if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';
-  if (studentSection) {
-    studentSection.style.display = hasStudentAccess ? 'flex' : 'none';
-    // Keep both portal menus in normal document flow when a parent has student access.
-    studentSection.style.flex = isParent ? '0 0 auto' : '1 1 auto';
-    studentSection.style.minHeight = isParent ? 'max-content' : '0';
-  }
+  if (studentSection) studentSection.style.display = hasStudentAccess ? 'flex' : 'none';
   if (studentHistoryLink) studentHistoryLink.style.display = hasStudentAccess ? '' : 'none';
   if (adminLink) adminLink.style.display = isAdmin ? '' : 'none';
   if (el('user-dropdown-email') && isAdmin && !email) el('user-dropdown-email').textContent = '🛡️ Quản trị viên';
