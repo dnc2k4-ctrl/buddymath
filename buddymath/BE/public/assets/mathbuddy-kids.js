@@ -2453,7 +2453,7 @@ function showHomeScreen() {
       <!-- Lời chào -->
       <div class="home-greet" style="margin:0 4px 10px;">
         <div style="font-family:'Baloo 2',cursive;font-size:29px;color:var(--text1);">Xin chào, Buddy! 👋</div>
-        <div style="font-size:17.5px;color:var(--text2);font-weight:600;margin-top:2px;">Hôm nay bạn muốn chinh phục thử thách nào?</div>
+        <div style="font-size:17.5px;color:var(--teal-d);font-weight:800;margin-top:4px;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
       </div>
       <div class="home-grid" style="display:grid;grid-template-columns:1.85fr 1fr;gap:16px;align-items:stretch;">
         <!-- LEFT — hero + danh mục GỘP CHUNG 1 khung (giống mẫu) -->
@@ -2509,7 +2509,6 @@ function showHomeScreen() {
         </div>
       </div>
 
-      <div class="home-quote" style="text-align:center;font-size:18.5px;color:var(--teal-d);font-weight:800;margin-top:14px;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
     </div>
   `;
 
