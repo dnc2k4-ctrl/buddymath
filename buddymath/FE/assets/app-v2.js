@@ -91,19 +91,21 @@
       </div>
       <div class="sb-home__grid">
         <div class="sb-home__main">
-          <section class="sb-hero-scene">
-            <div class="sb-hero-scene__art">
+          <section class="sb-hero-wow">
+            <div class="sb-hero-wow__copy">
+              <span class="sb-hero-wow__chip"><span data-i="sparkle"></span> Gia sư AI cho học sinh lớp 3–9</span>
+              <h1 class="sb-hero-wow__title">Học thông minh.<br><em>Tiến vững vàng.</em></h1>
+              <p class="sb-hero-wow__sub">Buddy hướng dẫn em từng bước — em tự tìm ra đáp án, ghi nhớ lâu hơn và tiến bộ mỗi ngày.</p>
+              <div class="sb-hero-wow__btns">
+                <button class="sb-wow-btn sb-wow-btn--mint" onclick="quickStartBuddy()"><span data-i="chat"></span> Hỏi ngay với Buddy</button>
+                <button class="sb-wow-btn sb-wow-btn--glass" onclick="showHomeScreen()"><span data-i="books"></span> Chọn môn học</button>
+              </div>
+            </div>
+            <div class="sb-hero-wow__art">
+              <span class="sb-wow-card sb-wow-card--a"><span data-i="flame"></span> Chuỗi <b>1</b> ngày</span>
+              <span class="sb-wow-card sb-wow-card--b"><span data-i="star"></span> <b>50</b> điểm</span>
               <img loading="lazy" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.style.display='none'">
             </div>
-            <div class="sb-hero-scene__copy">
-              <div class="sb-brand-word">Smart<span>Buddy</span></div>
-              <div class="sb-brand-tag">Học thông minh – Tiến vững vàng</div>
-              <button class="sb-hero-scene__cta" onclick="quickStartBuddy()"><span data-i="chat"></span> Hỏi ngay với Buddy</button>
-            </div>
-            <span class="sb-hero-scene__float" style="right:7%;top:10%;width:clamp(18px,3.2vh,34px);height:clamp(18px,3.2vh,34px);color:#4E8CFF;"><span data-i="books"></span></span>
-            <span class="sb-hero-scene__float" style="right:20%;top:22%;width:clamp(12px,2.2vh,24px);height:clamp(12px,2.2vh,24px);color:#FFB020;"><span data-i="star"></span></span>
-            <span class="sb-hero-scene__float" style="right:12%;bottom:14%;width:clamp(16px,2.6vh,28px);height:clamp(16px,2.6vh,28px);color:#A55EEA;"><span data-i="plane"></span></span>
-            <span class="sb-hero-scene__float" style="right:32%;top:8%;width:clamp(14px,2.4vh,26px);height:clamp(14px,2.4vh,26px);color:#2FCBA6;"><span data-i="sparkle"></span></span>
           </section>
           <section class="sb-card sb-home__cats">
             <div class="sb-home__cats-head">
