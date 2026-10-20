@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════════════
    app-v2.js — Override giao diện v2 (mint) cho mathbuddy-kids.html
    Load SAU mathbuddy-kids.js. Chỉ thay phần TRÌNH BÀY (markup/CSS), giữ nguyên
    toàn bộ logic dữ liệu/API của app cũ bằng cách tái dùng hàm & biến toàn cục.

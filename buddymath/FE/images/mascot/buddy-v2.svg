@@ -1,0 +1,77 @@
+/* SmartBuddy v2 — MASCOT MỚI (SVG tự vẽ): robot xanh pastel, đội mũ tốt nghiệp, vẫy tay */
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 320" fill="none">
+  <defs>
+    <linearGradient id="body" x1="60" y1="90" x2="200" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BFD9FF"/><stop offset=".55" stop-color="#8FB7FF"/><stop offset="1" stop-color="#6E9CF8"/>
+    </linearGradient>
+    <linearGradient id="face" x1="86" y1="120" x2="176" y2="210" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#EAF2FF"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="90" y1="30" x2="200" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2E4A7A"/><stop offset="1" stop-color="#16294A"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFE39B"/><stop offset="1" stop-color="#F7B733"/>
+    </linearGradient>
+    <linearGradient id="pad" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#DCEAFF"/><stop offset="1" stop-color="#B9D3FF"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#2A4B84" flood-opacity=".22"/>
+    </filter>
+  </defs>
+
+  <!-- bóng sàn -->
+  <ellipse cx="130" cy="296" rx="78" ry="14" fill="#2A4B84" opacity=".12"/>
+
+  <g filter="url(#soft)">
+    <!-- chân -->
+    <rect x="86" y="246" width="36" height="44" rx="17" fill="url(#body)"/>
+    <rect x="138" y="246" width="36" height="44" rx="17" fill="url(#body)"/>
+    <ellipse cx="104" cy="288" rx="22" ry="10" fill="#DCEAFF"/>
+    <ellipse cx="156" cy="288" rx="22" ry="10" fill="#DCEAFF"/>
+
+    <!-- thân -->
+    <rect x="66" y="128" width="128" height="132" rx="56" fill="url(#body)"/>
+    <rect x="96" y="176" width="68" height="64" rx="22" fill="#F4F9FF" opacity=".95"/>
+    <path d="M120 196h16a10 10 0 0 1 10 10v6a10 10 0 0 1-10 10h-6l-10 8v-8a10 10 0 0 1-8-10v-6a10 10 0 0 1 8-10Z" fill="#7FB0FF"/>
+
+    <!-- tai nghe -->
+    <rect x="46" y="150" width="26" height="56" rx="13" fill="url(#pad)"/>
+    <rect x="188" y="150" width="26" height="56" rx="13" fill="url(#pad)"/>
+
+    <!-- tay vẫy -->
+    <g transform="rotate(-24 210 170)">
+      <rect x="188" y="150" width="34" height="70" rx="17" fill="url(#body)"/>
+      <circle cx="205" cy="150" r="20" fill="#DCEAFF"/>
+      <circle cx="198" cy="145" r="6" fill="#F4F9FF"/>
+      <circle cx="209" cy="143" r="6" fill="#F4F9FF"/>
+      <circle cx="218" cy="148" r="5" fill="#F4F9FF"/>
+    </g>
+
+    <!-- đầu -->
+    <rect x="60" y="74" width="140" height="112" rx="54" fill="url(#body)"/>
+    <rect x="78" y="92" width="104" height="80" rx="38" fill="url(#face)"/>
+
+    <!-- mắt -->
+    <circle cx="108" cy="130" r="14" fill="#16294A"/>
+    <circle cx="112" cy="125" r="5" fill="#fff"/>
+    <path d="M142 124c8-8 20-8 26 0" stroke="#16294A" stroke-width="8" stroke-linecap="round"/>
+    <path d="M104 150c8 8 20 8 28 0" stroke="#16294A" stroke-width="6" stroke-linecap="round" opacity=".25"/>
+
+    <!-- má -->
+    <circle cx="90" cy="150" r="7" fill="#FFB6C8" opacity=".65"/>
+    <circle cx="170" cy="150" r="7" fill="#FFB6C8" opacity=".65"/>
+
+    <!-- ăng-ten -->
+    <path d="M130 74V44" stroke="#8FB7FF" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="130" cy="36" r="12" fill="url(#body)"/>
+    <circle cx="126" cy="32" r="4" fill="#EAF2FF"/>
+
+    <!-- mũ tốt nghiệp -->
+    <path d="M64 62 130 30l66 32-66 30-66-30Z" fill="url(#cap)"/>
+    <path d="M92 76v22c0 8 17 14 38 14s38-6 38-14V76" fill="#1B3157"/>
+    <path d="M196 62v34" stroke="#F7B733" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="196" cy="100" r="7" fill="url(#gold)"/>
+  </g>
+</svg>

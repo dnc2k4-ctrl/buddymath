@@ -1,0 +1,40 @@
+/* SmartBuddy UI v3 — Blue Pastel theme (ghi đè cuối cùng) */
+:root{
+  --blue-50:#F4F8FF; --blue-100:#E8F0FF; --blue-200:#D5E4FF; --blue-300:#B6CFFF;
+  --blue-400:#8FB7FF; --blue-500:#6EA8FE; --blue-600:#4E8CFF; --blue-700:#2F6BE0;
+  --ink:#1B2B4B; --ink-2:#22355C; --muted:#6B7E9E; --muted-2:#93A6C4;
+  --mint-50:#F4F8FF; --mint-100:#E8F0FF; --mint-200:#D5E4FF; --mint-300:#B6CFFF;
+  --mint-400:#8FB7FF; --mint-500:#6EA8FE; --mint-600:#4E8CFF; --mint-700:#2F6BE0; --mint-800:#1E4FB3;
+  --mint-grad:linear-gradient(135deg,#9CC2FF 0%,#6EA8FE 55%,#4E8CFF 100%);
+  --mint-soft:linear-gradient(120deg,#DCE9FF 0%,#F2F8FF 55%,#E3EEFF 100%);
+  --page-grad:
+     radial-gradient(1100px 560px at 12% -8%, #F7FAFF 0%, rgba(247,250,255,0) 62%),
+     radial-gradient(900px 480px at 92% 2%, #EDF4FF 0%, rgba(237,244,255,0) 60%),
+     linear-gradient(168deg,#EDF4FF 0%,#E6EFFF 38%,#F8FBFF 100%);
+}
+body:not(.role-parent){ background:var(--page-grad) !important; }
+/* nền aurora xanh pastel cho hero + banner */
+.sb-hero-wow{ background-image:linear-gradient(115deg,#1B2B4B 0%,#2F6BE0 45%,#9CC2FF 100%) !important; }
+.sb-hero-wow::before{ background:linear-gradient(100deg,rgba(16,32,66,.86) 0%,rgba(31,74,150,.6) 45%,rgba(60,130,255,.18) 78%,transparent 100%) !important; }
+#panel-buddy .sb-chat__hero, #panel-score_history .sb-hist__hero,
+#panel-english_hub .sb-hero, #panel-prompt-playground .sb-prompt__hero,
+#panel-math_hub .sb-hero, #panel-life_skills .sb-hero, .sb-view__banner{
+  background-image:linear-gradient(118deg,#1E3F7A 0%,#3E7BE8 46%,#B9D3FF 100%) !important;
+}
+.sb-chat__hero .sb-chat__title span, .sb-home__greet, .sb-brand-word{ color:#2F6BE0; }
+.sb-brand-word span{ color:#1B2B4B; }
+.sb-wow-btn--mint{ background:linear-gradient(135deg,#9CC2FF,#4E8CFF) !important; color:#fff !important; }
+.sb-btn--primary, .sb-seg__btn.active, .sb-filter.active, .sb-cat__arrow,
+body:not(.role-parent) .topic-btn.nav-new.active{
+  background:linear-gradient(135deg,#7FB0FF,#4E8CFF) !important; box-shadow:0 10px 22px rgba(78,140,255,.32) !important;
+}
+.sb-sidecard__title .sb-ic, .topic-btn .sb-ic, .nav-ic-em{ color:#4E8CFF !important; }
+body:not(.role-parent) .topic-btn.nav-new.active .sb-ic{ color:#fff !important; }
+.sb-donut{ background:conic-gradient(#6EA8FE 0deg var(--p,0deg),#E4EDFF var(--p,0deg) 360deg) !important; }
+.sb-cat__ico{ color:#4E8CFF !important; }
+.sb-cat{ background:linear-gradient(160deg,#F7FAFF,#EAF2FF) !important; border-color:#E1EBFF !important; }
+.sb-motiv{ background:linear-gradient(120deg,#F1F7FF,#E4EEFF) !important; }
+.sb-hist__icon, .sb-view__gear{ background:rgba(255,255,255,.94) !important; }
+/* mascot SVG mới thay ảnh cũ */
+img[src*="mascot/waving.png"], img[src*="mascot/reading.png"], img[src*="taodang"]{ }
+.buddy-v2{ width:100%; height:auto; display:block; }
