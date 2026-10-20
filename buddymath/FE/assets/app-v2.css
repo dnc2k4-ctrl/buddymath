@@ -762,7 +762,61 @@ body:not(.role-parent) .sb-bg__star{ font-size:clamp(11px,1.7vh,19px); }
 #ach-list{ min-height:0; overflow:hidden; }
 .sb-hist__empty{ overflow:hidden; }
 
-/* ─────────────────────────── 19. HERO "GLASS AURORA" (ảnh tự sinh) ─────────────────────────── */
+/* ─────────────────────────── 20. AURORA GLASS TOÀN BỘ BANNER (ảnh tự sinh, bỏ ảnh cũ) ─────────────────────────── */
+#panel-buddy .sb-chat__hero,
+#panel-english_hub .sb-hero,
+#panel-prompt-playground .sb-prompt__hero,
+#panel-score_history .sb-hist__hero,
+#panel-math_hub .sb-hero,
+#panel-life_skills .sb-hero,
+.sb-view__banner{
+  background:url('/images/art/aurora-mint.jpg') center/cover no-repeat !important;
+  color:#fff !important; border:1px solid rgba(255,255,255,.22) !important;
+  box-shadow:0 24px 50px rgba(6,60,52,.28) !important; overflow:hidden; position:relative;
+  isolation:isolate;
+}
+#panel-english_hub .sb-hero, .sb-view__banner{ background-image:url('/images/art/aurora-ocean.jpg') !important; }
+#panel-prompt-playground .sb-prompt__hero{ background-image:url('/images/art/aurora-sunset.jpg') !important; }
+#panel-math_hub .sb-hero{ background-image:url('/images/art/aurora-ocean.jpg') !important; }
+#panel-life_skills .sb-hero{ background-image:url('/images/art/aurora-sunset.jpg') !important; }
+#panel-buddy .sb-chat__hero::before,
+#panel-english_hub .sb-hero::before,
+#panel-prompt-playground .sb-prompt__hero::before,
+#panel-score_history .sb-hist__hero::before,
+.sb-view__banner::before{
+  content:""; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(100deg,rgba(4,36,33,.84) 0%,rgba(7,58,50,.55) 46%,rgba(8,70,62,.12) 78%,rgba(8,70,62,0) 100%);
+}
+#panel-buddy .sb-chat__hero .sb-chat__title,
+#panel-buddy .sb-chat__hero .sb-chat__sub,
+#panel-english_hub .sb-hero .sb-hero__title,
+#panel-english_hub .sb-hero .sb-hero__sub,
+#panel-prompt-playground .sb-prompt__hero .sb-hero__title,
+#panel-prompt-playground .sb-prompt__hero .sb-hero__sub,
+#panel-score_history .sb-hist__hero .sb-hero__title,
+#panel-score_history .sb-hist__hero .sb-hero__sub,
+#panel-math_hub .sb-hero .sb-hero__title,
+#panel-math_hub .sb-hero .sb-hero__sub,
+#panel-life_skills .sb-hero .sb-hero__title,
+#panel-life_skills .sb-hero .sb-hero__sub,
+.sb-view__banner .sb-view__title,
+.sb-view__banner .sb-view__sub{ color:#fff !important; text-shadow:0 4px 18px rgba(0,0,0,.28); }
+#panel-buddy .sb-chat__hero .sb-chip,
+#panel-prompt-playground .sb-prompt__hero .sb-chip{
+  background:rgba(255,255,255,.18) !important; color:#EAFFFA !important;
+  border-color:rgba(255,255,255,.38) !important; backdrop-filter:blur(8px);
+}
+#panel-buddy .sb-chat__hero .sb-chat__chip{ background:rgba(255,255,255,.20) !important; color:#fff !important; border:1px solid rgba(255,255,255,.35); }
+#panel-score_history .sb-hist__icon,
+.sb-view__banner .sb-title-ic,
+.sb-view__gear{ background:rgba(255,255,255,.92) !important; border-radius:16px; }
+.sb-view__banner .sb-view__art{ display:none !important; }
+.sb-hero > img[src*="/images/v2/"]{ display:none !important; }
+/* giữ mascot 3D nhưng ẩn ảnh cắt cũ trong banner các màn */
+#panel-english_hub .sb-eng__badge, #panel-math_hub .sb-eng__badge, #panel-life_skills .sb-eng__badge{
+  background:rgba(255,255,255,.92) !important;
+}
+
 .sb-hero-wow{position:relative;display:flex;align-items:center;gap:clamp(12px,2vw,28px);
   flex:1 1 auto;min-height:clamp(200px,34vh,360px);border-radius:clamp(20px,3vh,30px);overflow:hidden;
   padding:clamp(16px,2.6vh,30px) clamp(18px,2.2vw,34px);color:#fff;isolation:isolate;
