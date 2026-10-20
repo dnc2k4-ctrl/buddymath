@@ -145,3 +145,21 @@ body:not(.role-parent) .main-area::after{display:none !important;content:none !i
   background:linear-gradient(118deg,#FFFFFF 0%,#EAF6FF 58%,#DDEFFF 100%) !important;
 }
 #content-topbar{position:relative !important;top:auto !important;right:auto !important}
+/* mascot SVG dùng trong header/empty state */
+.sb-view__art svg, .sb-view__mascot svg{width:100%;height:auto;display:block}
+.sb-profile__art svg{width:100%;height:auto;display:block}
+.sb-profile__art{display:flex;align-items:flex-end;justify-content:flex-end}
+.sb-view__banner .sb-view__art{display:block !important}
+.sb-hist__empty .sb-ico, .sb-empty__mascot{display:none}
+.sb-profile__top{background:linear-gradient(112deg,#EAF6FF 0%,#F7FBFF 60%,#E2F0FE 100%) !important}
+.sb-profile__grade{background:#fff !important;color:var(--brand-strong) !important;border-color:#DFEFFB !important}
+.sb-profile__avatar{background:linear-gradient(135deg,#A6D4F5,#5FAEE6) !important}
+.sb-plan--hot{border-color:#8FC9F4 !important;box-shadow:0 14px 28px rgba(95,174,230,.18) !important}
+.sb-plan__ribbon{background:linear-gradient(135deg,#A6D4F5,#5FAEE6) !important}
+.sb-plan__cta{background:#EAF6FF !important;color:var(--brand-deep) !important}
+.sb-plan__cta:not(:disabled){background:linear-gradient(135deg,#A6D4F5,#5FAEE6) !important;color:#fff !important}
+.sb-profile__top .sb-profile__art{height:clamp(52px,8.4vh,92px) !important;right:10px !important;bottom:0 !important}
+.sb-profile__top .sb-profile__art svg{height:100%;width:auto}
+.sb-plan__icon{background:#EAF6FF !important;border-radius:50%;display:flex;align-items:center;justify-content:center;width:34px;height:34px}
+.sb-plan__icon .sb-ic{width:20px;height:20px;color:var(--brand-strong)}
+.sb-plan__icon img{display:none !important}

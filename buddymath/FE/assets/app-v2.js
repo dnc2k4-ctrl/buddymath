@@ -189,7 +189,7 @@
             <h1 class="sb-view__title"><img class="sb-title-ic" src="/images/v2/ic-trophy-title.png" alt=""> Thành tích của em</h1>
             <p class="sb-view__sub">Cùng xem em đã tiến bộ thế nào nhé!</p>
           </div>
-          <img loading="lazy" class="sb-view__art" src="/images/mascot/celebrate.png" alt="" onerror="this.style.display='none'">
+          <div class="sb-view__art">${(typeof sbMascot==="function"?sbMascot("celebration"):"")}</div>
         </div>
         <div class="sb-stat-grid">
           ${sbStatCard('/images/v2/ic-trophy3d.png', 'Điểm tổng', s)}
@@ -262,7 +262,7 @@
       : `<button class="sb-plan__cta" onclick="sbChoosePlan('${id}')">${id === P.defaultPlan ? P.ui.cta.free : P.ui.cta.paid}</button>`;
     return `<div class="sb-plan ${hot ? 'sb-plan--hot' : ''} ${gold ? 'sb-plan--gold' : ''}" style="--pl:${color};--plbg:${bgIcon}">
       ${hot ? '<span class="sb-plan__ribbon">PHỔ BIẾN</span>' : ''}
-      <span class="sb-plan__icon"><img src="${icon}" alt="" loading="lazy"></span>
+      <span class="sb-plan__icon"><span data-i="${id === "premium" || id === "standard" ? "crown" : "gift"}"></span></span>
       <div class="sb-plan__name">${esc(plan.name)}</div>
       <div class="sb-plan__price"><b>${price}</b>${suffix ? `<span>${suffix}</span>` : ''}</div>
       <ul class="sb-plan__feat">${highlights.map(f => `<li><span>✓</span>${esc(f)}</li>`).join('')}</ul>
@@ -298,7 +298,7 @@
                 <div class="sb-profile__name">${esc(name)}</div>
                 <span class="sb-profile__grade">🎓 ${esc(grade)}</span>
               </div>
-              <img loading="lazy" class="sb-profile__art" src="/images/mascot/thumbsup.png" alt="" onerror="this.style.display='none'">
+              <div class="sb-profile__art">${(typeof sbMascot==="function"?sbMascot("hint"):"")}</div>
             </div>
             <div class="sb-profile__rows">
               ${sbProfileRow('/images/v2/ic-mail3d.png', 'Email', esc(email))}
@@ -364,7 +364,7 @@
             <h1 class="sb-view__title">Cài đặt</h1>
             <p class="sb-view__sub">Tùy chỉnh trải nghiệm học tập của em</p>
           </div>
-          <img loading="lazy" class="sb-view__art" src="/images/mascot/waving.png" alt="" onerror="this.style.display='none'">
+          <div class="sb-view__art">${(typeof sbMascot==="function"?sbMascot("welcome"):"")}</div>
         </div>
         <div class="sb-settings__card">
           ${sbSettingRow('/images/v2/ic-bell3d.png', 'Thông báo', 'Nhận thông báo trong ứng dụng', sbSwitch('notif', notifOn))}
