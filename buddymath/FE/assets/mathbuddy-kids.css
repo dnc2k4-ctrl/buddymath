@@ -1966,3 +1966,80 @@ body:not(.role-parent) #intro-welcome-screen::-webkit-scrollbar{ width:0 !import
     line-height:1.3;
   }
 }
+
+
+/* Home dashboard proportions and card rhythm */
+@media (min-width: 901px) {
+  #intro-welcome-screen #home-fit-wrap { max-width: 1440px !important; }
+  #intro-welcome-screen .home-greet { margin: 0 4px 14px !important; }
+  #intro-welcome-screen .home-grid {
+    grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr) !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+  }
+  #intro-welcome-screen .home-grid > div:first-child { min-width: 0; }
+  #intro-welcome-screen .home-cats {
+    grid-auto-rows: minmax(136px, 1fr) !important;
+    gap: 14px !important;
+    align-items: stretch;
+  }
+  #intro-welcome-screen .home-cats > div {
+    min-width: 0;
+    min-height: 136px;
+    padding: 12px 10px 14px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 5px 15px rgba(18, 49, 74, .08) !important;
+  }
+  #intro-welcome-screen .home-cats > div img {
+    width: auto !important;
+    height: 76px !important;
+    max-width: 100%;
+    object-fit: contain;
+    margin: 0 auto !important;
+  }
+  #intro-welcome-screen .home-cats > div > div:nth-of-type(1) {
+    margin-top: 8px !important;
+    font-size: clamp(14px, 1.05vw, 17px) !important;
+    line-height: 1.2;
+  }
+  #intro-welcome-screen .home-cats > div > div:nth-of-type(2) {
+    margin-top: 4px !important;
+    font-size: clamp(11px, .85vw, 13px) !important;
+    line-height: 1.35;
+  }
+  #intro-welcome-screen .home-side-col { min-width: 0; gap: 12px !important; }
+  #intro-welcome-screen .home-side-col > div:last-child {
+    min-height: 0;
+    padding: 8px 12px !important;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #intro-welcome-screen .home-side-col > div:last-child img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  #intro-welcome-screen .home-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+  #intro-welcome-screen .home-cats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(132px, 1fr) !important;
+    gap: 10px !important;
+  }
+  #intro-welcome-screen .home-side-col {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px !important;
+  }
+  #intro-welcome-screen .home-side-col > div:last-child {
+    grid-column: 1 / -1;
+  }
+  #intro-welcome-screen .home-side-col > div:last-child img { height: 160px; }
+}
