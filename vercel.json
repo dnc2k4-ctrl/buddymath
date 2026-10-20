@@ -1,9 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "python ../../build.py",
+  "buildCommand": "python build.py",
+  "outputDirectory": "buddymath/BE/public",
   "functions": {
-    "api/index.py": {
-      "maxDuration": 60
+    "index.py": {
+      "maxDuration": 60,
+      "includeFiles": "{buddymath/BE/app/**,buddymath/BE/data/faiss.index,buddymath/BE/data/metadata.pkl}"
     }
   },
   "redirects": [
@@ -15,6 +17,7 @@
     { "source": "/privacy.html", "destination": "/privacy", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/parent-login", "destination": "/login.html" },
     { "source": "/", "destination": "/login.html" },
     { "source": "/app", "destination": "/mathbuddy-kids.html" },
     { "source": "/parent-portal", "destination": "/parent.html" },

@@ -7,22 +7,22 @@
 (function(){
   let token;
   try { token = localStorage.getItem('sb_parent_token'); }
-  catch (_) { location.replace('/?portal=parent'); return; }
-  if (!token) { location.replace('/?portal=parent'); return; }
+  catch (_) { location.replace('/parent-login'); return; }
+  if (!token) { location.replace('/parent-login'); return; }
   fetch('/auth/me', {headers:{Authorization:'Bearer '+token}})
     .then(response => response.ok ? response.json() : null)
     .then(user => {
       if (!user || !['student','parent'].includes(user.role) || !user.parent_access) {
         localStorage.removeItem('sb_parent_token');
         localStorage.removeItem('sb_parent_user');
-        location.replace('/?portal=parent&upgrade=parent');
+        location.replace('/parent-login?upgrade=parent');
         return;
       }
       localStorage.setItem('sb_parent_user', JSON.stringify(user));
       if (window._sbApplyParentUser) window._sbApplyParentUser(user);
       document.documentElement.dataset.parentAuthReady = '1';
     })
-    .catch(() => location.replace('/?portal=parent'));
+    .catch(() => location.replace('/parent-login'));
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -434,7 +434,7 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
         <div class="parent-account-menu-email" id="parent-menu-email"></div>
       </div>
       <button type="button" onclick="openParentGuide()" role="menuitem">📘 Hướng dẫn và mẹo</button>
-      <button type="button" onclick="location.href='/?portal=student'" role="menuitem">🎒 Mở cổng học sinh</button>
+      <button type="button" onclick="location.href='/'" role="menuitem">🎒 Mở cổng học sinh</button>
       <button type="button" onclick="logout()" role="menuitem">🚪 Đăng xuất</button>
     </div>
   </div>
@@ -924,7 +924,7 @@ function showParentPlanExpiryNotice(account){
 }
 
 // Auth guard
-if(!token){ window.location.href='/?portal=parent'; }
+if(!token){ window.location.href='/parent-login'; }
 document.getElementById('parent-menu-name').textContent = user?.username || 'Phụ huynh';
 document.getElementById('parent-menu-email').textContent = user?.email || '';
 document.getElementById('hero-name').textContent   = user?.username || 'Phụ huynh';
@@ -1288,7 +1288,7 @@ function showToast(msg,duration=2500){
 function logout(){
   localStorage.removeItem('sb_parent_token');
   localStorage.removeItem('sb_parent_user');
-  window.location.href='/?portal=parent';
+  window.location.href='/parent-login';
 }
 
 loadChildren();

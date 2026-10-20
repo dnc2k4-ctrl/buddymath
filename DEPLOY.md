@@ -34,11 +34,11 @@ quyền truy cập trước; đừng khởi chạy production bằng database tr
 
 1. Vercel Dashboard → **Add New → Project** → import Git repository
    `dnc2k4-ctrl/buddymath`.
-2. Đặt **Root Directory** là `buddymath/BE`. Đây là thư mục gốc của Vercel
-   project hiện tại; giữ **Output Directory** mặc định để Vercel phục vụ các
-   file trong `public/`. Build Command `python ../../build.py` đồng bộ frontend
-   từ `buddymath/FE/`; các file trong `buddymath/BE/public/` được commit để
-   Vercel thu thập trực tiếp.
+2. Đặt **Root Directory** là `buddymath/BE`. Thư mục này có `index.py`,
+   `vercel.json`, `requirements.txt` và `public/` để Vercel nhận diện FastAPI,
+   cài dependency, phục vụ static assets và định tuyến hai cổng. Build Command
+   là `python build_vercel.py`; Output Directory để mặc định. Đồng bộ các file
+   trong `public/` từ `buddymath/FE/` bằng `python build.py` trước khi commit.
 3. Thêm biến môi trường dưới đây cho **Production**, rồi deploy nhánh `main`.
 
 | Biến | Bắt buộc | Ghi chú |

@@ -40,6 +40,11 @@ async def legacy_login_page():
     return _redirect_legacy_page("/")
 
 
+@router.get("/parent-login", include_in_schema=False)
+async def parent_login_page():
+    return RedirectResponse(url="/?portal=parent", status_code=307)
+
+
 @router.get("/mathbuddy-kids.html", include_in_schema=False)
 async def legacy_app_page():
     return _redirect_legacy_page("/app")

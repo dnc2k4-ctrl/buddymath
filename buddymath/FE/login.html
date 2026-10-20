@@ -218,7 +218,7 @@ body{
         <div class="card-sub">Đăng nhập để tiếp tục hành trình học tập cùng Buddy nhé!</div>
         <nav class="portal-choice" aria-label="Chọn cổng đăng nhập">
           <a href="/?portal=student">🎒 Khu vực học sinh</a>
-          <a href="/?portal=parent">👨‍👩‍👧 Khu vực phụ huynh</a>
+          <a href="/parent-login">👨‍👩‍👧 Khu vực phụ huynh</a>
         </nav>
 
         <div class="error-msg" id="login-err"></div>
@@ -383,7 +383,8 @@ body{
 const API = (location.protocol !== 'file:' && location.hostname)
   ? location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
   : 'http://localhost:8000';
-const _parentPortalLogin = new URLSearchParams(location.search).get('portal') === 'parent';
+const _parentPortalLogin = new URLSearchParams(location.search).get('portal') === 'parent'
+  || location.pathname.replace(/\/+$/, '') === '/parent-login';
 let selectedRole  = 'student';
 let selectedGrade = 5;
 let otpSent = false;   // đã gửi OTP đăng ký hay chưa
