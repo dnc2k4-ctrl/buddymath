@@ -16,7 +16,7 @@
       linear-gradient(168deg,#E9FBF5 0%,#E4F9F1 44%,#F5FDFB 100%);
   }
   #sb-stage-frame{
-    width:1672px;height:941px;border:0;display:block;background:#fff;
+    border:0;display:block;background:#fff;
     transform-origin:center center;
     box-shadow:0 30px 80px rgba(16,80,70,.10), 0 0 0 1px rgba(47,203,166,.08);
   }
@@ -26,26 +26,44 @@
 <div id="sb-stage-wrap"><iframe id="sb-stage-frame" allow="camera; microphone; clipboard-write; fullscreen"></iframe></div>
 <script>
 (function () {
-  var W = 1672, H = 941;
+  /* Chọn khung thiết kế theo tỉ lệ màn hình để luôn giãn kín, không chừa hai bên:
+     ~2.2:1 → 1859×846 (ảnh mẫu Trang chủ/Hỏi đáp/Đăng nhập/Thành tích)
+     16:9   → 1672×941 (Hồ sơ/Cài đặt/Lịch sử/Tiếng Anh…)
+     tỉ lệ khác → nội suy để vẫn giãn đều */
   var params = new URLSearchParams(location.search);
   var to = params.get('to') || '/';
   if (to.charAt(0) !== '/') to = '/' + to;
-  var sep = to.indexOf('?') === -1 ? '?' : '&';
-  var src = to + sep + 'embed=1';
 
   var frame = document.getElementById('sb-stage-frame');
   var wrap = document.getElementById('sb-stage-wrap');
+  var curW = 0, curH = 0, lastSrc = '';
+
+  function canvasFor(vw, vh) {
+    var ratio = vw / vh;
+    if (ratio >= 2.02) return { w: 1859, h: 846 };
+    if (ratio >= 1.92) return { w: Math.round(941 * Math.min(ratio, 2.02)), h: 941 };
+    if (ratio >= 1.70) return { w: 1672, h: 941 };
+    return { w: Math.round(941 * Math.max(ratio, 1.2)), h: Math.max(700, Math.round(941 * Math.max(ratio, 1.2) / 1.777)) };
+  }
 
   function fit() {
-    var s = Math.min(window.innerWidth / W, window.innerHeight / H);
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var c = canvasFor(vw, vh);
+    var s = Math.min(vw / c.w, vh / c.h);
+    if (c.w !== curW || c.h !== curH) {
+      curW = c.w; curH = c.h;
+      frame.style.width = c.w + 'px';
+      frame.style.height = c.h + 'px';
+      var sep = to.indexOf('?') === -1 ? '?' : '&';
+      var src = to + sep + 'embed=1&cw=' + c.w + '&ch=' + c.h;
+      if (src !== lastSrc) { lastSrc = src; frame.src = src; }
+    }
     frame.style.transform = 'scale(' + s + ')';
-    wrap.style.setProperty('--sb-scale', s);
   }
+
   frame.addEventListener('load', function () {
     try { history.replaceState(null, '', to); } catch (e) { }
-    // sau replaceState, hash/query vẫn giữ cho lần refresh (loader sẽ dựng lại stage)
   });
-  frame.src = src;
   fit();
   window.addEventListener('resize', fit);
   window.addEventListener('orientationchange', fit);
