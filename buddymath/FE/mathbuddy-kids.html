@@ -2,6 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<style>body{visibility:hidden}html[data-student-auth-ready="1"] body{visibility:visible}</style>
+<script>
+try { if (!localStorage.getItem('sb_token')) location.replace('/?portal=student'); }
+catch (_) { location.replace('/?portal=student'); }
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <!-- Mobile-responsive baseline (đồng bộ mọi trang) -->
@@ -172,14 +177,6 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
           &nbsp;·&nbsp; Chưa có tài khoản? <a href="#" onclick="switchAuthTab('register');return false;" style="color:var(--teal);font-weight:800;">Đăng ký ngay</a>
         </div>
 
-        <!-- Demo mode fallback -->
-        <div style="border-top:1px solid #EEF8F5;padding-top:12px;text-align:center;">
-          <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:8px;">Không có server? Dùng chế độ thử:</div>
-          <div style="display:flex;gap:6px;align-items:center;">
-            <input class="auth-input" id="demo-name-input" placeholder="Nhập tên của bạn..." style="flex:1;padding:9px 12px;font-size:13px;">
-            <button onclick="doQuickDemo()" style="padding:9px 14px;border:none;border-radius:12px;background:#E8F5F0;color:var(--teal-d);font-family:'Nunito',Arial;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;">▶ Vào thử</button>
-          </div>
-        </div>
       </div>
 
       <!-- ─── REGISTER ─── -->
@@ -309,6 +306,9 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
       </button>
       <button class="topic-btn" onclick="openLearningGuide(true)">
         <span>📘</span> Hướng dẫn & mẹo phụ huynh
+      </button>
+      <button class="topic-btn" onclick="location.href='/?portal=parent'">
+        <span>↗️</span> Mở cổng phụ huynh riêng
       </button>
     </div>
 

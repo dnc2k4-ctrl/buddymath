@@ -2,6 +2,29 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<style>body{visibility:hidden}html[data-parent-auth-ready="1"] body{visibility:visible}</style>
+<script>
+(function(){
+  let token;
+  try { token = localStorage.getItem('sb_parent_token'); }
+  catch (_) { location.replace('/?portal=parent'); return; }
+  if (!token) { location.replace('/?portal=parent'); return; }
+  fetch('/auth/me', {headers:{Authorization:'Bearer '+token}})
+    .then(response => response.ok ? response.json() : null)
+    .then(user => {
+      if (!user || !['student','parent'].includes(user.role) || !user.parent_access) {
+        localStorage.removeItem('sb_parent_token');
+        localStorage.removeItem('sb_parent_user');
+        location.replace('/?portal=parent&upgrade=parent');
+        return;
+      }
+      localStorage.setItem('sb_parent_user', JSON.stringify(user));
+      if (window._sbApplyParentUser) window._sbApplyParentUser(user);
+      document.documentElement.dataset.parentAuthReady = '1';
+    })
+    .catch(() => location.replace('/?portal=parent'));
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1FCBA6">
 <!-- Mobile-responsive baseline (đồng bộ mọi trang) -->
@@ -411,6 +434,7 @@ body{font-family:'Nunito',Arial;background:var(--bg);color:var(--text1);display:
         <div class="parent-account-menu-email" id="parent-menu-email"></div>
       </div>
       <button type="button" onclick="openParentGuide()" role="menuitem">📘 Hướng dẫn và mẹo</button>
+      <button type="button" onclick="location.href='/?portal=student'" role="menuitem">🎒 Mở cổng học sinh</button>
       <button type="button" onclick="logout()" role="menuitem">🚪 Đăng xuất</button>
     </div>
   </div>
@@ -584,6 +608,15 @@ const API = (location.protocol !== 'file:' && location.hostname)
   : 'http://localhost:8000';
 let token         = localStorage.getItem('sb_parent_token');
 let user          = JSON.parse(localStorage.getItem('sb_parent_user') || 'null');
+window._sbApplyParentUser = function(verifiedUser){
+  user = verifiedUser;
+  document.getElementById('parent-menu-name').textContent = user.username || 'Phụ huynh';
+  document.getElementById('parent-menu-email').textContent = user.email || '';
+  document.getElementById('hero-name').textContent = user.username || 'Phụ huynh';
+};
+if (document.documentElement.dataset.parentAuthReady === '1') {
+  user = JSON.parse(localStorage.getItem('sb_parent_user') || 'null');
+}
 let selectedChild = null;
 let currentPeriod = 'week';
 let currentReport = null;
@@ -891,12 +924,7 @@ function showParentPlanExpiryNotice(account){
 }
 
 // Auth guard
-if(!token || !user){ window.location.href='/?portal=parent'; }
-if(user && (!['student','parent'].includes(user.role) || !user.parent_access)){
-  localStorage.removeItem('sb_parent_token');
-  localStorage.removeItem('sb_parent_user');
-  window.location.href='/?portal=parent&upgrade=parent';
-}
+if(!token){ window.location.href='/?portal=parent'; }
 document.getElementById('parent-menu-name').textContent = user?.username || 'Phụ huynh';
 document.getElementById('parent-menu-email').textContent = user?.email || '';
 document.getElementById('hero-name').textContent   = user?.username || 'Phụ huynh';

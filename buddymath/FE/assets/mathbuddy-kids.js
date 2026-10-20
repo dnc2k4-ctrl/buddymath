@@ -5448,15 +5448,16 @@ function processPendingPlanAction(user) {
         .then(r => r.ok ? r.json() : null)
         .then(u => {
           if (u) {
-                if (u.role === 'parent' && u.parent_access) {
+                if (u.role === 'parent' && !u.parent_access) {
                   localStorage.removeItem('sb_token');
                   localStorage.removeItem('sb_user');
-                  window.location.replace('/?portal=parent');
+                  window.location.replace('/?portal=student');
                   return;
                 }
                 authCurrentUser = u;
             localStorage.setItem('sb_user', JSON.stringify(u));
             renderAuthState();
+            document.documentElement.dataset.studentAuthReady = '1';
             // Chào mừng quay lại — mỗi phiên trình duyệt 1 lần, im lặng để đỡ làm phiền
             try {
               if (!sessionStorage.getItem('sb_session_greeted')) {
@@ -5482,18 +5483,15 @@ function processPendingPlanAction(user) {
             // Token expired – redirect to login
             localStorage.removeItem('sb_token');
             localStorage.removeItem('sb_user');
+            window.location.replace('/?portal=student');
           }
-        }).catch(() => {});
+        }).catch(() => { window.location.replace('/?portal=student'); });
     } else {
-      // Fall back to old mb_user for compatibility
-      const legacy = localStorage.getItem('mb_user');
-      if (legacy) {
-        const u = JSON.parse(legacy);
-        authCurrentUser = { username: u.name, email: u.email || '', role: 'student', grade: 5 };
-        renderAuthState();
-      }
+      // Legacy demo profiles are not authenticated sessions.
+      localStorage.removeItem('mb_user');
+      window.location.replace('/?portal=student');
     }
-  } catch(e) {}
+  } catch(e) { window.location.replace('/?portal=student'); }
 })();
 
 function _showMascotMoodLegacy() {
@@ -5597,11 +5595,6 @@ async function doModalLogin() {
     });
     if (res.ok) {
       const data = await res.json();
-      if (data.user?.role === 'parent') {
-        _authShowErr('auth-login-err', 'Đây là tài khoản phụ huynh. Hãy đăng nhập riêng tại Cổng Phụ huynh; phiên này không đổi sang tài khoản khác.');
-        _authSetBtn('auth-login-btn', false, '🚀 Đăng nhập');
-        return;
-      }
       _sbToken = data.token || data.access_token;
       authCurrentUser = data.user || data;
       localStorage.setItem('sb_token', _sbToken);
@@ -5661,12 +5654,7 @@ async function doModalRegister() {
 }
 
 function doQuickDemo() {
-  const name = (document.getElementById('demo-name-input')||{}).value?.trim() || 'Bạn nhỏ';
-  authCurrentUser = { username: name, role: 'student', grade: 5 };
-  localStorage.setItem('mb_user', JSON.stringify({ name }));
-  renderAuthState();
-  showAuthToast && showAuthToast('👋 Xin chào ' + name + '! Đang dùng chế độ thử.', 'var(--teal)');
-  closeAuthModal();
+  window.location.href = '/?portal=student';
 }
 
 // ════════════════════════════════════════════════════════════
@@ -6695,9 +6683,7 @@ function logoutUser() {
     localStorage.removeItem('mb_user');
   } catch(e) {}
   toggleUserMenu(true);
-  renderAuthState();
-  showAuthToast('👋 Đã đăng xuất. Hẹn gặp lại!', '#FF6B35');
-  setTimeout(() => { openAuthModal('login'); }, 900);
+  window.location.replace('/?portal=student');
 }
 
 function renderAuthState() {
@@ -6741,9 +6727,9 @@ function renderAuthState() {
   const isStudent = u.role === 'student';
   const isParent = u.role === 'parent';
   const isAdmin  = u.role === 'admin';
-  const hasStudentAccess = isStudent;
+  const hasStudentAccess = isStudent || (isParent && !!u.parent_access);
   document.body.classList.toggle('role-parent', isParent);
-  if (parentSection) parentSection.style.display = 'none';
+  if (parentSection) parentSection.style.display = u.parent_access ? '' : 'none';
   if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';
   if (studentSection) studentSection.style.display = hasStudentAccess ? '' : 'none';
   if (studentHistoryLink) studentHistoryLink.style.display = hasStudentAccess ? '' : 'none';

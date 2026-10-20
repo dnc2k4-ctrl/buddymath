@@ -492,15 +492,18 @@ async function doLogin(){
     // Ghi nhớ đăng nhập → lưu email để lần sau điền sẵn
     if (document.getElementById('login-remember').checked) localStorage.setItem('sb_saved_email', email);
     else localStorage.removeItem('sb_saved_email');
-    const parentSession = _parentPortalLogin || (data.user.role === 'parent' && data.user.parent_access);
+    if (!_parentPortalLogin && data.user.role === 'parent' && !data.user.parent_access) {
+      showErr('login-err', 'Tài khoản phụ huynh cần gói Standard 199.000đ hoặc Premium 299.000đ để dùng cổng học sinh.');
+      return;
+    }
+    const parentSession = _parentPortalLogin;
     const tokenKey = parentSession ? 'sb_parent_token' : 'sb_token';
     const userKey = parentSession ? 'sb_parent_user' : 'sb_user';
     localStorage.setItem(tokenKey, data.token);
     localStorage.setItem(userKey, JSON.stringify(data.user));
     showOk('login-ok', `Chào mừng ${data.user.username}! Đang chuyển hướng...`);
     setTimeout(()=>{
-      window.location.href = parentSession ? '/parent-portal'
-        : data.user.role === 'parent' ? '/app?upgrade=parent' : '/app';
+      window.location.href = parentSession ? '/parent-portal' : '/app';
     }, 800);
   }catch(e){ showErr('login-err','Không kết nối được server. Hãy kiểm tra server đang chạy!'); }
   finally{ btn.disabled = false; btn.innerHTML = 'Đăng nhập <span>→</span>'; }
@@ -618,10 +621,11 @@ if (existing){
           localStorage.removeItem('sb_parent_user');
           showErr('login-err', 'Tài khoản này chưa có quyền vào Cổng Phụ huynh. Hãy nâng cấp gói phù hợp rồi đăng nhập lại tại cổng này nhé.');
         }
-      } else if (u?.role === 'parent') {
+      } else if (u?.role === 'parent' && u.parent_access) window.location.href = '/app';
+      else if (u?.role === 'parent') {
         localStorage.removeItem('sb_token');
         localStorage.removeItem('sb_user');
-        showErr('login-err', 'Đây là tài khoản phụ huynh. Vui lòng đăng nhập riêng từ Cổng Phụ huynh.');
+        showErr('login-err', 'Tài khoản phụ huynh cần gói Standard 199.000đ hoặc Premium 299.000đ để dùng cổng học sinh.');
       } else if (u) window.location.href = '/app';
     })
     .catch(()=>{});
