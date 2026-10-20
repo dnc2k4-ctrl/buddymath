@@ -2114,15 +2114,15 @@ body:not(.role-parent) #intro-welcome-screen::-webkit-scrollbar{ width:0 !import
 }
 
 
-/* Stable home frame: fixed scale, centered width, vertical scroll when needed */
+/* Home frame: fit one desktop viewport; keep vertical scrolling on mobile */
 body:not(.role-parent) #intro-welcome-screen {
   overflow-x: hidden !important;
   overflow-y: auto !important;
 }
 @media (min-width: 761px) {
+  body:not(.role-parent) #intro-welcome-screen { overflow: hidden !important; }
   #intro-welcome-screen #home-fit-wrap {
     width: 100% !important;
     max-width: 1210px !important;
-    zoom: 1 !important;
   }
 }

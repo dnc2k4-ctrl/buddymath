@@ -2449,7 +2449,7 @@ function showHomeScreen() {
   const _C     = 2 * Math.PI * 52;
   introPanel.innerHTML = `
     <style>@media(max-width:900px){.home-grid{grid-template-columns:1fr !important;} .home-cats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}</style>
-    <div id="home-fit-wrap" style="width:100%;margin:0 auto;">
+    <div id="home-fit-wrap" style="width:100%;margin:0 auto;visibility:hidden;">
       <!-- Lời chào -->
       <div class="home-greet" style="margin:0 4px 10px;">
         <div style="font-family:'Baloo 2',cursive;font-size:29px;color:var(--text1);">Xin chào, Buddy! 👋</div>
@@ -2521,10 +2521,6 @@ function showHomeScreen() {
   if (_homeBtn && typeof setNavActive === 'function') setNavActive(_homeBtn);
   // Tự co giãn cho vừa khít khung — KHÔNG bao giờ phải cuộn, không thừa nền
   fitHomeContent();
-  requestAnimationFrame(fitHomeContent);
-  setTimeout(fitHomeContent, 120);
-  setTimeout(fitHomeContent, 400);
-  setTimeout(fitHomeContent, 800);
 }
 
 // Đổ số liệu THẬT vào 2 bảng trang chủ (Tiến độ hôm nay + Thành tích nổi bật).
@@ -2553,30 +2549,65 @@ async function refreshHomeStats(){
     _set('home-pct-text',    pct + '%');
     const ring = document.getElementById('home-prog-ring');
     if (ring) ring.style.background = `conic-gradient(#1FCBA6 0deg ${pct * 3.6}deg, #E6F4EF ${pct * 3.6}deg 360deg)`;
-    if (typeof fitHomeContent === 'function') fitHomeContent();
   } catch (e) { /* im lặng — giữ số 0 mặc định */ }
 }
 
 // Auto-fit: scale nội dung trang chủ vừa đúng vùng hiển thị (cả cao lẫn rộng),
 // đảm bảo luôn vừa 1 màn hình, không có thanh cuộn, không hở nền thừa.
+let _homeFitTimer = null;
+let _homeFitWaitStarted = 0;
 function fitHomeContent() {
   const wrap = document.getElementById('home-fit-wrap');
   const host = document.getElementById('intro-welcome-screen');
   if (!wrap || !host) return;
-  // Use one stable scale. Let short screens scroll instead of resizing the whole dashboard.
+  const isMobile = window.innerWidth <= 760;
   wrap.style.width = '100%';
-  wrap.style.maxWidth = window.innerWidth <= 760 ? '100%' : '1210px';
-  wrap.style.zoom = '1';
+  wrap.style.maxWidth = isMobile ? '100%' : '1210px';
+  if (isMobile) {
+    clearTimeout(_homeFitTimer);
+    wrap.style.zoom = '1';
+    wrap.style.visibility = 'visible';
+    host.style.overflowY = 'auto';
+    return;
+  }
+
+  // Keep the unscaled layout hidden until artwork and fonts settle, then show one stable fit.
+  wrap.style.visibility = 'hidden';
   host.style.overflowX = 'hidden';
-  host.style.overflowY = 'auto';
+  host.style.overflowY = 'hidden';
+  const images = Array.from(wrap.querySelectorAll('img'));
+  images.forEach(img => { if (img.loading === 'lazy') img.loading = 'eager'; });
+  const resourcesPending = images.some(img => !img.complete) || (document.fonts && document.fonts.status === 'loading');
+  if (resourcesPending && Date.now() - (_homeFitWaitStarted || Date.now()) < 2000) {
+    if (!_homeFitWaitStarted) _homeFitWaitStarted = Date.now();
+    clearTimeout(_homeFitTimer);
+    _homeFitTimer = setTimeout(fitHomeContent, 80);
+    return;
+  }
+  _homeFitWaitStarted = 0;
+  clearTimeout(_homeFitTimer);
+  wrap.style.zoom = '1';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    wrap.style.zoom = '1';
+    const cs = getComputedStyle(host);
+    const availW = host.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) - 8;
+    const availH = host.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0) - 8;
+    const needW = Math.max(wrap.scrollWidth, Math.ceil(wrap.getBoundingClientRect().width));
+    const needH = Math.max(wrap.scrollHeight, Math.ceil(wrap.getBoundingClientRect().height));
+    if (!needW || !needH) {
+      wrap.style.visibility = 'visible';
+      return;
+    }
+    const scale = Math.max(0.4, Math.min(1, availW / needW, availH / needH));
+    wrap.style.zoom = String(Math.round(scale * 1000) / 1000);
+    wrap.style.visibility = 'visible';
+  }));
 }
 let _fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(_fitTimer);
   _fitTimer = setTimeout(fitHomeContent, 120);
 });
-window.addEventListener('load', () => setTimeout(fitHomeContent, 60));
-
 // Bấm logo (góc trên bên trái) → quay lại trang chủ
 function goHome() {
   showHomeScreen();
