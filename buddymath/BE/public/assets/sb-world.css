@@ -134,3 +134,14 @@ h1,h2,h3,.sb-home__greet,.sb-sidecard__title{color:var(--ink) !important}
 .sb-side-logo .sb-logo-txt b{color:var(--brand-strong)}
 .sb-side-logo .sb-logo-sub{display:block;font-size:9px;letter-spacing:.1em;color:var(--muted);font-weight:800;text-transform:uppercase;margin-top:2px}
 .sb-side-logo svg{width:clamp(44px,7.4vh,72px);height:auto;margin:0 auto}
+/* ---- DỌN SẠCH: bỏ toàn bộ ảnh/decor cũ (không ghép nữa) ---- */
+.sb-bg, .sb-bg img, .sb-bg__star, .sb-bg__plane, .sb-bg__dash, .sb-bg-svg{display:none !important}
+body:not(.role-parent) .main-area::before,
+body:not(.role-parent) .main-area::after{display:none !important;content:none !important}
+.sb-hero-wow, [class*="sb-hero"], .sb-view__banner{background-image:none !important}
+#panel-buddy .sb-chat__hero, #panel-score_history .sb-hist__hero,
+#panel-english_hub .sb-hero, #panel-prompt-playground .sb-prompt__hero,
+#panel-math_hub .sb-hero, #panel-life_skills .sb-hero{
+  background:linear-gradient(118deg,#FFFFFF 0%,#EAF6FF 58%,#DDEFFF 100%) !important;
+}
+#content-topbar{position:relative !important;top:auto !important;right:auto !important}
