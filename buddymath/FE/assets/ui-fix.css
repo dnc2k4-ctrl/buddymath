@@ -1,0 +1,62 @@
+/* SmartBuddy UI fix — match mockups, no scrollbar, solid buttons & images */
+html, body {
+  height: 100% !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+}
+body {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+/* Login button never blank */
+.btn-primary {
+  background: linear-gradient(135deg, #1FCBA6 0%, #13B392 100%) !important;
+  color: #ffffff !important;
+  min-height: 48px !important;
+  box-shadow: 0 8px 20px rgba(19, 179, 146, 0.35) !important;
+}
+.btn-primary span { color: #fff !important; }
+
+/* Logo badge fallback if image missing */
+.logo-badge, .brand img {
+  background: #fff;
+  border-radius: 16px;
+}
+
+/* Sidebar match mockup */
+.layout {
+  grid-template-columns: 240px 1fr !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.sidebar {
+  background: #ffffff !important;
+  border-right: 1px solid #E8F0EE !important;
+  overflow: hidden !important;
+  padding: 12px 10px !important;
+}
+.topic-btn {
+  border-radius: 12px !important;
+  border-left: none !important;
+  padding: 9px 12px !important;
+}
+.topic-btn.active {
+  background: linear-gradient(135deg, #1FCBA6, #13B392) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(31, 203, 166, 0.28) !important;
+}
+.topic-btn.active .nav-ic-em,
+.topic-btn.active span { color: #fff !important; }
+
+/* Main panels stay in viewport */
+.main-area,
+.topic-content-panel {
+  overflow: hidden !important;
+  min-height: 0 !important;
+}
+.topic-content-panel {
+  overflow-y: auto !important;
+  max-height: 100% !important;
+}
