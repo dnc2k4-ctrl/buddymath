@@ -133,7 +133,6 @@ const I18N_VI2EN = {
   "Trung bình":"Medium", "Khó":"Hard", "Nâng cao":"Advanced",
   "Chọn lớp để bắt đầu:":"Choose a grade to start:", "Thời gian (phút):":"Time (minutes):",
   // Màn hình chính (home)
-  "Xin chào, Buddy":"Hi there, Buddy", "Hôm nay bạn muốn chinh phục thử thách nào":"What challenge would you like today",
   "Hỏi ngay với Buddy":"Ask Buddy now", "Chọn danh mục học tập":"Choose a learning category",
   "Học chủ đề + kiểm tra":"Topics + tests", "Từ vựng · hội thoại":"Vocabulary & conversation",
   "Tư duy & cảm xúc":"Thinking & emotions", "Học cách hỏi hay":"Learn to ask well",
@@ -2450,10 +2449,9 @@ function showHomeScreen() {
   introPanel.innerHTML = `
     <style>@media(max-width:900px){.home-grid{grid-template-columns:1fr !important;} .home-cats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}</style>
     <div id="home-fit-wrap" style="width:100%;margin:0 auto;visibility:hidden;">
-      <!-- Lời chào -->
+      <!-- Câu tạo động lực -->
       <div class="home-greet" style="margin:0 4px 10px;">
-        <div style="font-family:'Baloo 2',cursive;font-size:29px;color:var(--text1);">Xin chào, Buddy! 👋</div>
-        <div style="font-size:17.5px;color:var(--teal-d);font-weight:800;margin-top:4px;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
+        <div class="home-greet-quote" style="font-size:24px;color:var(--teal-d);font-weight:800;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
       </div>
       <div class="home-grid" style="display:grid;grid-template-columns:1.85fr 1fr;gap:16px;align-items:stretch;">
         <!-- LEFT — hero + danh mục GỘP CHUNG 1 khung (giống mẫu) -->
