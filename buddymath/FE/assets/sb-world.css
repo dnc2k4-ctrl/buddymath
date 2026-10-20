@@ -163,3 +163,7 @@ body:not(.role-parent) .main-area::after{display:none !important;content:none !i
 .sb-plan__icon{background:#EAF6FF !important;border-radius:50%;display:flex;align-items:center;justify-content:center;width:34px;height:34px}
 .sb-plan__icon .sb-ic{width:20px;height:20px;color:var(--brand-strong)}
 .sb-plan__icon img{display:none !important}
+/* mascot trong trạng thái AI đang trả lời */
+.chat-mascot-loading{position:absolute;left:-6px;top:-46px;width:44px;height:44px;pointer-events:none}
+.chat-mascot-loading svg{width:100%;height:auto}
+.msg-row.ai{position:relative}

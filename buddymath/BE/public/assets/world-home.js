@@ -119,6 +119,28 @@
       '<span class="sb-logo-txt">Smart<b>Buddy</b></span>' +
       '<span class="sb-logo-sub">Học thông minh · Tiến vững vàng</span>';
   }
+  function watchChat() {
+    var wrap = document.getElementById('messages');
+    if (!wrap || wrap.getAttribute('data-mascot-watch')) return;
+    wrap.setAttribute('data-mascot-watch', '1');
+    function decorate() {
+      var rows = wrap.querySelectorAll('.msg-row.ai');
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i], dots = r.querySelector('.dots-wrap');
+        if (dots && !r.querySelector('.chat-mascot-loading')) {
+          var d = document.createElement('div');
+          d.className = 'chat-mascot-loading';
+          d.innerHTML = window.sbMascot ? sbMascot('loading') : '';
+          r.insertBefore(d, r.firstChild);
+        }
+        if (!dots && r.getAttribute('data-done')) continue;
+        if (!dots) r.setAttribute('data-done', '1');
+      }
+    }
+    new MutationObserver(decorate).observe(wrap, { childList: true, subtree: true });
+    decorate();
+  }
+  setInterval(watchChat, 400);
   setTimeout(upgradeLogo, 60);
   setTimeout(upgradeLogo, 600);
   try { window.fitHomeContent = function () { }; } catch (e) { }
