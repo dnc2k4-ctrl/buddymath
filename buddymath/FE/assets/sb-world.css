@@ -1,0 +1,113 @@
+﻿/* ═══════════════════════════════════════════════════════════════════════════
+   sb-world.css — DESIGN SYSTEM "Blue Pastel Learning World" (BuddyMath)
+   Token + typography + component + bản đồ khám phá + mascot sizing.
+   File này load CUỐI trên mọi trang để thay toàn bộ theme cũ.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  /* palette theo brief */
+  --cloud:#F8FCFF;      --ice:#E6F4FF;       --sky:#C8E7FF;
+  --buddy:#8FC9F4;      --peri:#AEBEFF;      --deep:#315782;
+  --mint:#C9F2E2;       --lemon:#FFE8A3;     --peach:#FFD9CB;   --lav:#E7DFFF;
+  /* vai trò */
+  --bg:var(--cloud);    --surface:#FFFFFF;   --surface-2:var(--ice);
+  --line:#DCEBF9;       --line-2:#CBE3F7;
+  --ink:#20374F;        --ink-2:#315782;     --muted:#5F7E9C;   --muted-2:#8AA7C2;
+  --brand:var(--buddy); --brand-strong:#5FAEE6; --brand-deep:var(--deep);
+  --ok:#5FC8A8;         --warn:#F3C75F;      --err:#F0918E;
+  --shadow-sm:0 4px 14px rgba(49,87,130,.08);
+  --shadow:0 14px 34px rgba(49,87,130,.12);
+  --shadow-lg:0 28px 60px rgba(49,87,130,.18);
+  --r-sm:12px; --r-md:16px; --r-lg:22px; --r-xl:28px; --pill:999px;
+  --fs-h1:clamp(26px,3.6vh,44px); --fs-h2:clamp(20px,2.6vh,30px); --fs-h3:clamp(16px,2.1vh,22px);
+  --fs-body:clamp(14px,1.72vh,18px); --fs-sm:clamp(12.5px,1.5vh,15px); --fs-xs:clamp(11px,1.3vh,13px);
+  /* ghi đè token cũ (mint → blue pastel) để các trang cũ tự đồng bộ */
+  --mint-50:var(--cloud); --mint-100:var(--ice); --mint-200:var(--sky); --mint-300:var(--buddy);
+  --mint-400:#A6D4F5; --mint-500:var(--buddy); --mint-600:var(--brand-strong); --mint-700:var(--deep);
+  --mint-800:#27476B; --mint-grad:linear-gradient(135deg,#B9E2FA,#8FC9F4 55%,#6FB6EA);
+  --page-grad:radial-gradient(1100px 620px at 12% -10%,#FFFFFF 0%,rgba(255,255,255,0) 60%),
+              radial-gradient(900px 520px at 92% 0%,#EAF6FF 0%,rgba(234,246,255,0) 58%),
+              linear-gradient(168deg,#F3FAFF 0%,#E8F4FF 40%,#F8FCFF 100%);
+}
+html,body{background:var(--page-grad) !important;color:var(--ink) !important;font-family:'Nunito',Arial,sans-serif !important}
+.sb-ic{stroke-width:1.8}
+h1,h2,h3,.sb-home__greet,.sb-sidecard__title{color:var(--ink) !important}
+
+/* ------- bản đồ khám phá trang chủ ------- */
+.world{position:relative;display:grid;grid-template-columns:minmax(0,1.62fr) minmax(300px,.85fr);gap:clamp(12px,1.4vw,22px);height:100%;min-height:0}
+.world__head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:0 2px;grid-column:1/-1}
+.world__hi{font-family:'Baloo 2',cursive;font-weight:800;font-size:var(--fs-h1);line-height:1.05;color:var(--ink)}
+.world__hi span{color:var(--brand-strong)}
+.world__sub{margin:4px 0 0;color:var(--muted);font-weight:700;font-size:var(--fs-body)}
+.world__map{position:relative;border-radius:var(--r-xl);background:
+  radial-gradient(70% 50% at 20% 10%,#FFFFFF 0%,rgba(255,255,255,0) 60%),
+  radial-gradient(80% 60% at 90% 20%,var(--sky) 0%,rgba(200,231,255,0) 62%),
+  linear-gradient(160deg,#EAF6FF 0%,#DDEFFE 45%,#F3FAFF 100%);
+  border:1px solid #E2F0FC;box-shadow:var(--shadow);overflow:hidden;min-height:0;padding:clamp(12px,2vh,22px)}
+.world__map::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(closest-side at 88% 82%,rgba(201,242,226,.55),rgba(201,242,226,0)) 0 0/42% 38% no-repeat,
+  radial-gradient(closest-side at 8% 70%,rgba(231,223,255,.5),rgba(231,223,255,0)) 0 0/36% 34% no-repeat,
+  radial-gradient(closest-side at 55% 4%,rgba(255,232,163,.4),rgba(255,232,163,0)) 0 0/30% 26% no-repeat;
+  pointer-events:none}
+.world__title{position:relative;z-index:2;display:flex;align-items:center;gap:8px;font-family:'Baloo 2',cursive;
+  font-weight:800;font-size:var(--fs-h3);color:var(--deep)}
+.world__title .sb-ic{color:var(--brand-strong)}
+.world__path{position:absolute;inset:12% 6% 8% 6%;width:88%;height:80%;z-index:1;pointer-events:none;
+  stroke:#9CCBEE;stroke-width:2.4;stroke-dasharray:7 9;opacity:.8;fill:none}
+.world__isles{position:relative;z-index:2;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));
+  gap:clamp(8px,1.4vh,16px);padding:clamp(6px,1vh,10px) 0 0}
+.isle{position:relative;display:flex;align-items:center;gap:clamp(8px,1vw,14px);text-align:left;
+  background:rgba(255,255,255,.9);border:1px solid #E2F0FC;border-radius:var(--r-lg);
+  padding:clamp(10px,1.7vh,16px);cursor:pointer;box-shadow:var(--shadow-sm);
+  transition:transform .18s ease, box-shadow .18s ease}
+.isle:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.isle__art{flex:0 0 auto;width:clamp(44px,7.4vh,76px);height:clamp(44px,7.4vh,76px);border-radius:20px;
+  display:flex;align-items:center;justify-content:center;background:var(--tint,#EAF6FF);color:var(--tone,#5FAEE6);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.8)}
+.isle__art .sb-ic{width:52%;height:52%}
+.isle__body{min-width:0;display:flex;flex-direction:column;gap:2px}
+.isle__name,.isle__desc{display:block}
+.isle__name{font-family:'Baloo 2',cursive;font-weight:800;font-size:var(--fs-h3);color:var(--ink);line-height:1.15}
+.isle__desc{font-size:var(--fs-xs);color:var(--muted);font-weight:700;margin-top:2px;line-height:1.35}
+.isle__go{position:absolute;right:10px;bottom:10px;width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;background:var(--tone,#5FAEE6);color:#fff;font-size:12px}
+.isle--locked{opacity:.62;filter:saturate(.8)}
+.isle__lock{position:absolute;left:8px;top:8px;font-size:11px;font-weight:900;color:var(--deep);
+  background:var(--lemon);border-radius:999px;padding:2px 7px}
+
+/* bảng bên: mascot dẫn đường + nhiệm vụ hôm nay */
+.world__side{display:flex;flex-direction:column;gap:clamp(9px,1.4vh,16px);min-height:0}
+.guide{position:relative;display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid #E2F0FC;
+  border-radius:var(--r-xl);box-shadow:var(--shadow);padding:clamp(10px,1.6vh,16px)}
+.guide__ava{flex:0 0 auto;width:clamp(64px,11vh,116px);height:auto}
+.guide__bubble{position:relative;background:var(--ice);border:1px solid #DBEDFB;border-radius:18px;padding:clamp(9px,1.4vh,14px);
+  font-weight:700;color:var(--ink-2);font-size:var(--fs-sm);line-height:1.5}
+.guide__bubble::before{content:"";position:absolute;left:-7px;top:18px;width:12px;height:12px;background:var(--ice);
+  border-left:1px solid #DBEDFB;border-bottom:1px solid #DBEDFB;transform:rotate(45deg)}
+.guide__cta{margin-top:8px}
+.quest{background:#fff;border:1px solid #E2F0FC;border-radius:var(--r-xl);box-shadow:var(--shadow);padding:clamp(10px,1.6vh,18px)}
+.quest__title{display:flex;align-items:center;gap:8px;font-family:'Baloo 2',cursive;font-weight:800;font-size:var(--fs-h3);color:var(--ink)}
+.quest__row{display:flex;align-items:center;gap:10px;padding:clamp(6px,1vh,10px) 0;border-bottom:1px dashed #E6F1FB}
+.quest__row:last-child{border-bottom:0}
+.quest__ico{width:clamp(30px,4.4vh,42px);height:clamp(30px,4.4vh,42px);border-radius:50%;display:flex;
+  align-items:center;justify-content:center;background:var(--ice);color:var(--brand-strong)}
+.quest__ico .sb-ic{width:56%;height:56%}
+.quest__val{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(17px,2.3vh,24px);color:var(--ink);line-height:1}
+.quest__label{font-size:var(--fs-xs);color:var(--muted);font-weight:700}
+.bar{height:8px;border-radius:999px;background:#E6F1FB;overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#A6D4F5,#5FAEE6)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chipx{display:inline-flex;align-items:center;gap:5px;background:var(--ice);border:1px solid #DBEDFB;color:var(--ink-2);
+  border-radius:var(--pill);padding:4px 10px;font-size:var(--fs-xs);font-weight:800}
+.chipx--lemon{background:#FFF7DC;border-color:#FBE6A6;color:#8A6A12}
+.chipx--mint{background:#E9FBF4;border-color:#C9F2E2;color:#1F7A5E}
+.chipx--lav{background:#F2EDFF;border-color:#E7DFFF;color:#5B4BA8}
+@media (max-width:1100px){
+  .world{grid-template-columns:1fr;overflow:hidden}
+  .world__map{min-height:clamp(300px,52vh,460px)}
+  .world__isles{grid-template-columns:1fr 1fr}
+  .world__side{overflow:auto}
+}
+@media (max-width:620px){
+  .world__isles{grid-template-columns:1fr}
+  .world__map{min-height:0}
+}
