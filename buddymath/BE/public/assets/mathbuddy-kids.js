@@ -2561,7 +2561,7 @@ function fitHomeContent() {
   if (!wrap || !host) return;
   const isMobile = window.innerWidth <= 760;
   wrap.style.width = '100%';
-  wrap.style.maxWidth = isMobile ? '100%' : '1210px';
+  wrap.style.maxWidth = isMobile ? '100%' : '1400px';
   if (isMobile) {
     clearTimeout(_homeFitTimer);
     wrap.style.zoom = '1';
