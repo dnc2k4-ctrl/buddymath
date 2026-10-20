@@ -2043,3 +2043,72 @@ body:not(.role-parent) #intro-welcome-screen::-webkit-scrollbar{ width:0 !import
   }
   #intro-welcome-screen .home-side-col > div:last-child img { height: 160px; }
 }
+
+
+/* Home dashboard text and progress sizing */
+@media (min-width: 761px) {
+  #intro-welcome-screen .home-greet > div:first-child {
+    font-size: clamp(34px, 2.35vw, 40px) !important;
+    line-height: 1.12;
+  }
+  #intro-welcome-screen .home-greet > div:last-child {
+    font-size: clamp(19px, 1.35vw, 22px) !important;
+    line-height: 1.35;
+  }
+  #intro-welcome-screen .home-grid > div:first-child > div:first-child > div:nth-child(2) > div:first-child {
+    font-size: clamp(23px, 1.6vw, 27px) !important;
+    line-height: 1.2;
+  }
+
+  #intro-welcome-screen .home-side-col > div:first-child > div:first-child,
+  #intro-welcome-screen .home-side-col > div:nth-child(2) > div:first-child {
+    font-size: clamp(21px, 1.45vw, 24px) !important;
+    line-height: 1.2;
+  }
+  #intro-welcome-screen #home-prog-ring {
+    width: 140px !important;
+    height: 140px !important;
+  }
+  #intro-welcome-screen #home-prog-ring > div {
+    width: 106px !important;
+    height: 106px !important;
+  }
+  #intro-welcome-screen #home-pct-text { font-size: 35px !important; }
+  #intro-welcome-screen #home-prog-ring + div > div:first-child {
+    font-size: clamp(18px, 1.25vw, 20px) !important;
+  }
+  #intro-welcome-screen #home-prog-ring + div > div:nth-child(2) {
+    font-size: clamp(16px, 1.1vw, 18px) !important;
+    line-height: 1.45 !important;
+  }
+  #intro-welcome-screen #home-prog-ring + div > button {
+    padding: 11px 22px !important;
+    font-size: 17px !important;
+  }
+
+  #intro-welcome-screen .home-side-col > div:nth-child(2) > div:nth-child(2) > div {
+    gap: 16px !important;
+  }
+  #intro-welcome-screen .home-side-col > div:nth-child(2) > div:nth-child(2) > div > div:first-child {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 29px !important;
+  }
+  #intro-welcome-screen .home-side-col > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) {
+    font-size: clamp(27px, 1.9vw, 31px) !important;
+  }
+  #intro-welcome-screen .home-side-col > div:nth-child(2) > div:nth-child(2) > div > div:last-child {
+    font-size: clamp(16px, 1.15vw, 18px) !important;
+    line-height: 1.35;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  #intro-welcome-screen #home-prog-ring { width: 124px !important; height: 124px !important; }
+  #intro-welcome-screen #home-prog-ring > div { width: 94px !important; height: 94px !important; }
+  #intro-welcome-screen .home-side-col > div:nth-child(2) > div:nth-child(2) > div > div:first-child {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 26px !important;
+  }
+}
