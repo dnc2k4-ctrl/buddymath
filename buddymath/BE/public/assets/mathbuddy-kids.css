@@ -1970,7 +1970,7 @@ body:not(.role-parent) #intro-welcome-screen::-webkit-scrollbar{ width:0 !import
 
 /* Home dashboard proportions and card rhythm */
 @media (min-width: 901px) {
-  #intro-welcome-screen #home-fit-wrap { max-width: 1400px !important; }
+  #intro-welcome-screen #home-fit-wrap { max-width: 1600px !important; }
   #intro-welcome-screen .home-greet { margin: 0 4px 14px !important; }
   #intro-welcome-screen .home-grid {
     grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr) !important;
@@ -2123,7 +2123,7 @@ body:not(.role-parent) #intro-welcome-screen {
   body:not(.role-parent) #intro-welcome-screen { overflow: hidden !important; }
   #intro-welcome-screen #home-fit-wrap {
     width: 100% !important;
-    max-width: 1400px !important;
+    max-width: 1600px !important;
   }
 }
 
@@ -2137,5 +2137,267 @@ body:not(.role-parent) #intro-welcome-screen {
   #intro-welcome-screen .home-greet > .home-greet-quote {
     font-size: 17px !important;
     line-height: 1.4 !important;
+  }
+}
+
+/* Student dashboard skin based on the airy Buddy reference layout */
+body:not(.role-parent) {
+  background:
+    radial-gradient(ellipse at 56% 4%, rgba(255,255,255,.9) 0, rgba(255,255,255,0) 42%),
+    linear-gradient(130deg, #D9F4F8 0%, #EDF9FA 48%, #F0FBF6 100%) !important;
+  background-attachment: fixed !important;
+}
+body:not(.role-parent) .layout {
+  background: transparent !important;
+}
+@media (min-width: 761px) {
+  body:not(.role-parent) .layout {
+    grid-template-columns: clamp(280px, 19.5vw, 365px) minmax(0, 1fr) !important;
+    gap: 16px !important;
+    padding: 14px 16px !important;
+  }
+  body:not(.role-parent) .sidebar {
+    align-self: stretch;
+    margin: 0;
+    padding: 0 0 10px !important;
+    overflow-x: hidden;
+    border: 1px solid #C8EDF0 !important;
+    border-radius: 28px !important;
+    background: rgba(255,255,255,.94) !important;
+    box-shadow: 0 12px 34px rgba(38,112,132,.12) !important;
+  }
+  body:not(.role-parent) .sb-side-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 174px;
+    min-height: 174px;
+    padding: 8px 18px !important;
+    border-bottom: 1px solid #E3F3F4 !important;
+  }
+  body:not(.role-parent) .sb-side-logo img {
+    width: 100% !important;
+    max-width: 250px !important;
+    height: 158px;
+    object-fit: contain;
+  }
+  body:not(.role-parent) .topic-btn.nav-new {
+    width: calc(100% - 26px) !important;
+    min-height: 43px;
+    margin: 3px 13px !important;
+    padding: 9px 14px !important;
+    gap: 11px !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    background: transparent !important;
+    color: #24496C !important;
+    font-size: 15.5px !important;
+    font-weight: 800 !important;
+  }
+  body:not(.role-parent) .topic-btn.nav-new .nav-ic-em {
+    width: 25px !important;
+    font-size: 21px !important;
+  }
+  body:not(.role-parent) .topic-btn.nav-new:hover {
+    background: #EAF9F7 !important;
+    color: #087F78 !important;
+  }
+  body:not(.role-parent) .topic-btn.nav-new.active {
+    background: linear-gradient(105deg, #08BBA9 0%, #53D99A 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 7px 16px rgba(16,178,155,.20) !important;
+  }
+  body:not(.role-parent) .sidebar::after {
+    content: 'Cùng Buddy chinh phục tri thức!  ♥';
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 86px;
+    max-width: 220px;
+    margin-top: auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px 16px 16px;
+    color: #098F85;
+    text-align: center;
+    white-space: pre-line;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 900;
+    font-style: italic;
+    background:
+      radial-gradient(ellipse at 5% 100%, rgba(133,222,190,.42) 0 18%, transparent 19%),
+      radial-gradient(ellipse at 96% 100%, rgba(215,239,174,.55) 0 21%, transparent 22%),
+      linear-gradient(180deg, transparent 0, #F0FBF6 100%);
+  }
+  body:not(.role-parent) .main-area {
+    border: 1px solid rgba(197,235,238,.85) !important;
+    border-radius: 28px !important;
+    background:
+      radial-gradient(ellipse at 78% 4%, rgba(255,255,255,.75) 0, transparent 32%),
+      linear-gradient(135deg, #E5F8FA 0%, #F3FBFA 62%, #E8F8F2 100%) !important;
+    box-shadow: 0 12px 34px rgba(38,112,132,.10) !important;
+  }
+  #content-topbar {
+    padding: 17px 20px 4px !important;
+  }
+  #intro-welcome-screen {
+    padding: 18px 24px 18px !important;
+  }
+  #intro-welcome-screen #home-fit-wrap {
+    max-width: 1600px !important;
+  }
+}
+
+#intro-welcome-screen .home-greet {
+  margin: 0 4px 16px !important;
+}
+#intro-welcome-screen .home-greet > .home-greet-title {
+  color: #153D64 !important;
+  font-family: 'Baloo 2', cursive !important;
+  font-size: clamp(30px, 2vw, 38px) !important;
+  font-weight: 800 !important;
+  line-height: 1.08 !important;
+}
+#intro-welcome-screen .home-greet > .home-greet-quote {
+  margin-top: 2px !important;
+  color: #099F98 !important;
+  font-size: clamp(19px, 1.35vw, 23px) !important;
+}
+#intro-welcome-screen .home-main-col {
+  gap: 14px !important;
+}
+#intro-welcome-screen .home-hero-card {
+  border-color: #CDEBF0 !important;
+  border-radius: 24px !important;
+  box-shadow: 0 10px 26px rgba(38,112,132,.12) !important;
+}
+#intro-welcome-screen .home-hero-banner {
+  background: linear-gradient(135deg, #CFF2F8 0%, #F7FDFC 72%, #E9FAF2 100%) !important;
+}
+#intro-welcome-screen .home-hero-cta {
+  padding: 10px 18px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(110deg, #00B8A7, #47D895) !important;
+  box-shadow: 0 5px 14px rgba(10,171,155,.22) !important;
+}
+#intro-welcome-screen .home-category-card {
+  border-color: #D8EEF1 !important;
+  border-radius: 22px !important;
+  box-shadow: 0 9px 24px rgba(38,112,132,.09) !important;
+}
+#intro-welcome-screen .home-category-title {
+  color: #163D64 !important;
+}
+#intro-welcome-screen .home-cats {
+  grid-auto-rows: minmax(190px, 1fr) !important;
+  align-items: stretch;
+}
+#intro-welcome-screen .home-cats > div {
+  min-height: 190px;
+  padding: 14px 10px 13px !important;
+  border-radius: 19px !important;
+  box-shadow: none !important;
+}
+#intro-welcome-screen .home-cats > div:nth-child(1) {
+  background: linear-gradient(145deg, #E5FBF5, #F9FFFC) !important;
+  border-color: #C4EFE5 !important;
+}
+#intro-welcome-screen .home-cats > div:nth-child(2) {
+  background: linear-gradient(145deg, #E8F6FF, #F8FCFF) !important;
+  border-color: #D2EAFB !important;
+}
+#intro-welcome-screen .home-cats > div:nth-child(3) {
+  background: linear-gradient(145deg, #F3EDFF, #FCFAFF) !important;
+  border-color: #E7DFFF !important;
+}
+#intro-welcome-screen .home-cats > div:nth-child(4) {
+  background: linear-gradient(145deg, #FFF6DF, #FFFCF4) !important;
+  border-color: #F6E9BD !important;
+}
+#intro-welcome-screen .home-cats > div img {
+  height: 96px !important;
+  margin-bottom: 2px !important;
+}
+#intro-welcome-screen .home-cats > div > div:nth-of-type(1) {
+  color: #153D64 !important;
+  font-size: clamp(15px, 1.05vw, 18px) !important;
+}
+#intro-welcome-screen .home-cats > div > div:nth-of-type(2) {
+  color: #6684A5 !important;
+  font-size: clamp(11px, .82vw, 13px) !important;
+}
+#intro-welcome-screen .home-side-col {
+  gap: 14px !important;
+}
+#intro-welcome-screen .home-progress-card,
+#intro-welcome-screen .home-achievements-card,
+#intro-welcome-screen .home-motivation-card {
+  border-color: #D6EDF1 !important;
+  border-radius: 22px !important;
+  box-shadow: 0 9px 24px rgba(38,112,132,.10) !important;
+}
+#intro-welcome-screen .home-progress-card > div:first-child,
+#intro-welcome-screen .home-achievements-card > div:first-child {
+  color: #183F66 !important;
+}
+#intro-welcome-screen .home-motivation-card {
+  min-height: 166px;
+  padding: 8px 14px !important;
+  background: linear-gradient(110deg, #D8F8F1, #F5FFFB) !important;
+}
+#intro-welcome-screen .home-motivation-card img {
+  width: 140px !important;
+  height: 146px !important;
+  object-fit: contain !important;
+}
+#intro-welcome-screen .home-motivation-card > div {
+  font-size: clamp(15px, 1.05vw, 19px) !important;
+}
+
+@media (max-width: 1100px) and (min-width: 761px) {
+  #intro-welcome-screen .home-cats {
+    grid-auto-rows: minmax(170px, 1fr) !important;
+  }
+  #intro-welcome-screen .home-cats > div {
+    min-height: 170px;
+  }
+}
+@media (max-width: 760px) {
+  body:not(.role-parent) .layout {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    padding: 6px 8px 0 !important;
+  }
+  body:not(.role-parent) .sidebar {
+    border-radius: 0 22px 22px 0 !important;
+  }
+  body:not(.role-parent) .main-area {
+    border-radius: 20px 20px 0 0 !important;
+  }
+  #intro-welcome-screen {
+    padding: 58px 14px 18px !important;
+  }
+  #intro-welcome-screen .home-greet {
+    margin: 0 2px 12px !important;
+  }
+  #intro-welcome-screen .home-greet > .home-greet-title {
+    font-size: 22px !important;
+  }
+  #intro-welcome-screen .home-greet > .home-greet-quote {
+    font-size: 15px !important;
+  }
+  #intro-welcome-screen .home-category-card {
+    padding: 12px !important;
+  }
+  #intro-welcome-screen .home-cats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(120px, auto) !important;
+  }
+  #intro-welcome-screen .home-cats > div {
+    min-height: 120px;
+  }
+  #intro-welcome-screen .home-cats > div img {
+    height: 64px !important;
   }
 }

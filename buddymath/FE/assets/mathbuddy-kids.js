@@ -2449,35 +2449,34 @@ function showHomeScreen() {
   introPanel.innerHTML = `
     <style>@media(max-width:900px){.home-grid{grid-template-columns:1fr !important;} .home-cats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}</style>
     <div id="home-fit-wrap" style="width:100%;margin:0 auto;visibility:hidden;">
-      <!-- Câu tạo động lực -->
+      <!-- Lời chào và câu tạo động lực -->
       <div class="home-greet" style="margin:0 4px 10px;">
+        <div class="home-greet-title" style="font-family:'Baloo 2',cursive;font-size:34px;color:#123B63;font-weight:800;line-height:1.1;">Xin chào, Buddy! 👋</div>
         <div class="home-greet-quote" style="font-size:24px;color:var(--teal-d);font-weight:800;font-style:italic;letter-spacing:.2px;">"Học tập là chìa khóa mở ra cánh cửa tương lai" ✨</div>
       </div>
       <div class="home-grid" style="display:grid;grid-template-columns:1.85fr 1fr;gap:16px;align-items:stretch;">
         <!-- LEFT — hero + danh mục GỘP CHUNG 1 khung (giống mẫu) -->
-        <div style="display:flex;flex-direction:column;">
-          <div style="background:#fff;border:1px solid #E7F1EE;border-radius:22px;box-shadow:0 14px 34px rgba(18,49,74,.12);overflow:hidden;flex:1;display:flex;flex-direction:column;">
-            <!-- Hero banner (đầu khung) — phóng nhẹ + cắt viền bo tròn có sẵn của ảnh để nền mint liền mạch với khung -->
+        <div class="home-main-col" style="display:flex;flex-direction:column;gap:14px;min-width:0;">
+          <div class="home-hero-card" style="background:#fff;border:1px solid #D9EEF1;border-radius:22px;box-shadow:0 12px 28px rgba(37,104,128,.12);overflow:hidden;">
             <div class="home-hero-banner" style="position:relative;overflow:hidden;background:linear-gradient(135deg,#DEF2EC,#EAF5FF);">
               <img loading="lazy"src="/images/anhtrangchu.png" alt="SmartBuddy" style="width:100%;height:auto;margin:-32px 0;display:block;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.background='linear-gradient(120deg,#E9F9F3,#F2FBFF)';this.parentNode.style.minHeight='130px';this.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
               <button class="home-hero-cta" onclick="quickStartBuddy()" style="position:absolute;left:16px;bottom:14px;padding:9px 16px;background:linear-gradient(135deg,#1FCBA6,#13B392);color:#fff;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',Arial;font-weight:900;font-size:13px;box-shadow:0 6px 14px rgba(27,184,147,.35);transition:.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💬 Hỏi ngay với Buddy</button>
             </div>
-            <!-- Phần chọn danh mục — cùng khung, nền hơi mint để 4 nút trắng nổi khối rõ -->
-            <div style="padding:18px 18px 22px;flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#F4FBF9,#FFFFFF 60%);">
-              <div style="font-size:20.5px;font-weight:900;color:var(--text1);margin:2px 2px 15px;">📚 Chọn danh mục học tập</div>
-              <div class="home-cats" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:13px;flex:1;">
-                ${homeCard('math_hub','/images/mascot/pencil.png','📐','Toán học','Học chủ đề + kiểm tra','#1E90FF')}
-                ${homeCard('english_hub','/images/tienganh.jpg','🌏','Tiếng Anh','Từ vựng · hội thoại','#2ED573')}
-                ${homeCard('life_skills','/images/mascot/idea.png','🌟','Kỹ năng sống','Tư duy &amp; cảm xúc','#FF6B35')}
-                ${homeCard('prompt-playground','/images/mascot/thinking.png','💭','Tư duy đặt câu hỏi','Học cách hỏi hay','#A55EEA')}
-              </div>
+          </div>
+          <div class="home-category-card" style="padding:16px 18px 18px;background:#fff;border:1px solid #D9EEF1;border-radius:22px;box-shadow:0 10px 26px rgba(37,104,128,.10);">
+            <div class="home-category-title" style="font-size:20.5px;font-weight:900;color:var(--text1);margin:0 2px 12px;">📚 Chọn danh mục học tập</div>
+            <div class="home-cats" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;">
+              ${homeCard('math_hub','/images/mascot/pencil.png','📐','Toán học','Học chủ đề + kiểm tra','#1E90FF')}
+              ${homeCard('english_hub','/images/tienganh.jpg','🌏','Tiếng Anh','Từ vựng · hội thoại','#2ED573')}
+              ${homeCard('life_skills','/images/mascot/idea.png','🌟','Kỹ năng sống','Tư duy &amp; cảm xúc','#FF6B35')}
+              ${homeCard('prompt-playground','/images/mascot/thinking.png','💭','Tư duy đặt câu hỏi','Học cách hỏi hay','#A55EEA')}
             </div>
           </div>
         </div>
 
         <!-- RIGHT -->
         <div class="home-side-col" style="display:flex;flex-direction:column;gap:16px;">
-          <div style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;padding:20px 22px;box-shadow:0 14px 32px rgba(18,49,74,.12);flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div class="home-progress-card" style="background:#fff;border:1px solid #D9EEF1;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(37,104,128,.10);flex:1;display:flex;flex-direction:column;justify-content:center;">
             <div style="font-size:19.5px;font-weight:900;color:var(--text1);margin-bottom:14px;">📊 Tiến độ học tập</div>
             <div style="display:flex;align-items:center;gap:18px;">
               <div id="home-prog-ring" style="width:112px;height:112px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:conic-gradient(#1FCBA6 0deg ${_pct*3.6}deg, #E6F4EF ${_pct*3.6}deg 360deg);">
@@ -2493,7 +2492,7 @@ function showHomeScreen() {
             </div>
           </div>
 
-          <div style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;padding:22px;box-shadow:0 14px 32px rgba(18,49,74,.12);flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div class="home-achievements-card" style="background:#fff;border:1px solid #D9EEF1;border-radius:20px;padding:22px;box-shadow:0 10px 26px rgba(37,104,128,.10);flex:1;display:flex;flex-direction:column;justify-content:center;">
             <div style="font-size:18.5px;font-weight:900;color:var(--text1);margin-bottom:14px;">🏆 Thành tích nổi bật</div>
             <div style="display:flex;flex-direction:column;gap:14px;">
               ${achRow('⭐','#FFF7DC','Điểm số', _score, 'home-ach-score')}
@@ -2501,8 +2500,9 @@ function showHomeScreen() {
               ${achRow('🔥','#FFF1E8','Tinh thần học tập', 'Cố lên!')}
             </div>
           </div>
-          <div onclick="quickStartBuddy()" title="Cùng học với Buddy nào!" style="background:#fff;border:1px solid #EAF3F0;border-radius:20px;box-shadow:0 14px 32px rgba(18,49,74,.12);padding:14px 20px;flex-shrink:0;cursor:pointer;transition:transform .18s,box-shadow .18s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 20px 40px rgba(18,49,74,.18)'" onmouseout="this.style.transform='';this.style.boxShadow='0 14px 32px rgba(18,49,74,.12)'">
-            <img loading="lazy"src="/images/anhthaythe-nobg.png" alt="Mỗi ngày một chút, bạn sẽ tiến bộ mỗi ngày!" style="display:block;width:100%;height:auto;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.parentNode.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
+          <div class="home-motivation-card" onclick="quickStartBuddy()" title="Cùng học với Buddy nào!" style="background:#fff;border:1px solid #D9EEF1;border-radius:20px;box-shadow:0 10px 26px rgba(37,104,128,.10);padding:10px 16px;flex-shrink:0;display:flex;align-items:center;gap:10px;cursor:pointer;transition:transform .18s,box-shadow .18s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 18px 34px rgba(37,104,128,.16)'" onmouseout="this.style.transform='';this.style.boxShadow='0 10px 26px rgba(37,104,128,.10)'">
+            <img loading="lazy"src="/images/mascot/reading.png" alt="Buddy đang đọc sách" style="display:block;width:150px;height:150px;object-fit:contain;flex-shrink:0;" onload="typeof fitHomeContent==='function'&&fitHomeContent()" onerror="this.style.display='none';typeof fitHomeContent==='function'&&fitHomeContent()">
+            <div style="font-size:18px;line-height:1.45;font-weight:900;color:#173D64;">Mỗi ngày một chút,<br>bạn sẽ tiến bộ mỗi <span style="color:#0AAE9F;">ngày! ✨</span></div>
           </div>
         </div>
       </div>
@@ -2559,7 +2559,7 @@ function fitHomeContent() {
   if (!wrap || !host) return;
   const isMobile = window.innerWidth <= 760;
   wrap.style.width = '100%';
-  wrap.style.maxWidth = isMobile ? '100%' : '1400px';
+  wrap.style.maxWidth = isMobile ? '100%' : '1600px';
   if (isMobile) {
     clearTimeout(_homeFitTimer);
     wrap.style.zoom = '1';
