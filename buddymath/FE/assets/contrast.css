@@ -1,0 +1,40 @@
+/* contrast.css — tăng độ tương phản chữ (không đổi cấu trúc/chức năng) */
+:root{ --ink:#0F2C4C; --ink-2:#173E63; --muted:#45647F; --muted-2:#6B87A2; }
+body, .sidebar, .main-area, .sb-h1, .sb-h2, .sb-h3,
+.sb-home__greet, .sb-sidecard__title, .sb-cat__name, .sb-view__title,
+.sb-progress__label, .sb-achrow__val, .sb-srow__title, .sb-prow__val{
+  color: var(--ink) !important;
+}
+.sb-home__quote{ color:#1B5E8C !important; }
+.sb-sub, .sb-cat__sub, .sb-progress__desc, .sb-view__sub,
+.sb-srow__sub, .sb-prow__label, .sb-hist__empty-sub{
+  color:#45647F !important;
+}
+.sb-chat__chip, .sb-chip{ color:#174468 !important; }
+.sb-chat__title span{ color:#1D7FC4 !important; }
+.sb-chat__sub b, .sb-progress__desc b{ color:#0F4C7A !important; }
+
+/* banner nền sáng: chữ luôn navy, bỏ chữ trắng */
+#panel-buddy .sb-chat__hero .sb-chat__title,
+#panel-buddy .sb-chat__hero .sb-chat__sub,
+#panel-english_hub .sb-hero .sb-hero__title,
+#panel-english_hub .sb-hero .sb-hero__sub,
+#panel-prompt-playground .sb-hero .sb-hero__title,
+#panel-prompt-playground .sb-hero .sb-hero__sub,
+#panel-score_history .sb-hero .sb-hero__title,
+#panel-score_history .sb-hero .sb-hero__sub,
+#panel-math_hub .sb-hero .sb-hero__title,
+#panel-math_hub .sb-hero .sb-hero__sub,
+#panel-life_skills .sb-hero .sb-hero__title,
+#panel-life_skills .sb-hero .sb-hero__sub,
+.sb-view__banner .sb-view__title,
+.sb-view__banner .sb-view__sub{
+  color:var(--ink) !important; text-shadow:none !important;
+}
+/* nút/nhấn mạnh hơn */
+.sb-btn--primary, .sb-seg__btn.active, .sb-filter.active,
+body:not(.role-parent) .topic-btn.nav-new.active{
+  background:linear-gradient(135deg,#8FC9F4,#4E97D8) !important; color:#0B2B44 !important;
+}
+.sb-cat__name, .sb-home__cats-title{ color:#0F2C4C !important; }
+#content-topbar .user-avatar-pill, #content-topbar .notif-bell{ color:#123A5A !important; }

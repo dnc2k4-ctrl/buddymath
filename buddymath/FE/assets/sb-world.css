@@ -167,3 +167,25 @@ body:not(.role-parent) .main-area::after{display:none !important;content:none !i
 .chat-mascot-loading{position:absolute;left:-6px;top:-46px;width:44px;height:44px;pointer-events:none}
 .chat-mascot-loading svg{width:100%;height:auto}
 .msg-row.ai{position:relative}
+/* Ẩn toàn bộ ảnh cũ còn sót trong các panel (chỉ dùng icon SVG + mascot) */
+#panel-english_hub .sb-topic__plate,
+#panel-english_hub .sb-topic__img,
+#panel-math_hub .sb-topic__img,
+#panel-english_hub .sb-eng__badge img,
+#panel-math_hub .sb-eng__badge img,
+#panel-life_skills .sb-eng__badge img,
+#panel-prompt-playground .sb-hero__mascot,
+#panel-prompt-playground .sb-hero img,
+#panel-english_hub .sb-hero img,
+#panel-math_hub .sb-hero img,
+#panel-life_skills .sb-hero img,
+#panel-toan3_ontap img, .grade-panel img[src*="/images/"]{display:none !important}
+#panel-english_hub .sb-topic{justify-content:flex-start;gap:8px}
+#panel-english_hub .sb-topic::before{content:"";width:54px;height:54px;border-radius:16px;background:#EAF6FF;
+  box-shadow:inset 0 0 0 1px #D9ECFB}
+#panel-english_hub .sb-topic .sb-topic__name{margin-top:4px}
+#panel-english_hub .sb-topic::after{content:"\2192";position:absolute;right:14px;bottom:12px;width:26px;height:26px;
+  border-radius:50%;background:#8FC9F4;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:13px}
+.sb-hist__empty img, .sb-empty__mascot{max-width:150px}
+#panel-score_history .sb-hist__hero .sb-hero__mascot{display:none}
+#panel-score_history .sb-hist__hero .sb-hist__icon{display:flex}
