@@ -2563,28 +2563,13 @@ function fitHomeContent() {
   const wrap = document.getElementById('home-fit-wrap');
   const host = document.getElementById('intro-welcome-screen');
   if (!wrap || !host) return;
-  // Điện thoại: KHÔNG ép-vừa bằng zoom (gây chữ nhỏ + đè) → để trang cuộn tự nhiên, cỡ chữ chuẩn.
-  if (window.innerWidth <= 760) { wrap.style.zoom = '1'; wrap.style.width = '100%'; return; }
-  wrap.style.width = '100%';   // luôn reset (tránh phóng to lỗi)
+  // Use one stable scale. Let short screens scroll instead of resizing the whole dashboard.
+  wrap.style.width = '100%';
+  wrap.style.maxWidth = window.innerWidth <= 760 ? '100%' : '1210px';
   wrap.style.zoom = '1';
-  const cs = getComputedStyle(host);
-  const availW = host.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-  const availH = host.clientHeight - parseFloat(cs.paddingTop)  - parseFloat(cs.paddingBottom);
-  const needW = wrap.scrollWidth;
-  const needH = wrap.scrollHeight;
-  if (!needW || !needH) return;
-  let scale = Math.min(availW / needW, availH / needH);
-  scale = Math.max(0.4, Math.min(scale, 1.0));
-  wrap.style.zoom = String(Math.round(scale * 1000) / 1000);
-  // Tự sửa: hỏi thẳng trình duyệt còn tràn không, giảm dần tới khi vừa khít
-  let guard = 0;
-  while (host.scrollHeight > host.clientHeight + 1 && scale > 0.4 && guard < 14) {
-    scale = Math.round(scale * 0.97 * 1000) / 1000;
-    wrap.style.zoom = String(scale);
-    guard++;
-  }
+  host.style.overflowX = 'hidden';
+  host.style.overflowY = 'auto';
 }
-// Co giãn lại khi đổi kích thước cửa sổ
 let _fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(_fitTimer);
