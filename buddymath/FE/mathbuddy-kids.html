@@ -43,7 +43,7 @@ catch (_) { location.replace('/?portal=student'); }
 <link rel="stylesheet" href="/assets/mint-v2.css?v=2">
 <link rel="stylesheet" href="/assets/app-v2.css?v=17">
 <link rel="stylesheet" href="/assets/theme-blue.css?v=1">
-<link rel="stylesheet" href="/assets/sb-world.css?v=2">
+<link rel="stylesheet" href="/assets/sb-world.css?v=4">
 
 <!-- CHỐNG NHÁY: áp phẳng nav + mint header/nền NGAY từ <head> (trước khi body vẽ) để không lộ style hộp-màu cũ -->
 
@@ -738,12 +738,7 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
               <button class="sb-chat__chip sb-chat__chip--amber" onclick="sbChatSuggest('')">❓ Hỏi bất kỳ điều gì</button>
             </div>
           </div>
-          <div class="sb-chat__art">
-            <img loading="lazy" class="sb-chat__art-img" src="/images/mascot/reading.png" alt="SmartBuddy" onerror="this.style.display='none'">
-            <span class="sb-chat__float" style="left:-4%;top:8%;width:clamp(20px,3.4vh,38px);height:clamp(20px,3.4vh,38px);color:#4E8CFF;"><span data-i="books"></span></span>
-            <span class="sb-chat__float" style="right:0%;top:20%;width:clamp(16px,2.8vh,30px);height:clamp(16px,2.8vh,30px);color:#FFB020;"><span data-i="star"></span></span>
-            <span class="sb-chat__float" style="right:8%;top:-2%;width:clamp(16px,2.6vh,28px);height:clamp(16px,2.6vh,28px);color:#2FCBA6;"><span data-i="sparkle"></span></span>
-          </div>
+          <div class="sb-chat__art sb-chat__art--mascot"><div data-mascot="listening"></div></div>
         </div>
 
         <div class="messages" id="messages"></div>

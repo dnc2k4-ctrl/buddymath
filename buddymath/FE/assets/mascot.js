@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════════════
    mascot.js — BUDDY: mascot mới của BuddyMath (SVG, palette pastel blue).
    window.sbMascot(expr, cls) → trả về chuỗi SVG.
    expr: welcome | thinking | hint | correct | tryagain | celebration | listening | loading
@@ -79,5 +79,20 @@
       '</svg>';
   }
 
+  function hydrate() {
+    var els = document.querySelectorAll('[data-mascot]');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el.getAttribute('data-mascot-done')) continue;
+      el.innerHTML = build(el.getAttribute('data-mascot') || 'welcome', el.className || '');
+      el.setAttribute('data-mascot-done', '1');
+    }
+  }
   window.sbMascot = build;
+  window.sbMascotHydrate = hydrate;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hydrate);
+  else setTimeout(hydrate, 0);
+  try {
+    new MutationObserver(function () { hydrate(); }).observe(document.body, { childList: true, subtree: true });
+  } catch (e) { }
 })();

@@ -107,7 +107,21 @@ h1,h2,h3,.sb-home__greet,.sb-sidecard__title{color:var(--ink) !important}
   .world__isles{grid-template-columns:1fr 1fr}
   .world__side{overflow:auto}
 }
+.sb-chat__art--mascot{width:clamp(150px,26vh,300px)}
+.sb-chat__art--mascot svg{width:100%;height:auto}
 @media (max-width:620px){
+  .world__side{overflow:hidden}
   .world__isles{grid-template-columns:1fr}
   .world__map{min-height:0}
 }
+
+/* ---- chat AI: chữ navy trên nền pastel sáng + mascot mới ---- */
+#panel-buddy .sb-chat__hero .sb-chat__title,
+#panel-buddy .sb-chat__hero .sb-chat__title span{color:var(--ink) !important;text-shadow:none !important}
+#panel-buddy .sb-chat__hero .sb-chat__title span{color:var(--brand-strong) !important}
+#panel-buddy .sb-chat__hero .sb-chat__sub{color:var(--muted) !important}
+#panel-buddy .sb-chat__hero .sb-chat__sub b{color:var(--brand-deep) !important}
+#panel-buddy .sb-chat__hero .sb-chip{background:#fff !important;color:var(--brand-strong) !important;border-color:#D9EDFB !important}
+#panel-buddy .sb-chat__hero .sb-chat__chip{background:#fff !important;color:var(--ink-2) !important;border:1px solid #DFEFFB !important}
+#panel-buddy .sb-chat__hero .sb-chat__chip--mint{background:linear-gradient(135deg,#C8E7FF,#8FC9F4) !important;color:#1E4E77 !important}
+#panel-buddy .sb-chat__hero{background:linear-gradient(115deg,#FFFFFF 0%,#EAF6FF 55%,#DDEFFF 100%) !important}
