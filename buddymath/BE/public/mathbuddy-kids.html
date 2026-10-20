@@ -1,7 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<script src="/assets/stage-loader.js?v=1"></script>
 <style>body{visibility:hidden}html[data-student-auth-ready="1"] body{visibility:visible}</style>
 <script>
 try { if (!localStorage.getItem('sb_token')) location.replace('/?portal=student'); }
@@ -38,6 +39,8 @@ catch (_) { location.replace('/?portal=student'); }
 <!-- Gói đăng ký: NGUỒN DUY NHẤT từ backend (app/plans.py) → gán window.SB_PLANS -->
 <script src="/config/plans.js"></script>
 <link rel="stylesheet" href="/assets/mathbuddy-kids.css?v=11">
+<link rel="stylesheet" href="/assets/mint-v2.css?v=2">
+<link rel="stylesheet" href="/assets/app-v2.css?v=13">
 
 <!-- CHỐNG NHÁY: áp phẳng nav + mint header/nền NGAY từ <head> (trước khi body vẽ) để không lộ style hộp-màu cũ -->
 
@@ -58,6 +61,22 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
 </script>
 
 <div class="bubbles" id="bubbles"></div>
+
+<!-- Nền trang trí (cắt trực tiếp từ ảnh mẫu) — chỉ hiển thị trên desktop -->
+<div class="sb-bg" aria-hidden="true">
+  <img class="sb-bg__img sb-bg__img--cloud" src="/images/v2/bg-cloud.png" alt="">
+  <img class="sb-bg__img sb-bg__img--leaves-l" src="/images/v2/bg-leaves-l.png" alt="">
+  <img class="sb-bg__img sb-bg__img--leaves-r" src="/images/v2/bg-leaves-r.png" alt="">
+  <img class="sb-bg__img sb-bg__img--plane" src="/images/v2/bg-plane.png" alt="">
+  <span class="sb-bg__star" style="left:23%;top:7%;">★</span>
+  <span class="sb-bg__star" style="left:66%;top:4%;font-size:11px;">★</span>
+  <span class="sb-bg__star" style="left:88%;top:16%;font-size:14px;">★</span>
+  <span class="sb-bg__star" style="left:37%;top:92%;font-size:12px;">★</span>
+  <span class="sb-bg__plane" style="left:58%;top:12%;">✈</span>
+  <span class="sb-bg__plane" style="left:93%;top:74%;font-size:26px;transform:rotate(12deg) scaleX(-1);">✈</span>
+  <span class="sb-bg__dash" style="left:30%;top:20%;transform:rotate(-12deg);"></span>
+  <span class="sb-bg__dash" style="left:74%;top:70%;transform:rotate(8deg);"></span>
+</div>
 
 <header class="header">
   <!-- Nút menu (chỉ hiện trên điện thoại) -->
@@ -703,17 +722,25 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
     <!-- BUDDY PANEL -->
     <div class="topic-content-panel" id="panel-buddy" style="padding:0; overflow:hidden;">
       <div class="chat-panel-wrap">
-        <button class="new-chat-btn" onclick="newChat()">✨ Học bài mới</button>
-
-        <div class="messages" id="messages" style="padding-top:44px;">
-          <div class="welcome-wrap" id="welcome-screen">
-            <div class="welcome-box">
-              <img loading="lazy"class="welcome-mascot" src="/images/mascot/waving.png" alt="SmartBuddy" onerror="this.outerHTML='&lt;div class=\'robot-face\'&gt;🤖&lt;/div&gt;'">
-              <div class="welcome-title">Chào em! Mình là <span>SmartBuddy</span></div>
-              <p class="welcome-sub">Hôm nay em muốn Buddy giúp gì nào? 😊<br>Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <strong>nhập câu hỏi của em</strong> bên dưới — Buddy sẽ hướng dẫn em <strong>tự nghĩ ra đáp án</strong> nhé! 🚀</p>
+        <!-- HERO chào mừng (ẩn khi đã có tin nhắn) -->
+        <div class="sb-chat__hero" id="sb-chat-hero">
+          <div class="sb-chat__copy">
+            <button class="sb-chip sb-chip--active" onclick="newChat()" style="align-self:flex-start;">✨ Học bài mới</button>
+            <h1 class="sb-chat__title">Chào em! ☀️<br>Mình là <span>SmartBuddy</span></h1>
+            <p class="sb-chat__sub">Hôm nay em muốn Buddy giúp gì nào? 😊 Em đang học bài gì, hay đang mắc ở chỗ nào? Cứ <b>nhập câu hỏi của em</b> bên dưới — Buddy sẽ hướng dẫn em <b>tự nghĩ ra đáp án</b> nhé! 🚀</p>
+            <div class="sb-chat__chips">
+              <button class="sb-chat__chip sb-chat__chip--mint" onclick="sbChatSuggest('Giải giúp em bài tập toán: ')">💡 Giải bài tập toán</button>
+              <button class="sb-chat__chip sb-chat__chip--violet" onclick="sbChatSuggest('Giải thích giúp em ngữ pháp tiếng Anh: ')">💬 Giải thích ngữ pháp</button>
+              <button class="sb-chat__chip sb-chat__chip--sky" onclick="sbChatSuggest('Cho em làm bài tiếng Anh về ')">📘 Làm bài tiếng Anh</button>
+              <button class="sb-chat__chip sb-chat__chip--amber" onclick="sbChatSuggest('')">❓ Hỏi bất kỳ điều gì</button>
             </div>
           </div>
+          <div class="sb-chat__art">
+            <img loading="lazy" class="sb-chat__art-img" src="/images/mascot/reading.png" alt="SmartBuddy" onerror="this.style.display='none'">
+          </div>
         </div>
+
+        <div class="messages" id="messages"></div>
         <div class="input-area">
           <!-- Ô XEM TRƯỚC công thức đúng chuẩn SGK (render KaTeX khi gõ ký hiệu toán) -->
           <div class="math-preview" id="mp-user-input" style="display:none;"></div>
@@ -875,84 +902,102 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
 
     <!-- ══ MATH HUB PANEL ══ -->
     <div class="topic-content-panel" id="panel-math_hub" style="overflow-y:auto;">
-      <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
-        <div style="background:linear-gradient(135deg,#1E90FF,#2ED573);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(30,144,255,.3);display:flex;align-items:center;gap:16px;">
-          <img loading="lazy"src="/images/taodang1.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
-          <div>
-            <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">📐 Toán học</div>
-            <div style="font-size:15px;opacity:.92;font-weight:600;line-height:1.6;">Học cùng gia sư AI — Buddy dẫn em tư duy từng bước, không giải hộ!</div>
+      <div class="sb-panel sb-panel--pad">
+        <div class="sb-hero sb-eng__hero">
+          <div class="sb-eng__badge"><img src="/images/v2/cat-math.png" alt=""></div>
+          <div class="sb-hero__copy">
+            <h1 class="sb-hero__title">Toán học 📐</h1>
+            <p class="sb-hero__sub">Học cùng gia sư AI — Buddy dẫn em tư duy từng bước, không giải hộ!</p>
           </div>
+          <img class="sb-hero__mascot" src="/images/mascot/pencil.png" alt="" onerror="this.style.display='none'">
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
-          <div class="subtopic-card" onclick="hubOpen('math-home')">
-            <div class="sc-img">📚</div><div class="sc-name">Học theo chủ đề</div><div class="sc-desc">Buddy dẫn khám phá từng chủ đề</div>
-          </div>
-          <div class="subtopic-card" onclick="hubOpen('classroom')">
-            <div class="sc-img">📝</div><div class="sc-name">Phòng kiểm tra</div><div class="sc-desc">Tạo đề, làm bài, AI chấm &amp; chữa</div>
-          </div>
+        <div class="sb-eng__cards" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+          <button class="sb-topic" onclick="hubOpen('math-home')">
+            <img class="sb-topic__img" src="/images/v2/eng-card-vocab.png" alt="">
+            <div class="sb-topic__name">Học theo chủ đề</div>
+            <div class="sb-topic__sub">Buddy dẫn khám phá từng chủ đề</div>
+            <span class="sb-arrow sb-topic__arrow">→</span>
+          </button>
+          <button class="sb-topic" onclick="hubOpen('classroom')">
+            <img class="sb-topic__img" src="/images/v2/eng-card-test.png" alt="">
+            <div class="sb-topic__name">Phòng kiểm tra</div>
+            <div class="sb-topic__sub">Tạo đề, làm bài, AI chấm &amp; chữa</div>
+            <span class="sb-arrow sb-arrow--violet sb-topic__arrow">→</span>
+          </button>
         </div>
       </div>
     </div>
 
     <!-- ══ ENGLISH HUB PANEL ══ -->
     <div class="topic-content-panel" id="panel-english_hub" style="overflow-y:auto;">
-      <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
-        <div style="background:linear-gradient(135deg,#1A8A50,#2ED573);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(26,138,80,.3);display:flex;align-items:center;gap:16px;">
-          <img loading="lazy"src="/images/taodang3.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
-          <div>
-            <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">🌏 Tiếng Anh</div>
-            <div style="font-size:15px;opacity:.92;font-weight:600;line-height:1.6;">Học từ vựng, luyện hội thoại và làm bài tập cùng SmartBuddy AI!</div>
+      <div class="sb-panel sb-panel--pad">
+        <div class="sb-hero sb-eng__hero">
+          <div class="sb-eng__badge"><img src="/images/v2/cat-english.png" alt=""></div>
+          <div class="sb-hero__copy">
+            <h1 class="sb-hero__title">Tiếng Anh ✈️</h1>
+            <p class="sb-hero__sub">Học từ vựng, luyện hội thoại và làm bài tập cùng SmartBuddy AI!</p>
           </div>
+          <img class="sb-hero__mascot" src="/images/mascot/reading.png" alt="" onerror="this.style.display='none'">
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
-          <div class="subtopic-card" onclick="hubOpen('english_vocab')">
-            <div class="sc-img">🔤</div><div class="sc-name">Từ vựng &amp; Ngữ pháp</div><div class="sc-desc">Vocabulary &amp; Grammar</div>
-          </div>
-          <div class="subtopic-card" onclick="hubOpen('english_speak')">
-            <div class="sc-img">🗣️</div><div class="sc-name">Hội thoại &amp; Đọc hiểu</div><div class="sc-desc">Speaking &amp; Reading</div>
-          </div>
-          <div class="subtopic-card" onclick="hubOpen('english_test')">
-            <div class="sc-img">✍️</div><div class="sc-name">Bài tập Tiếng Anh</div><div class="sc-desc">Practice &amp; feedback</div>
-          </div>
+        <div class="sb-eng__cards">
+          <button class="sb-topic" onclick="hubOpen('english_vocab')">
+            <img class="sb-topic__plate" src="/images/v2/eng-card-vocab.png" alt="">
+            <div class="sb-topic__name">Từ vựng &amp; Ngữ pháp</div>
+            <div class="sb-topic__sub">Vocabulary &amp; Grammar</div>
+            <span class="sb-arrow sb-topic__arrow">→</span>
+          </button>
+          <button class="sb-topic" onclick="hubOpen('english_speak')">
+            <img class="sb-topic__plate" src="/images/v2/eng-card-speak.png" alt="">
+            <div class="sb-topic__name">Hội thoại &amp; Đọc hiểu</div>
+            <div class="sb-topic__sub">Speaking &amp; Reading</div>
+            <span class="sb-arrow sb-arrow--sky sb-topic__arrow">→</span>
+          </button>
+          <button class="sb-topic" onclick="hubOpen('english_test')">
+            <img class="sb-topic__plate" src="/images/v2/eng-card-test.png" alt="">
+            <div class="sb-topic__name">Bài tập Tiếng Anh</div>
+            <div class="sb-topic__sub">Practice &amp; feedback</div>
+            <span class="sb-arrow sb-arrow--violet sb-topic__arrow">→</span>
+          </button>
         </div>
       </div>
     </div>
 
     <!-- ══ LIFE SKILLS PANEL ══ -->
     <div class="topic-content-panel" id="panel-life_skills" style="overflow-y:auto;">
-      <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
-        <div style="background:linear-gradient(135deg,#FF6B35,#FFCB45);border-radius:20px;padding:18px 22px;color:white;box-shadow:0 6px 0 rgba(255,107,53,.3);display:flex;align-items:center;gap:16px;">
-          <img loading="lazy"src="/images/taodang2.png" alt="" style="width:64px;height:64px;object-fit:contain;background:white;border-radius:14px;padding:4px;flex-shrink:0;" onerror="this.style.display='none'">
-          <div>
-            <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:4px;">🌟 Kỹ năng sống</div>
-            <div style="font-size:15px;opacity:.9;font-weight:600;line-height:1.6;">SmartBuddy giúp em phát triển những kỹ năng quan trọng trong cuộc sống!</div>
+      <div class="sb-panel sb-panel--pad">
+        <div class="sb-hero sb-eng__hero">
+          <div class="sb-eng__badge"><img src="/images/v2/cat-life.png" alt=""></div>
+          <div class="sb-hero__copy">
+            <h1 class="sb-hero__title">Kỹ năng sống 🌟</h1>
+            <p class="sb-hero__sub">SmartBuddy giúp em phát triển những kỹ năng quan trọng trong cuộc sống!</p>
           </div>
+          <img class="sb-hero__mascot" src="/images/mascot/idea.png" alt="" onerror="this.style.display='none'">
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
-          <div class="subtopic-card" onclick="startLifeSkill('Ra quyết định','🤔','Học cách suy nghĩ và ra quyết định đúng đắn trong các tình huống khó khăn.')">
+        <div class="sb-hub__cards">
+          <button class="sb-hub__card" onclick="startLifeSkill('Ra quyết định','🤔','Học cách suy nghĩ và ra quyết định đúng đắn trong các tình huống khó khăn.')">
             <div class="sc-img">🤔</div><div class="sc-name">Ra quyết định</div><div class="sc-desc">Decision making</div>
-          </div>
-          <div class="subtopic-card" onclick="startLifeSkill('Giao tiếp tốt','🗣️','Học cách nói chuyện, lắng nghe và thể hiện cảm xúc một cách lịch sự.')">
+          </button>
+          <button class="sb-hub__card" onclick="startLifeSkill('Giao tiếp tốt','🗣️','Học cách nói chuyện, lắng nghe và thể hiện cảm xúc một cách lịch sự.')">
             <div class="sc-img">🗣️</div><div class="sc-name">Giao tiếp</div><div class="sc-desc">Communication</div>
-          </div>
-          <div class="subtopic-card" onclick="startLifeSkill('Quản lý thời gian','⏰','Học cách sắp xếp thời gian học và chơi sao cho cân bằng và hiệu quả.')">
+          </button>
+          <button class="sb-hub__card" onclick="startLifeSkill('Quản lý thời gian','⏰','Học cách sắp xếp thời gian học và chơi sao cho cân bằng và hiệu quả.')">
             <div class="sc-img">⏰</div><div class="sc-name">Quản lý thời gian</div><div class="sc-desc">Time management</div>
-          </div>
-          <div class="subtopic-card" onclick="startLifeSkill('An toàn online','🔒','Học cách sử dụng internet an toàn và nhận biết nguy hiểm trực tuyến.')">
+          </button>
+          <button class="sb-hub__card" onclick="startLifeSkill('An toàn online','🔒','Học cách sử dụng internet an toàn và nhận biết nguy hiểm trực tuyến.')">
             <div class="sc-img">🔒</div><div class="sc-name">An toàn online</div><div class="sc-desc">Internet safety</div>
-          </div>
-          <div class="subtopic-card" onclick="startLifeSkill('Làm việc nhóm','🤝','Học cách hợp tác, chia sẻ và giúp đỡ bạn bè trong nhóm.')">
+          </button>
+          <button class="sb-hub__card" onclick="startLifeSkill('Làm việc nhóm','🤝','Học cách hợp tác, chia sẻ và giúp đỡ bạn bè trong nhóm.')">
             <div class="sc-img">🤝</div><div class="sc-name">Làm việc nhóm</div><div class="sc-desc">Teamwork</div>
-          </div>
-          <div class="subtopic-card" onclick="startLifeSkill('Kiểm soát cảm xúc','❤️','Học cách nhận biết và kiểm soát cảm xúc của bản thân một cách lành mạnh.')">
+          </button>
+          <button class="sb-hub__card" onclick="startLifeSkill('Kiểm soát cảm xúc','❤️','Học cách nhận biết và kiểm soát cảm xúc của bản thân một cách lành mạnh.')">
             <div class="sc-img">❤️</div><div class="sc-name">Quản lý cảm xúc</div><div class="sc-desc">Emotional control</div>
-          </div>
-          <div class="subtopic-card" onclick="startLifeSkill('Đạo đức & Lịch sự','🌺','Học về lòng biết ơn, tôn trọng người khác và các giá trị đạo đức tốt đẹp.')">
+          </button>
+          <button class="sb-hub__card" onclick="startLifeSkill('Đạo đức & Lịch sự','🌺','Học về lòng biết ơn, tôn trọng người khác và các giá trị đạo đức tốt đẹp.')">
             <div class="sc-img">🌺</div><div class="sc-name">Đạo đức</div><div class="sc-desc">Ethics &amp; values</div>
-          </div>
-          <div class="subtopic-card" onclick="startLifeSkill('Sáng tạo & Tư duy','💡','Phát triển khả năng sáng tạo và tư duy phản biện để giải quyết vấn đề.')">
+          </button>
+          <button class="sb-hub__card" onclick="startLifeSkill('Sáng tạo & Tư duy','💡','Phát triển khả năng sáng tạo và tư duy phản biện để giải quyết vấn đề.')">
             <div class="sc-img">💡</div><div class="sc-name">Sáng tạo</div><div class="sc-desc">Creative thinking</div>
-          </div>
+          </button>
         </div>
         <!-- Life skills chat -->
         <div id="life-skills-chat" style="display:none;flex-direction:column;gap:10px;">
@@ -972,30 +1017,37 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
 
     <!-- ══ SCORE HISTORY PANEL ══ -->
     <div class="topic-content-panel" id="panel-score_history" style="overflow-y:auto;">
-      <div style="padding:20px 22px;display:flex;flex-direction:column;gap:18px;">
-        <div style="background:linear-gradient(135deg,#3742FA,#A55EEA);border-radius:20px;padding:20px 24px;color:white;box-shadow:0 6px 0 rgba(55,66,250,.3);">
-          <div style="font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:6px;">📊 Lịch sử học tập</div>
-          <div style="font-size:15px;opacity:.9;font-weight:600;line-height:1.6;">Theo dõi hành trình học tập của em theo từng môn và thời gian!</div>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button class="practice-type-btn active" id="hist-tab-scores" onclick="switchHistTab('scores')" style="flex:1;">📊 Bài làm</button>
-          <button class="practice-type-btn" id="hist-tab-chat" onclick="switchHistTab('chat')" style="flex:1;">💬 Trò chuyện với AI</button>
-        </div>
-        <div id="hist-scores-section">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;" id="score-hist-filters">
-            <button class="practice-type-btn active" onclick="loadScoreHistory('');setHistFilter(this)">Tất cả</button>
-            <button class="practice-type-btn" onclick="loadScoreHistory('Toán');setHistFilter(this)">📐 Toán</button>
-            <button class="practice-type-btn" onclick="loadScoreHistory('Tiếng Anh');setHistFilter(this)">🌏 Tiếng Anh</button>
-            <button class="practice-type-btn" onclick="loadScoreHistory('Kỹ năng sống');setHistFilter(this)">🌟 Kỹ năng sống</button>
+      <div class="sb-panel sb-panel--pad">
+        <div class="sb-hero sb-hist__hero">
+          <div class="sb-hist__icon"><img src="/images/v2/hist-doc3d.png" alt="" style="width:70%;height:70%;object-fit:contain;"></div>
+          <div class="sb-hero__copy">
+            <h1 class="sb-hero__title">Lịch sử học tập</h1>
+            <p class="sb-hero__sub">Theo dõi hành trình học tập của em theo từng môn và thời gian!</p>
           </div>
-          <div id="score-history-list">
-            <div class="empty-state"><div class="empty-icon">📊</div>Đang tải lịch sử...</div>
+          <img loading="lazy" class="sb-hero__mascot" src="/images/mascot/reading.png" alt="" onerror="this.style.display='none'">
+        </div>
+        <div class="sb-seg">
+          <button class="sb-seg__btn active" id="hist-tab-scores" onclick="switchHistTab('scores')">📊 Bài làm</button>
+          <button class="sb-seg__btn" id="hist-tab-chat" onclick="switchHistTab('chat')">💬 Trò chuyện với AI</button>
+        </div>
+        <div id="hist-scores-section" class="sb-hist__body" style="display:flex;flex-direction:column;gap:clamp(8px,1.2vh,12px);">
+          <div class="sb-filters" id="score-hist-filters">
+            <button class="sb-filter active" onclick="loadScoreHistory('');setHistFilter(this)">Tất cả</button>
+            <button class="sb-filter" onclick="loadScoreHistory('Toán');setHistFilter(this)">📐 Toán</button>
+            <button class="sb-filter" onclick="loadScoreHistory('Tiếng Anh');setHistFilter(this)">🌏 Tiếng Anh</button>
+            <button class="sb-filter" onclick="loadScoreHistory('Kỹ năng sống');setHistFilter(this)">🌟 Kỹ năng sống</button>
+          </div>
+          <div id="score-history-list" class="sb-hist__body">
+            <div class="sb-hist__empty">
+              <img loading="lazy" src="/images/v2/hist-empty-art.png" alt="" onerror="this.style.display='none'">
+              <div class="sb-hist__empty-title">Chưa có bài nào</div>
+              <p class="sb-hist__empty-sub">Hãy bắt đầu học để lưu lại hành trình tiến bộ của em nhé!</p>
+              <button class="sb-btn sb-btn--primary" onclick="showHomeScreen()">🚀 Bắt đầu học</button>
+            </div>
           </div>
         </div>
-        <div id="hist-chat-section" style="display:none;">
-          <div id="chat-history-list">
-            <div class="empty-state"><div class="empty-icon">💬</div>Đang tải...</div>
-          </div>
+        <div id="hist-chat-section" class="sb-hist__body" style="display:none;">
+          <div id="chat-history-list" class="sb-hist__body"></div>
         </div>
       </div>
     </div>
@@ -1136,39 +1188,65 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
     <div class="topic-content-panel prompt-playground-panel" id="panel-prompt-playground" style="overflow-y:auto;">
 
       <!-- ══ SCREEN 0: CHÀO MỪNG ══ -->
-      <div id="qc-home" class="qc-screen" style="padding:24px 20px;">
-        <!-- Mascot header banner -->
-        <div style="background:linear-gradient(135deg,#1FCBA6,#13B392);border-radius:24px;padding:22px 20px;text-align:center;box-shadow:0 8px 0 rgba(27,184,147,.3);">
-          <img src="/images/mascot/thinking.png" alt="Buddy đang suy nghĩ" loading="lazy" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 12px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.18));animation:mascotBob 2.5s ease-in-out infinite;">
-          <div style="font-family:'Baloo 2',cursive;font-size:21px;font-weight:900;color:white;line-height:1.25;">Lớp học Đặt Câu Hỏi<br>Thông Minh 💭</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.85);font-weight:700;margin-top:7px;">Học cách hỏi đúng — nhận câu trả lời hay hơn gấp 10 lần!</div>
+      <div id="qc-home" class="qc-screen" style="padding:0;">
+        <!-- HERO banner -->
+        <div class="sb-hero sb-prompt__hero">
+          <div class="sb-hero__copy">
+            <button class="sb-chip sb-chip--active" onclick="qcStart()" style="align-self:flex-start;border:0;cursor:pointer;">✨ Học bài mới</button>
+            <h1 class="sb-hero__title">Lớp học Đặt Câu Hỏi<br>Thông Minh 💡</h1>
+            <p class="sb-hero__sub">Học cách hỏi đúng — nhận câu trả lời hay hơn gấp 10 lần!</p>
+            <div class="sb-chat__chips" style="margin-top:2px;">
+              <span class="sb-chat__chip sb-chat__chip--mint" style="cursor:default;">🔍 Tư duy sâu hơn</span>
+              <span class="sb-chat__chip sb-chat__chip--amber" style="cursor:default;">⭐ Hiểu vấn đề tốt hơn</span>
+              <span class="sb-chat__chip" style="cursor:default;background:#fff;">🎯 Tự tin hơn</span>
+            </div>
+          </div>
+          <img loading="lazy" class="sb-hero__mascot sb-hero__mascot--lg" src="/images/mascot/thinking.png" alt="Buddy đang suy nghĩ" onerror="this.style.display='none'">
         </div>
-        <!-- Why it matters -->
-        <div style="background:#FFFBF0;border-radius:16px;padding:14px 16px;border:2px solid #FFE099;">
-          <div style="font-size:13px;font-weight:900;color:#B8860B;margin-bottom:6px;">💡 Câu hỏi tốt vs câu hỏi thường:</div>
-          <div style="font-size:12px;color:#8B6914;font-weight:600;line-height:1.8;">
-            ❌ <em>"Tại sao em không hiểu toán?"</em> → AI trả lời chung chung<br>
-            ✅ <em>"Em lớp 6, không hiểu bước quy đồng mẫu số khi cộng phân số"</em> → AI giải đúng ngay!
+
+        <!-- Câu hỏi tốt vs câu hỏi thường -->
+        <div class="sb-prompt__note">
+          <div class="sb-prompt__note-main">
+            <div class="sb-prompt__note-title">💡 Câu hỏi tốt vs câu hỏi thường:</div>
+            <div class="sb-prompt__note-line">❌ <em>"Tại sao em không hiểu toán?"</em> → AI trả lời chung chung</div>
+            <div class="sb-prompt__note-line">✅ <em>"Em lớp 6, không hiểu bước quy đồng mẫu số khi cộng phân số"</em> → AI giải đúng ngay!</div>
+          </div>
+          <div class="sb-prompt__note-side">Hỏi đúng<br>là bước đầu<br>để hiểu sâu!</div>
+        </div>
+
+        <!-- Các bước học tập -->
+        <div class="sb-steps-head">📚 Các bước học tập</div>
+        <div class="sb-steps">
+          <div class="sb-step" style="--stbg:#EFFBF6;--stn:#2FCBA6;">
+            <span class="sb-step__num">1</span>
+            <span class="sb-step__icon">🔍</span>
+            <div style="min-width:0;">
+              <div class="sb-step__title">Khám phá thắc mắc</div>
+              <div class="sb-step__sub">Em đang bối rối về điều gì? Diễn đạt ra xem!</div>
+            </div>
+            <button class="sb-arrow sb-step__arrow" onclick="qcStart()">→</button>
+          </div>
+          <div class="sb-step" style="--stbg:#EEF5FF;--stn:#4E8CFF;">
+            <span class="sb-step__num">2</span>
+            <span class="sb-step__icon">📝</span>
+            <div style="min-width:0;">
+              <div class="sb-step__title">Viết câu hỏi đầu tiên</div>
+              <div class="sb-step__sub">Buddy đo chất lượng câu hỏi (4 tiêu chí, 0–100 điểm)</div>
+            </div>
+            <button class="sb-arrow sb-arrow--sky sb-step__arrow" onclick="qcStart()">→</button>
+          </div>
+          <div class="sb-step" style="--stbg:#FFF1F6;--stn:#FF6B9D;">
+            <span class="sb-step__num">3</span>
+            <span class="sb-step__icon">🏆</span>
+            <div style="min-width:0;">
+              <div class="sb-step__title">Cải thiện &amp; nhận huy hiệu</div>
+              <div class="sb-step__sub">Buddy giúp viết lại câu hỏi hay hơn — rồi hỏi AI ngay!</div>
+            </div>
+            <button class="sb-arrow sb-arrow--rose sb-step__arrow" onclick="qcStart()">→</button>
           </div>
         </div>
-        <!-- 3 steps preview -->
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:12px 14px;border:2px solid #E8FFF5;box-shadow:0 3px 0 rgba(0,0,0,.05);">
-            <div style="width:34px;height:34px;border-radius:50%;background:var(--teal);color:white;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-            <div><div style="font-size:13px;font-weight:900;color:var(--text1);">Khám phá thắc mắc</div><div style="font-size:11px;color:var(--text2);font-weight:600;">Em đang bối rối về điều gì? Diễn đạt ra xem!</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:12px 14px;border:2px solid #E8F4FF;box-shadow:0 3px 0 rgba(0,0,0,.05);">
-            <div style="width:34px;height:34px;border-radius:50%;background:#1E90FF;color:white;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
-            <div><div style="font-size:13px;font-weight:900;color:var(--text1);">Viết câu hỏi đầu tiên</div><div style="font-size:11px;color:var(--text2);font-weight:600;">Buddy đo chất lượng câu hỏi (4 tiêu chí, 0–100 điểm)</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:12px 14px;border:2px solid #FFF0F5;box-shadow:0 3px 0 rgba(0,0,0,.05);">
-            <div style="width:34px;height:34px;border-radius:50%;background:#FF6B8A;color:white;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
-            <div><div style="font-size:13px;font-weight:900;color:var(--text1);">Cải thiện & nhận huy hiệu</div><div style="font-size:11px;color:var(--text2);font-weight:600;">Buddy giúp viết lại câu hỏi hay hơn — rồi hỏi AI ngay!</div></div>
-          </div>
-        </div>
-        <button onclick="qcStart()" class="qc-action-btn" style="background:linear-gradient(135deg,#1FCBA6,#13B392);color:white;box-shadow:0 6px 0 rgba(27,184,147,.4);font-size:16px;">
-          Bắt đầu học ngay! 🚀
-        </button>
+
+        <button onclick="qcStart()" class="sb-cta-bar">🚀 Bắt đầu học ngay! 🚀</button>
       </div>
 
       <!-- ══ SCREEN 1: KHÁM PHÁ THẮC MẮC ══ -->
@@ -1405,6 +1483,7 @@ setTimeout(function(){if(window._sbHideBoot)window._sbHideBoot();},4000); // an 
 </div>
 
 <script src="/assets/mathbuddy-kids.js?v=11"></script>
+<script src="/assets/app-v2.js?v=9"></script>
 
 <!-- Floating mascot đã được gỡ bỏ theo yêu cầu -->
 

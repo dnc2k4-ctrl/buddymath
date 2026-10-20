@@ -1,155 +1,372 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="sb-fixed">
 <head>
 <meta charset="UTF-8">
+<script src="/assets/stage-loader.js?v=1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
-<!-- Mobile-responsive baseline (đồng bộ mọi trang) -->
-<style>
-html{-webkit-text-size-adjust:100%;}
-html,body{overflow-x:hidden;max-width:100%;}
-img,svg,video{max-width:100%;height:auto;}
-button,a,label,input,select,textarea{touch-action:manipulation;}
-@media (max-width:768px){ input,select,textarea{font-size:16px !important;} }
-</style>
+<meta name="theme-color" content="#2FCBA6">
 <title>SmartBuddy · Quản trị</title>
 <link rel="icon" href="/images/logogiaodienmoi.jpg" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  /* Mobile-responsive baseline (đồng bộ mọi trang) */
+  html{-webkit-text-size-adjust:100%;}
+  html,body{max-width:100%;}
+  img,svg,video{max-width:100%;}
+  button,a,label,input,select,textarea{touch-action:manipulation;}
+  @media (max-width:768px){ input,select,textarea{font-size:16px !important;} }
+
+  /* ── biến tương thích JS inline (giữ nguyên JS cũ) ── */
   :root{
-    --bg:#0f172a; --card:#ffffff; --line:#e6ebf2;
-    --t1:#1e293b; --t2:#64748b; --t3:#94a3b8;
-    --teal:#2EC4A0; --blue:#4776E6; --red:#EF4444; --orange:#F39C12; --green:#22C55E; --purple:#8B5CF6;
+    --t1:var(--ink); --t2:var(--muted); --t3:var(--muted-2);
+    --teal:#2FCBA6; --blue:#4E8CFF; --red:#EF5B5B; --orange:#F5A623; --green:#22C55E; --purple:#A55EEA;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#eef2f7;color:var(--t1);min-height:100vh}
 
-  /* ── Login ── */
-  #login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,#1e3a8a,#0f766e);padding:20px}
-  .login-card{background:#fff;border-radius:20px;padding:34px 30px;width:100%;max-width:380px;
-    box-shadow:0 20px 60px rgba(0,0,0,.3)}
-  .login-logo{font-size:34px;text-align:center}
-  .login-title{font-size:22px;font-weight:800;text-align:center;margin-top:6px}
-  .login-sub{font-size:13px;color:var(--t2);text-align:center;margin:4px 0 22px}
-  .field{margin-bottom:14px}
-  .field label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:5px}
-  .field input{width:100%;padding:11px 13px;border:2px solid var(--line);border-radius:11px;
-    font-size:14px;font-family:inherit;outline:none;transition:border .15s}
-  .field input:focus{border-color:var(--teal)}
-  .btn{width:100%;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--teal),var(--blue));
-    color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
-  .btn:hover{opacity:.92}.btn:active{transform:scale(.98)}
-  .err{background:#fef2f2;color:var(--red);font-size:13px;font-weight:600;padding:9px 12px;
-    border-radius:9px;margin-bottom:12px;display:none}
-  .hint{font-size:11px;color:var(--t3);text-align:center;margin-top:14px;line-height:1.5}
-  .login-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:12px;font-weight:800}
-  .login-links a{color:var(--blue);text-decoration:none}
-  .login-links a:hover{text-decoration:underline}
+  .adm-layer{height:100%; min-height:0;}
 
-  /* ── Dashboard ── */
-  #app-view{display:none;max-width:1050px;margin:0 auto;padding:18px}
-  .topbar{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;
-    padding:14px 20px;box-shadow:0 4px 18px rgba(0,0,0,.06);margin-bottom:16px;flex-wrap:wrap}
-  .topbar h1{font-size:19px;font-weight:900}
-  .topbar .who{font-size:12px;color:var(--t2);font-weight:600}
-  .topbar a{color:var(--blue);font-size:13px;font-weight:800;text-decoration:none}
-  .topbar a:hover{text-decoration:underline}
-  .spacer{flex:1}
-  .btn-sm{padding:8px 14px;border:2px solid var(--line);border-radius:10px;background:#fff;
-    cursor:pointer;font-size:13px;font-weight:800;color:var(--t2);font-family:inherit}
-  .btn-sm.primary{background:linear-gradient(135deg,var(--teal),var(--blue));color:#fff;border:none}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
-  .stat{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 3px 12px rgba(0,0,0,.05)}
-  .stat .n{font-size:26px;font-weight:900}
-  .stat .l{font-size:12px;color:var(--t2);font-weight:700;margin-top:2px}
-  .toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-  .toolbar input{flex:1;min-width:180px;padding:10px 13px;border:2px solid var(--line);
-    border-radius:11px;font-size:14px;font-family:inherit;outline:none}
-  .toolbar select{padding:10px 12px;border:2px solid var(--line);border-radius:11px;font-family:inherit;font-size:13px}
-  .user{background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;
-    display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-  .user.locked{opacity:.7;border-color:#ffe0c0}
-  .ava{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
-    justify-content:center;color:#fff;font-weight:900;font-size:18px}
-  .u-main{flex:1;min-width:170px}
-  .u-name{font-weight:800;font-size:14.5px}
-  .u-email{font-size:12.5px;color:var(--t2);word-break:break-all}
-  .u-meta{font-size:11.5px;color:var(--t3);font-weight:600;margin-top:2px}
-  .badge{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:800;color:#fff}
-  .u-link{font-size:11.5px;font-weight:700;margin-top:3px}
+  /* ══════════════════════════ LOGIN (admin) ══════════════════════════ */
+  #login-view{
+    height:100%; display:flex; align-items:center; justify-content:center;
+    padding:clamp(12px,2vh,24px) clamp(14px,2vw,28px);
+  }
+  .adm-login{
+    position:relative; display:flex; flex-direction:column; align-items:center;
+    gap:clamp(8px,1.4vh,14px); width:min(100%,560px);
+  }
+  .adm-login__brand{display:flex; align-items:center; gap:10px; text-decoration:none}
+  .adm-login__brand img{
+    height:clamp(38px,5.4vh,52px); width:auto; border-radius:14px; background:#fff;
+    box-shadow:var(--sh-2);
+  }
+  .adm-login__brand b{
+    font-family:var(--font-head); font-weight:800; font-size:clamp(19px,2.7vh,28px); color:var(--mint-700);
+  }
+  .adm-login__brand span{font-size:var(--fs-xs); font-weight:800; color:var(--muted); letter-spacing:.04em}
+
+  .login-card{
+    position:relative; width:100%; padding:clamp(20px,3.1vh,34px) clamp(20px,2.2vw,32px);
+    overflow:visible;
+  }
+  .login-logo{
+    width:clamp(54px,7.4vh,74px); height:clamp(54px,7.4vh,74px); margin:0 auto clamp(6px,1vh,10px);
+    display:flex; align-items:center; justify-content:center; font-size:clamp(26px,3.6vh,38px);
+    border-radius:clamp(16px,2.3vh,22px); background:var(--mint-soft); border:1px solid var(--mint-200);
+    box-shadow:var(--sh-1);
+  }
+  .login-title{
+    font-family:var(--font-head); font-weight:800; text-align:center; color:var(--ink);
+    font-size:clamp(22px,3.1vh,32px); line-height:1.15;
+  }
+  .login-sub{
+    font-size:var(--fs-sm); font-weight:700; color:var(--muted); text-align:center;
+    margin:clamp(3px,.5vh,6px) 0 clamp(12px,1.9vh,20px); line-height:1.45;
+  }
+  .err{
+    display:none; background:var(--danger-bg); color:var(--danger); border:1px solid #FFD6D6;
+    font-size:var(--fs-sm); font-weight:800; padding:clamp(7px,1vh,10px) clamp(10px,1vw,14px);
+    border-radius:12px; margin-bottom:clamp(8px,1.2vh,12px); line-height:1.4;
+  }
+  .field{margin-bottom:clamp(9px,1.3vh,14px)}
+  .field > label{
+    display:block; font-size:var(--fs-sm); font-weight:900; color:var(--ink-2);
+    margin-bottom:clamp(4px,.6vh,7px);
+  }
+  .field .sb-input{height:clamp(44px,5.6vh,56px)}
+  .login-card .btn{
+    width:100%; margin-top:clamp(3px,.5vh,6px); border:0; cursor:pointer;
+    font-family:var(--font-body); font-weight:900; font-size:clamp(15px,2vh,19px);
+    color:#fff; background:var(--mint-grad); border-radius:16px;
+    padding:clamp(11px,1.75vh,16px) 20px; box-shadow:var(--sh-mint);
+    transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+  }
+  .login-card .btn:hover{transform:translateY(-1px); box-shadow:0 16px 32px rgba(24,190,156,.36)}
+  .login-card .btn:active{transform:translateY(0)}
+  .login-card .btn:disabled{opacity:.7; cursor:default; transform:none}
+  .hint{
+    font-size:var(--fs-xs); color:var(--muted); text-align:center; line-height:1.55;
+    margin-top:clamp(10px,1.5vh,16px);
+    background:var(--mint-50); border:1px solid var(--mint-100); border-radius:12px;
+    padding:clamp(7px,1vh,10px) clamp(9px,.9vw,13px);
+  }
+  .hint b{color:var(--mint-700)}
+  .login-links{
+    display:flex; justify-content:center; flex-wrap:wrap; gap:clamp(5px,.7vw,9px);
+    margin-top:clamp(9px,1.3vh,14px);
+  }
+  .login-links a{
+    text-decoration:none; font-weight:800; font-size:var(--fs-xs); color:var(--ink-3);
+    background:#fff; border:1px solid var(--line-2); border-radius:var(--r-pill);
+    padding:4px 11px; box-shadow:var(--sh-1);
+  }
+  .login-links a:hover{background:var(--mint-50); color:var(--mint-700)}
+  .adm-login__deco{
+    position:absolute; right:clamp(-130px,-6vw,-58px); bottom:clamp(6px,3.5vh,50px);
+    height:clamp(96px,16vh,158px); width:auto; object-fit:contain; pointer-events:none;
+    filter:drop-shadow(0 14px 22px rgba(16,80,70,.18));
+  }
+
+  /* ══════════════════════════ DASHBOARD (admin) ══════════════════════════ */
+  #app-view{display:none; height:100%}
+  .adm-shell{
+    height:100%; min-height:0; display:flex; flex-direction:column;
+    gap:clamp(8px,1.2vh,13px);
+    padding:clamp(10px,1.7vh,18px) clamp(14px,1.9vw,30px);
+  }
+  /* header */
+  .adm-top{
+    flex:0 0 auto; display:flex; align-items:center; gap:clamp(9px,1.2vw,16px);
+    padding:clamp(7px,1.15vh,13px) clamp(13px,1.5vw,22px);
+  }
+  .adm-top__id{display:flex; align-items:center; gap:clamp(9px,1vw,14px); min-width:0}
+  .adm-top__txt{min-width:0}
+  .adm-top__txt h1{white-space:nowrap}
+  .adm-desc{
+    font-size:var(--fs-xs); font-weight:700; color:var(--muted); line-height:1.3;
+    margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .who{
+    font-size:var(--fs-xs); font-weight:900; color:var(--mint-700); line-height:1.3;
+    margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .adm-links{display:flex; align-items:center; gap:clamp(4px,.5vw,7px); margin-left:auto; flex-wrap:wrap}
+  .adm-links a{
+    text-decoration:none; font-weight:800; font-size:var(--fs-xs); color:var(--ink-3);
+    background:var(--mint-50); border:1px solid var(--line-2); border-radius:var(--r-pill);
+    padding:5px 11px; white-space:nowrap;
+  }
+  .adm-links a:hover{background:var(--mint-100); color:var(--mint-700)}
+  .adm-top__acts{display:flex; align-items:center; gap:clamp(5px,.6vw,8px); flex:0 0 auto}
+  .adm-top__acts .sb-btn{font-size:var(--fs-xs); padding:clamp(8px,1.2vh,11px) clamp(11px,1vw,16px); border-radius:12px}
+
+  /* stats */
+  .stats{
+    flex:0 0 auto; display:grid; grid-template-columns:repeat(8,minmax(0,1fr));
+    gap:clamp(6px,1vh,11px);
+  }
+  .stat{
+    background:#fff; border:1px solid rgba(47,203,166,.12); border-radius:clamp(12px,1.6vh,16px);
+    padding:clamp(7px,1.15vh,12px) clamp(9px,1vw,15px); box-shadow:var(--sh-1); min-width:0;
+  }
+  .stat .n{
+    font-family:var(--font-head); font-weight:800; line-height:1.1;
+    font-size:clamp(18px,2.9vh,30px);
+  }
+  .stat .l{
+    font-size:var(--fs-xs); color:var(--muted); font-weight:800; margin-top:1px;
+    line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* toolbar */
+  .toolbar{
+    flex:0 0 auto; display:flex; align-items:center; gap:clamp(7px,1.1vw,13px);
+    background:#fff; border:1px solid rgba(47,203,166,.12); border-radius:16px;
+    padding:clamp(6px,1vh,10px) clamp(8px,1vw,14px); box-shadow:var(--sh-1);
+  }
+  .toolbar .sb-input{flex:1 1 auto; min-width:0; height:clamp(38px,4.9vh,48px); border-radius:12px}
+  .adm-select{
+    position:relative; display:flex; align-items:center; gap:6px; flex:0 0 auto;
+    height:clamp(38px,4.9vh,48px); padding:0 clamp(8px,.8vw,12px);
+    background:var(--mint-50); border:1.6px solid var(--line-2); border-radius:12px;
+  }
+  .adm-select span{font-size:var(--fs-sm); opacity:.8; line-height:1}
+  .adm-select select{
+    border:0; outline:0; background:transparent; font-family:var(--font-body);
+    font-size:var(--fs-sm); font-weight:800; color:var(--ink-2); cursor:pointer;
+    max-width:clamp(120px,11vw,180px);
+  }
+  .adm-select select:focus{color:var(--mint-700)}
+
+  /* list card */
+  .adm-list-card{
+    flex:1 1 auto; min-height:0; display:flex; flex-direction:column;
+    gap:clamp(5px,.8vh,9px); padding:clamp(9px,1.4vh,15px) clamp(10px,1.2vw,18px);
+  }
+  .adm-list-head{flex:0 0 auto; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+  .adm-hint{font-size:var(--fs-xs); font-weight:800; color:var(--muted-2); margin-left:auto}
+  #list{flex:1 1 auto; min-height:0; border-radius:12px}
+  #list .user:last-child{border-bottom:0}
+
+  /* user rows (markup do JS sinh ra — giữ nguyên) */
+  .user{
+    display:flex; align-items:center; gap:clamp(8px,1vw,14px); flex-wrap:nowrap;
+    padding:clamp(4px,.7vh,7px) clamp(6px,.7vw,10px);
+    border-bottom:1px solid var(--line); border-radius:12px; min-width:0;
+  }
+  .user:hover{background:var(--mint-50)}
+  .user.locked{background:var(--amber-bg); border-bottom-color:#F7E3BC}
+  .user.locked:hover{background:#FFF1D6}
+  .ava{
+    width:clamp(32px,4.6vh,44px); height:clamp(32px,4.6vh,44px); border-radius:50%; flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center; color:#fff;
+    font-family:var(--font-head); font-weight:800; font-size:clamp(14px,2vh,19px);
+    box-shadow:0 4px 10px rgba(16,80,70,.14);
+  }
+  .u-main{flex:1 1 auto; min-width:0}
+  .u-name{font-weight:900; font-size:var(--fs-sm); color:var(--ink); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .u-email{font-size:var(--fs-xs); color:var(--muted); font-weight:700; word-break:break-all; line-height:1.25}
+  .u-meta{font-size:var(--fs-xs); color:var(--muted-2); font-weight:700; line-height:1.4}
+  .badge{
+    display:inline-block; padding:1px 8px; border-radius:var(--r-pill);
+    font-size:var(--fs-xs); font-weight:900; color:#fff; letter-spacing:.01em;
+  }
+  .u-link{font-size:var(--fs-xs); font-weight:800; color:var(--mint-700); line-height:1.35;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .u-link.warn{color:var(--orange)}
-  .acts{display:flex;gap:6px;flex-wrap:wrap}
-  .acts button{padding:7px 10px;border:2px solid var(--line);border-radius:9px;background:#fff;
-    cursor:pointer;font-size:12px;font-weight:800;font-family:inherit}
-  .empty{text-align:center;padding:30px;color:var(--t3);font-size:14px}
-  .spin{text-align:center;padding:40px;color:var(--t2)}
+  .acts{display:flex; align-items:center; gap:4px; flex:0 0 auto; flex-wrap:nowrap}
+  .acts button{
+    padding:clamp(5px,.7vh,7px) clamp(7px,.6vw,10px);
+    border:1.6px solid var(--line-2); border-radius:10px; background:#fff; cursor:pointer;
+    font-family:var(--font-body); font-size:var(--fs-xs); font-weight:900; color:var(--ink-3);
+    line-height:1.1; transition:transform .14s ease, background .14s ease, border-color .14s ease;
+    white-space:nowrap;
+  }
+  .acts button:hover{transform:translateY(-1px); background:var(--mint-50); border-color:var(--mint-300)}
+  .empty{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    padding:clamp(16px,3vh,34px); color:var(--muted); font-size:var(--fs-sm); font-weight:800; text-align:center;
+  }
+  .spin{padding:clamp(14px,2.6vh,30px); text-align:center; color:var(--muted); font-size:var(--fs-sm); font-weight:800}
+  .spin::before{content:"⏳ "; }
+
+  /* ══════════════════════════ responsive ══════════════════════════ */
+  @media (max-width:1350px){
+    .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .adm-links{display:none}
+  }
+  @media (max-width:1100px){
+    .adm-login__deco{display:none}
+  }
+  @media (max-width:900px){
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .adm-top{flex-wrap:wrap}
+  }
 </style>
+<link rel="stylesheet" href="/assets/mint-v2.css">
 </head>
-<body>
+<body class="sb-page sb-decorated">
 
-<!-- ════════ LOGIN ════════ -->
-<div id="login-view">
-  <div class="login-card">
-    <div class="login-logo">🛡️</div>
-    <div class="login-title">Trang Quản Trị</div>
-    <div class="login-sub">SmartBuddy · dành cho quản trị viên</div>
-    <div class="err" id="login-err"></div>
-    <form id="login-form">
-      <div class="field">
-        <label>Email</label>
-        <input id="in-email" type="email" placeholder="admin@smartbuddy.vn" autocomplete="username" required>
-      </div>
-      <div class="field">
-        <label>Mật khẩu</label>
-        <input id="in-pass" type="password" placeholder="••••••••" autocomplete="current-password" required>
-      </div>
-      <button class="btn" type="submit" id="login-btn">Đăng nhập →</button>
-    </form>
-    <div class="hint">Chỉ tài khoản có vai trò <b>admin</b> mới vào được.<br>Dùng email quản trị và mật khẩu đã cấu hình cho ứng dụng.</div>
-    <nav class="login-links" aria-label="Các khu vực SmartBuddy">
-      <a href="/">Trang chủ</a>
-      <a href="/app">Học sinh</a>
-      <a href="/parent-portal">Phụ huynh</a>
-    </nav>
-  </div>
-</div>
+<div class="sb-layer adm-layer">
 
-<!-- ════════ DASHBOARD ════════ -->
-<div id="app-view">
-  <div class="topbar">
-    <div style="font-size:24px">🛡️</div>
-    <div>
-      <h1>Quản lý người dùng</h1>
-      <div class="who" id="who"></div>
+  <span class="sb-star" aria-hidden="true" style="left:2.2%;top:12%">✦</span>
+  <span class="sb-star" aria-hidden="true" style="right:2.6%;bottom:9%">✦</span>
+  <span class="sb-plane" aria-hidden="true" style="left:3%;bottom:14%">✈</span>
+
+  <!-- ════════ LOGIN ════════ -->
+  <div id="login-view">
+    <div class="adm-login">
+      <a class="adm-login__brand" href="/">
+        <img src="/images/logogiaodienmoi.jpg" alt="SmartBuddy" onerror="this.style.display='none'">
+        <span>
+          <b>SmartBuddy</b><br>
+          <span>Khu vực quản trị</span>
+        </span>
+      </a>
+
+      <div class="login-card sb-card">
+        <div class="login-logo" aria-hidden="true">🛡️</div>
+        <div class="login-title">Trang Quản Trị</div>
+        <div class="login-sub">SmartBuddy · dành cho quản trị viên</div>
+
+        <div class="err" id="login-err"></div>
+
+        <form id="login-form">
+          <div class="field">
+            <label for="in-email">Email</label>
+            <div class="sb-input">
+              <span class="sb-input__icon" aria-hidden="true">✉️</span>
+              <input id="in-email" type="email" placeholder="admin@smartbuddy.vn" autocomplete="username" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="in-pass">Mật khẩu</label>
+            <div class="sb-input">
+              <span class="sb-input__icon" aria-hidden="true">🔒</span>
+              <input id="in-pass" type="password" placeholder="••••••••" autocomplete="current-password" required>
+            </div>
+          </div>
+          <button class="btn" type="submit" id="login-btn">Đăng nhập →</button>
+        </form>
+
+        <div class="hint">Chỉ tài khoản có vai trò <b>admin</b> mới vào được.<br>Dùng email quản trị và mật khẩu đã cấu hình cho ứng dụng.</div>
+
+        <nav class="login-links" aria-label="Các khu vực SmartBuddy">
+          <a href="/">🏠 Trang chủ</a>
+          <a href="/app">🎓 Học sinh</a>
+          <a href="/parent-portal">👨‍👩‍👧 Phụ huynh</a>
+        </nav>
+      </div>
+
+      <img class="adm-login__deco" src="/images/mascot/laptop.png" alt="" aria-hidden="true" onerror="this.style.display='none'">
     </div>
-    <div class="spacer"></div>
-    <a href="/">Trang chủ</a>
-    <a href="/app">Khu vực học sinh</a>
-    <a href="/parent-portal">Khu vực phụ huynh</a>
-    <button class="btn-sm primary" onclick="openCreate()">＋ Tạo tài khoản</button>
-    <button class="btn-sm" onclick="loadAll()">🔄 Tải lại</button>
-    <button class="btn-sm" onclick="logout()">Đăng xuất</button>
   </div>
 
-  <div class="stats" id="stats"></div>
+  <!-- ════════ DASHBOARD ════════ -->
+  <div id="app-view">
+    <div class="adm-shell">
 
-  <div class="toolbar">
-    <input id="search" type="text" placeholder="🔎 Tìm theo tên hoặc email..." oninput="render()">
-    <select id="filter-role" onchange="render()">
-      <option value="">Tất cả vai trò</option>
-      <option value="student">Học sinh</option>
-      <option value="parent">Phụ huynh</option>
-      <option value="admin">Quản trị</option>
-    </select>
-    <select id="filter-plan" onchange="render()">
-      <option value="">Tất cả gói</option>
-      <option value="free">Miễn phí</option>
-      <option value="standard">Standard (199k)</option>
-      <option value="premium">Premium (299k)</option>
-    </select>
+      <header class="adm-top sb-card">
+        <div class="adm-top__id">
+          <div class="sb-tile sb-tile--sky" aria-hidden="true">🛡️</div>
+          <div class="adm-top__txt">
+            <h1 class="sb-h2">Quản lý người dùng</h1>
+            <p class="adm-desc">Học sinh, phụ huynh, gói học và quyền truy cập</p>
+            <div class="who" id="who"></div>
+          </div>
+        </div>
+        <nav class="adm-links" aria-label="Các khu vực SmartBuddy">
+          <a href="/">🏠 Trang chủ</a>
+          <a href="/app">🎓 Khu vực học sinh</a>
+          <a href="/parent-portal">👨‍👩‍👧 Khu vực phụ huynh</a>
+        </nav>
+        <div class="adm-top__acts">
+          <button class="sb-btn sb-btn--primary" onclick="openCreate()">＋ Tạo tài khoản</button>
+          <button class="sb-btn sb-btn--ghost" onclick="loadAll()">🔄 Tải lại</button>
+          <button class="sb-btn sb-btn--danger" onclick="logout()">Đăng xuất</button>
+        </div>
+      </header>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="toolbar">
+        <label class="sb-input">
+          <span class="sb-input__icon" aria-hidden="true">🔎</span>
+          <input id="search" type="text" placeholder="Tìm theo tên hoặc email..." oninput="render()" aria-label="Tìm người dùng">
+        </label>
+        <div class="adm-select">
+          <span aria-hidden="true">🎭</span>
+          <select id="filter-role" onchange="render()" aria-label="Lọc theo vai trò">
+            <option value="">Tất cả vai trò</option>
+            <option value="student">Học sinh</option>
+            <option value="parent">Phụ huynh</option>
+            <option value="admin">Quản trị</option>
+          </select>
+        </div>
+        <div class="adm-select">
+          <span aria-hidden="true">💳</span>
+          <select id="filter-plan" onchange="render()" aria-label="Lọc theo gói">
+            <option value="">Tất cả gói</option>
+            <option value="free">Miễn phí</option>
+            <option value="standard">Standard (199k)</option>
+            <option value="premium">Premium (299k)</option>
+          </select>
+        </div>
+      </div>
+
+      <section class="adm-list-card sb-card">
+        <div class="adm-list-head">
+          <h2 class="sb-h3">Danh sách tài khoản</h2>
+          <span class="adm-hint">Danh sách dài cuộn trong khung</span>
+        </div>
+        <div id="list" class="sb-inner-scroll"><div class="spin">Đang tải...</div></div>
+      </section>
+
+    </div>
   </div>
 
-  <div id="list"><div class="spin">Đang tải...</div></div>
 </div>
 
 <script>

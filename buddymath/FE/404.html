@@ -1,41 +1,140 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="sb-fixed">
 <head>
 <meta charset="UTF-8">
+<script src="/assets/stage-loader.js?v=1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2FCBA6">
 <meta name="robots" content="noindex,nofollow">
 <title>404 · Không tìm thấy trang — SmartBuddy</title>
 <link rel="icon" href="/images/logogiaodienmoi.jpg" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Nunito',system-ui,Arial,sans-serif;min-height:100vh;display:flex;
-    align-items:center;justify-content:center;padding:24px;
-    background:linear-gradient(170deg,#DFF4EF 0%,#E8F4FB 45%,#F1F8FF 72%,#FFFFFF 100%);color:#12314A}
-  .box{max-width:460px;text-align:center;background:#fff;border-radius:24px;padding:40px 28px;
-    box-shadow:0 26px 60px rgba(18,49,74,.14);border:1px solid #EEF4F2}
-  .emoji{font-size:64px;line-height:1}
-  .code{font-size:66px;font-weight:900;color:#1FCBA6;margin:6px 0}
-  h1{font-size:22px;margin-bottom:8px}
-  p{color:#5A6890;font-weight:600;line-height:1.6;margin-bottom:22px}
-  a.btn{display:inline-block;padding:13px 26px;border-radius:14px;text-decoration:none;font-weight:900;
-    color:#fff;background:linear-gradient(135deg,#1FCBA6,#13B392);box-shadow:0 10px 22px rgba(19,179,146,.32)}
-  a.btn:hover{transform:translateY(-2px)}
-  .links{display:flex;justify-content:center;gap:10px 16px;flex-wrap:wrap;margin-top:20px;font-size:13px;font-weight:800}
-  .links a{color:#0E8F79;text-decoration:none}
-  .links a:hover{text-decoration:underline}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  .nf-layer{
+    height:100%; min-height:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:clamp(8px,1.3vh,14px);
+    padding:clamp(10px,2vh,22px) clamp(14px,2vw,30px);
+  }
+  .nf-brand{
+    display:flex; align-items:center; gap:9px; text-decoration:none; flex:0 0 auto;
+  }
+  .nf-brand img{height:clamp(32px,4.6vh,44px); width:auto; border-radius:11px; box-shadow:var(--sh-1); background:#fff}
+  .nf-brand b{font-family:var(--font-head); font-size:clamp(17px,2.4vh,26px); font-weight:800; color:var(--mint-700)}
+  .nf-brand span{font-size:var(--fs-sm); font-weight:800; color:var(--muted); letter-spacing:.03em}
+
+  .nf-card{
+    position:relative; flex:0 1 auto; min-height:0;
+    width:clamp(620px,58vw,940px); max-width:100%;
+    display:grid; grid-template-columns:minmax(0,1fr) clamp(180px,19vw,280px);
+    align-items:center; gap:clamp(12px,2vw,34px);
+    padding:clamp(24px,4vh,46px) clamp(24px,2.8vw,44px) clamp(20px,3.2vh,38px);
+    overflow:visible;
+  }
+  /* mascot đặt nổi phía trên góc phải card */
+  .nf-mascot{
+    position:absolute; right:clamp(18px,2.6vw,40px); top:0; transform:translateY(-58%);
+    height:clamp(112px,19vh,188px); width:auto; object-fit:contain; pointer-events:none;
+    filter:drop-shadow(0 16px 24px rgba(16,80,70,.2));
+    animation:nf-float 5.5s ease-in-out infinite;
+  }
+  @keyframes nf-float{0%,100%{transform:translateY(-58%)}50%{transform:translateY(-64%)}}
+
+  .nf-copy{min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:clamp(7px,1.15vh,12px)}
+  .nf-code{
+    font-family:var(--font-head); font-weight:800; line-height:.88;
+    font-size:clamp(66px,15.5vh,152px); letter-spacing:-3px;
+    background:linear-gradient(135deg,#4FDDBB 0%,#1DB894 55%,#11917A 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    -webkit-text-fill-color:transparent;
+  }
+  .nf-title{font-size:clamp(24px,3.85vh,44px); line-height:1.12}
+  .nf-sub{font-size:clamp(14px,1.9vh,19px); font-weight:700; color:var(--muted); line-height:1.55; max-width:38ch}
+  .nf-actions{display:flex; flex-wrap:wrap; gap:clamp(9px,1.4vh,14px); margin-top:clamp(4px,.8vh,9px)}
+  .nf-actions .sb-btn{padding:clamp(10px,1.75vh,16px) clamp(17px,1.6vw,26px); font-size:clamp(13.5px,1.75vh,18px)}
+  .nf-links{
+    display:flex; align-items:center; flex-wrap:wrap; gap:clamp(6px,1vw,12px);
+    margin-top:clamp(3px,.7vh,8px); font-size:var(--fs-sm); font-weight:800;
+  }
+  .nf-links a{
+    color:var(--mint-700); text-decoration:none; background:#fff; border:1px solid var(--line-2);
+    border-radius:var(--r-pill); padding:5px 13px; box-shadow:var(--sh-1);
+  }
+  .nf-links a:hover{background:var(--mint-50)}
+  .nf-sep{color:var(--muted-2); font-weight:800}
+
+  /* minh hoạ bên phải: vòng tròn mint + dấu chấm hỏi */
+  .nf-art{
+    position:relative; aspect-ratio:1; width:100%; max-width:clamp(180px,19vw,280px);
+    display:flex; align-items:center; justify-content:center; justify-self:end;
+    border-radius:50%; background:var(--mint-soft); border:1px solid rgba(255,255,255,.8);
+    box-shadow:inset 0 0 0 10px rgba(255,255,255,.6), var(--sh-2);
+  }
+  .nf-art::before{
+    content:""; position:absolute; inset:12%; border-radius:50%;
+    border:2px dashed rgba(29,184,148,.45);
+  }
+  .nf-art span{font-family:var(--font-head); font-weight:800; font-size:clamp(56px,11.5vh,112px); color:var(--mint-500); line-height:1}
+  .nf-art i{position:absolute; color:#FFD25B; font-style:normal; font-weight:900; font-size:clamp(12px,1.8vh,20px); opacity:.95}
+  .nf-foot{font-size:var(--fs-sm); font-weight:700; color:var(--muted-2); line-height:1.4; text-align:center; flex:0 0 auto}
+  .nf-foot a{color:var(--mint-600); font-weight:900; text-decoration:none}
+  .nf-foot a:hover{text-decoration:underline}
+
+  @media (max-width:860px){
+    .nf-card{grid-template-columns:minmax(0,1fr); width:min(560px,100%)}
+    .nf-art{display:none}
+    .nf-mascot{height:clamp(88px,15vh,140px)}
+  }
 </style>
+<link rel="stylesheet" href="/assets/mint-v2.css">
 </head>
-<body>
-  <div class="box">
-    <div class="emoji">🧭</div>
-    <div class="code">404</div>
-    <h1>Ối! Không tìm thấy trang này</h1>
-    <p>Có thể đường dẫn bị sai hoặc trang đã được chuyển đi. Buddy sẽ đưa bạn về nhà nhé!</p>
-    <a class="btn" href="/">← Về trang chủ</a>
-    <nav class="links" aria-label="Các khu vực SmartBuddy">
-      <a href="/app">Học sinh</a>
-      <a href="/parent-portal">Phụ huynh</a>
-    </nav>
-  </div>
+<body class="sb-page sb-decorated">
+<div class="sb-layer nf-layer">
+
+  <span class="sb-star" aria-hidden="true" style="left:12%;top:20%">✦</span>
+  <span class="sb-star" aria-hidden="true" style="left:24%;bottom:22%;font-size:clamp(8px,1.1vh,13px)">✦</span>
+  <span class="sb-star" aria-hidden="true" style="right:9%;top:26%;font-size:clamp(9px,1.3vh,15px)">✦</span>
+  <span class="sb-star" aria-hidden="true" style="right:18%;bottom:16%;font-size:clamp(7px,1vh,12px)">✦</span>
+  <span class="sb-plane" aria-hidden="true" style="left:8%;top:34%">✈</span>
+  <span class="sb-plane" aria-hidden="true" style="right:12%;bottom:26%;transform:rotate(16deg);font-size:clamp(14px,2.4vh,28px)">✈</span>
+
+  <a class="nf-brand" href="/">
+    <img src="/images/logogiaodienmoi.jpg" alt="SmartBuddy" onerror="this.style.display='none'">
+    <b>SmartBuddy</b>
+    <span>Học thông minh · Tiến vững vàng</span>
+  </a>
+
+  <main class="sb-card nf-card">
+    <img class="nf-mascot" src="/images/mascot/search.png" alt="Buddy đang tìm trang" onerror="this.style.display='none'">
+    <div class="nf-copy">
+      <div class="nf-code">404</div>
+      <h1 class="sb-h1 nf-title">Ôi! Trang này không tồn tại</h1>
+      <p class="nf-sub">Có thể đường dẫn bị sai hoặc trang đã được chuyển đi. Buddy sẽ đưa bạn về nhà nhé!</p>
+      <div class="nf-actions">
+        <a class="sb-btn sb-btn--primary sb-btn--lg" href="/">🏠 Về trang chủ</a>
+        <a class="sb-btn sb-btn--ghost" href="/app">Vào khu vực học sinh</a>
+      </div>
+      <nav class="nf-links" aria-label="Các khu vực SmartBuddy">
+        <a href="/app">Học sinh</a>
+        <span class="nf-sep">·</span>
+        <a href="/parent-portal">Phụ huynh</a>
+        <span class="nf-sep">·</span>
+        <a href="/terms">Điều khoản</a>
+        <span class="nf-sep">·</span>
+        <a href="/privacy">Bảo mật</a>
+      </nav>
+    </div>
+    <div class="nf-art" aria-hidden="true">
+      <i style="left:10%;top:16%">✦</i>
+      <i style="right:12%;bottom:18%;font-size:clamp(9px,1.4vh,16px)">✦</i>
+      <span>?</span>
+    </div>
+  </main>
+
+  <p class="nf-foot">© 2026 SmartBuddy — Học thông minh, Tiến vững vàng</p>
+</div>
 </body>
 </html>

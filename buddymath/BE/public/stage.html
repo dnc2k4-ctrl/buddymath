@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>SmartBuddy</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#E9FBF5}
+  #sb-stage-wrap{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(1200px 700px at 20% -10%, #F2FDFA 0%, rgba(242,253,250,0) 60%),
+      radial-gradient(900px 520px at 94% 4%, #E6FAF3 0%, rgba(230,250,243,0) 58%),
+      linear-gradient(168deg,#E9FBF5 0%,#E4F9F1 44%,#F5FDFB 100%);
+  }
+  #sb-stage-frame{
+    width:1672px;height:941px;border:0;display:block;background:#fff;
+    transform-origin:center center;
+    box-shadow:0 30px 80px rgba(16,80,70,.10), 0 0 0 1px rgba(47,203,166,.08);
+  }
+</style>
+</head>
+<body>
+<div id="sb-stage-wrap"><iframe id="sb-stage-frame" allow="camera; microphone; clipboard-write; fullscreen"></iframe></div>
+<script>
+(function () {
+  var W = 1672, H = 941;
+  var params = new URLSearchParams(location.search);
+  var to = params.get('to') || '/';
+  if (to.charAt(0) !== '/') to = '/' + to;
+  var sep = to.indexOf('?') === -1 ? '?' : '&';
+  var src = to + sep + 'embed=1';
+
+  var frame = document.getElementById('sb-stage-frame');
+  var wrap = document.getElementById('sb-stage-wrap');
+
+  function fit() {
+    var s = Math.min(window.innerWidth / W, window.innerHeight / H);
+    frame.style.transform = 'scale(' + s + ')';
+    wrap.style.setProperty('--sb-scale', s);
+  }
+  frame.addEventListener('load', function () {
+    try { history.replaceState(null, '', to); } catch (e) { }
+    // sau replaceState, hash/query vẫn giữ cho lần refresh (loader sẽ dựng lại stage)
+  });
+  frame.src = src;
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', fit);
+})();
+</script>
+</body>
+</html>

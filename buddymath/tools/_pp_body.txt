@@ -1,0 +1,253 @@
+<body class="sb-page sb-decorated">
+
+<!-- Lớp trang trí nền (mây/lá do .sb-decorated, thêm sao + máy bay giấy) -->
+<div class="sb-decor" aria-hidden="true">
+  <span class="sb-star" style="left:44%;top:15%">✦</span>
+  <span class="sb-star" style="left:71%;top:8%;font-size:clamp(7px,1vh,11px)">✦</span>
+  <span class="sb-star" style="right:7%;top:31%;font-size:clamp(7px,1.1vh,12px)">✦</span>
+  <span class="sb-star" style="left:34%;bottom:14%;font-size:clamp(6px,.9vh,10px)">✦</span>
+  <span class="sb-plane" style="right:8.5%;top:21%">✈</span>
+</div>
+
+<!-- Header -->
+<header class="header sb-layer">
+  <div class="pp-brand">
+    <div class="pp-logo"><img src="/images/taodang1.png" alt="SmartBuddy" onerror="this.parentNode.textContent='🤖'"></div>
+    <div class="pp-brand-txt">
+      <div class="pp-wordmark">SmartBuddy</div>
+      <div class="pp-tagline">HỌC THÔNG MINH · TIẾN VỮNG VÀNG</div>
+    </div>
+  </div>
+  <div class="parent-account-wrap" id="parent-account-wrap">
+    <button class="pp-user-pill" id="parent-account-trigger" type="button" aria-label="Mở menu cổng phụ huynh và tài khoản" aria-haspopup="menu" aria-expanded="false" onclick="toggleParentAccountMenu()">
+      <span class="pp-avatar" aria-hidden="true">
+        <svg viewBox="0 0 40 40" role="presentation" focusable="false">
+          <defs><clipPath id="pp-avatar-clip"><circle cx="20" cy="20" r="20"/></clipPath></defs>
+          <g clip-path="url(#pp-avatar-clip)">
+            <rect width="40" height="40" fill="#EDF9CF"/>
+            <path d="M20 26.6c-7 0-11.4 3.6-12.4 8.4h24.8c-1-4.8-5.4-8.4-12.4-8.4z" fill="#5FAFEF"/>
+            <path d="M20 26.6c-2.4 0-4.3 1-4.3 1l4.3 4.4 4.3-4.4s-1.9-1-4.3-1z" fill="#FFFFFF"/>
+            <circle cx="20" cy="17.4" r="8.6" fill="#FFD9B6"/>
+            <path d="M10.4 17.2c0-6.6 4.4-10.4 9.6-10.4s9.6 3.8 9.6 10.4c-2.1-3.6-5.2-5-9.6-5s-7.5 1.4-9.6 5z" fill="#3A2A22"/>
+            <circle cx="16.6" cy="17.6" r="1.2" fill="#2A2320"/>
+            <circle cx="23.4" cy="17.6" r="1.2" fill="#2A2320"/>
+            <path d="M17.3 21.1c1.5 1.4 3.9 1.4 5.4 0" stroke="#C4703F" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          </g>
+        </svg>
+      </span>
+      <span id="parent-name">Phụ Huynh</span>
+      <span class="pp-caret" aria-hidden="true">▾</span>
+    </button>
+    <div class="parent-account-menu" id="parent-account-menu" role="menu" aria-label="Menu tài khoản phụ huynh" hidden>
+      <div class="parent-account-menu-head">
+        <div class="parent-account-menu-name" id="parent-menu-name">Phụ huynh</div>
+        <div class="parent-account-menu-email" id="parent-menu-email"></div>
+      </div>
+      <button type="button" onclick="openParentGuide()" role="menuitem">📘 Hướng dẫn và mẹo</button>
+      <button type="button" onclick="location.href='/'" role="menuitem">🎒 Mở cổng học sinh</button>
+      <button type="button" onclick="logout()" role="menuitem">🚪 Đăng xuất</button>
+    </div>
+  </div>
+</header>
+
+<div id="parent-plan-expiry-notice" role="alert" aria-live="assertive" style="display:none;position:fixed;top:84px;left:50%;transform:translateX(-50%);z-index:10015;width:min(760px,calc(100vw - 24px));padding:14px 16px;border:1.5px solid #F6DFA6;border-radius:16px;background:#FFFBF0;box-shadow:0 16px 40px rgba(30,50,70,.18);color:#5A4318;">
+  <div style="display:flex;align-items:flex-start;gap:12px;">
+    <div style="flex:1;min-width:0;">
+      <div id="parent-plan-expiry-title" style="font-weight:900;font-size:15px;line-height:1.4;"></div>
+      <div id="parent-plan-expiry-message" style="margin-top:3px;font-size:13px;line-height:1.5;overflow-wrap:anywhere;"></div>
+      <div id="parent-plan-expiry-actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
+    </div>
+    <button type="button" onclick="dismissParentPlanExpiryNotice()" aria-label="Đóng thông báo gia hạn" style="flex:0 0 auto;border:0;background:transparent;color:#765D2B;font-size:20px;cursor:pointer;">×</button>
+  </div>
+</div>
+
+<div class="pp-layout sb-layer">
+  <!-- ── Sidebar ── -->
+  <aside class="pp-side">
+    <div class="pp-side-top">
+      <div class="pp-label"><span class="pp-label-ico" aria-hidden="true">👥</span>Con em tôi</div>
+      <div id="children-list" class="pp-children"><div class="loading-spinner"></div></div>
+    </div>
+
+    <div class="pp-side-bottom">
+      <div class="pp-label"><span class="pp-label-ico" aria-hidden="true">🔗</span>Liên kết tài khoản học sinh</div>
+
+      <div class="pp-link-card">
+        <div class="pp-link-title"><span aria-hidden="true">💡</span>Dùng email học sinh</div>
+        <p class="pp-link-desc">Nếu một email dùng cho cả học sinh và phụ huynh, nhờ phụ huynh liên kết lại email đang đăng nhập.</p>
+        <div class="sb-input pp-link-input">
+          <span class="sb-input__icon" aria-hidden="true">✉️</span>
+          <input class="link-input" id="child-email-input" type="email" placeholder="Email tài khoản học sinh..." aria-label="Email tài khoản học sinh">
+        </div>
+        <button class="link-btn" type="button" onclick="linkChild()"><span aria-hidden="true">＋</span>Liên kết</button>
+        <div id="link-msg" class="pp-link-msg" style="display:none;"></div>
+      </div>
+
+      <div class="pp-tip">
+        <span class="pp-tip-star" style="left:11%;top:13%" aria-hidden="true">★</span>
+        <span class="pp-tip-star" style="left:25%;top:5%;font-size:clamp(5px,.8vh,10px)" aria-hidden="true">★</span>
+        <span class="pp-tip-star" style="right:13%;top:9%;font-size:clamp(6px,.9vh,11px)" aria-hidden="true">★</span>
+        <span class="pp-tip-star" style="right:26%;top:24%;font-size:clamp(5px,.7vh,9px)" aria-hidden="true">★</span>
+        <img class="pp-tip-mascot" src="/images/mascot/reading.png" alt="" onerror="this.style.display='none'">
+        <div class="pp-tip-title">Cùng con học mỗi ngày!</div>
+        <p class="pp-tip-sub">Đồng hành cùng con trên hành trình chinh phục tri thức.</p>
+        <button class="pp-tip-arrow" type="button" onclick="openParentGuide()" aria-label="Xem hướng dẫn phụ huynh">→</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="pp-main">
+    <section class="pp-hero">
+      <span class="pp-hero-glow" aria-hidden="true"></span>
+      <img class="pp-hero-mascot" src="/images/mascot/waving.png" alt="" onerror="this.style.display='none'">
+      <div class="pp-hero-txt">
+        <h1 class="pp-hero-title">Xin chào, <span id="hero-name">Phụ huynh</span>! <span aria-hidden="true">👋</span></h1>
+        <p class="pp-hero-sub">Cùng đồng hành và giúp con tiến bộ mỗi ngày. Chọn con em ở thanh bên trái để xem báo cáo học tập và trò chuyện cùng <b>AI Cố vấn</b>.</p>
+      </div>
+      <svg class="pp-hero-art" viewBox="0 0 210 190" aria-hidden="true" focusable="false">
+        <ellipse cx="124" cy="168" rx="86" ry="20" fill="#F1FFFD" opacity=".95"/>
+        <ellipse cx="66" cy="174" rx="54" ry="15" fill="#F8FFFE" opacity=".95"/>
+        <path d="M30 44l3.6 8.8L42 56.4l-8.4 3.6L30 68.8l-3.6-8.8L18 56.4l8.4-3.6z" fill="#FFC94D"/>
+        <path d="M184 66l2.6 6.4 6.4 2.6-6.4 2.6-2.6 6.4-2.6-6.4-6.4-2.6 6.4-2.6z" fill="#FFD877"/>
+        <g>
+          <rect x="58" y="122" width="108" height="30" rx="9" fill="#FFC845"/>
+          <rect x="58" y="122" width="108" height="30" rx="9" fill="none" stroke="#EFB13C" stroke-width="1.6"/>
+          <rect x="66" y="127" width="92" height="18" rx="5" fill="#FFEDB8"/>
+          <rect x="150" y="124" width="9" height="26" rx="4" fill="#FFF9E6"/>
+        </g>
+        <g transform="rotate(-4 122 104)">
+          <rect x="66" y="94" width="100" height="28" rx="9" fill="#5DA8E6"/>
+          <rect x="66" y="94" width="100" height="28" rx="9" fill="none" stroke="#4B94D0" stroke-width="1.6"/>
+          <rect x="74" y="99" width="84" height="16" rx="5" fill="#E3F3FF"/>
+          <rect x="152" y="96" width="9" height="24" rx="4" fill="#F3FAFF"/>
+        </g>
+        <ellipse cx="120" cy="95" rx="19" ry="6" fill="#F1F5F3"/>
+        <path d="M102 86h36l-4.5 15a8 8 0 0 1-7.7 6h-11.6a8 8 0 0 1-7.7-6z" fill="#FFFFFF" stroke="#E3EEEA" stroke-width="1.6"/>
+        <rect x="99" y="80" width="42" height="8" rx="4" fill="#F8DCD0"/>
+        <path d="M120 80V52" stroke="#5CC97C" stroke-width="4" stroke-linecap="round"/>
+        <path d="M120 64c-14-5-20-15-18-25 12 0 20 8 18 25z" fill="#6EDB8B"/>
+        <path d="M120 58c14-5 20-17 17-27-13 0-20 10-17 27z" fill="#55C778"/>
+      </svg>
+    </section>
+
+    <div class="mobile-parent-bar">
+      <div class="mobile-parent-controls">
+        <select id="mobile-parent-child" aria-label="Chọn học sinh để xem báo cáo" onchange="if(this.value)selectChild(this.value)">
+          <option value="">Chọn học sinh</option>
+        </select>
+        <button class="mobile-ai-btn" id="mobile-ai-btn" type="button" disabled onclick="switchTab('advisor')">💬 Hỏi AI</button>
+      </div>
+      <details class="mobile-link-details" id="mobile-link-details">
+        <summary>＋ Liên kết tài khoản học sinh</summary>
+        <div class="mobile-link-form">
+          <div class="sb-input"><input class="link-input" id="mobile-child-email-input" type="email" placeholder="Email tài khoản học sinh"></div>
+          <button class="link-btn" type="button" onclick="linkChild('mobile-child-email-input','mobile-link-msg')">Liên kết</button>
+          <div id="mobile-link-msg" style="display:none;"></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="pp-body">
+      <div class="empty-state" id="empty-state">
+        <div class="pp-empty-art">
+          <span class="pp-empty-glow" aria-hidden="true"></span>
+          <span class="pp-empty-spark" style="left:12%;top:28%" aria-hidden="true">✦</span>
+          <span class="pp-empty-spark" style="right:7%;top:12%" aria-hidden="true">✦</span>
+          <img class="empty-mascot" src="/images/mascot/search.png" alt="" onerror="this.outerHTML='&lt;div class=&quot;empty-icon&quot;&gt;👨‍👩‍👧&lt;/div&gt;'">
+          <span class="pp-empty-q" aria-hidden="true">?</span>
+          <span class="pp-empty-star" style="left:4%;top:19%" aria-hidden="true">★</span>
+          <span class="pp-empty-star" style="right:1%;top:47%;font-size:clamp(8px,1.15vh,14px)" aria-hidden="true">★</span>
+          <span class="pp-empty-book" aria-hidden="true">📖</span>
+          <svg class="pp-empty-dash" viewBox="0 0 300 120" fill="none" aria-hidden="true" focusable="false">
+            <path d="M4 106C58 44 168 24 294 52" stroke="#A9D9F2" stroke-width="2" stroke-dasharray="5 8" stroke-linecap="round"/>
+          </svg>
+          <span class="pp-empty-plane" aria-hidden="true">✈</span>
+        </div>
+        <div class="pp-empty-title">Chọn con em để xem báo cáo</div>
+        <p class="pp-empty-sub">Nhấn vào tên con em ở thanh bên trái<br>để xem chi tiết tiến trình học tập.</p>
+      </div>
+
+      <!-- Child view -->
+      <div id="child-view" style="display:none;flex-direction:column;">
+        <div class="report-header">
+          <div class="rh-avatar">🎒</div>
+          <div>
+            <div class="rh-name" id="rh-name">—</div>
+            <div class="rh-meta" id="rh-meta">—</div>
+          </div>
+          <div class="rh-actions">
+            <div class="period-toggle">
+              <button class="period-btn active" id="pb-week" onclick="setPeriod('week')">7 ngày</button>
+              <button class="period-btn" id="pb-month" onclick="setPeriod('month')">30 ngày</button>
+            </div>
+            <button class="send-report-btn" onclick="sendEmailReport()">📧 Gửi báo cáo email</button>
+          </div>
+        </div>
+
+        <div class="tab-nav">
+          <button class="tab-btn active" id="tab-report" onclick="switchTab('report')">📊 Báo cáo học tập</button>
+          <button class="tab-btn" id="tab-advisor" onclick="switchTab('advisor')">💬 AI Cố vấn</button>
+        </div>
+
+        <div id="view-report"><div class="loading-spinner"></div></div>
+
+        <div id="view-advisor" style="display:none;">
+          <button class="advisor-back-btn" type="button" onclick="switchTab('report')">← Quay lại báo cáo</button>
+          <div id="advisor-assessment"></div>
+          <div class="advisor-card">
+            <div class="advisor-head">
+              <img src="/images/mascot/idea.png" alt="" onerror="this.outerHTML='&lt;span class=&quot;ah-emoji&quot;&gt;🤖&lt;/span&gt;'">
+              <div>
+                <div class="ah-title">Trợ lý Tư vấn Giáo dục</div>
+                <div class="ah-sub">Tư vấn dựa trên điểm số &amp; lứa tuổi của con</div>
+              </div>
+            </div>
+            <div class="advisor-messages" id="advisor-messages"></div>
+            <div class="advisor-quick" id="advisor-quick"></div>
+            <div class="advisor-input-row">
+              <textarea id="advisor-input" class="advisor-input" rows="1" placeholder="Hỏi về việc học, tâm lý, thói quen của con..." oninput="autoH(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdvisor();}"></textarea>
+              <button class="send-btn" id="advisor-send" onclick="sendAdvisor()">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="parent-tip-overlay" class="parent-help-overlay" role="presentation" aria-hidden="true" onclick="if(event.target===this)closeParentTip()" style="display:none;">
+  <section class="parent-help-card" role="dialog" aria-modal="true" aria-labelledby="parent-tip-title">
+    <button type="button" class="pp-help-close" aria-label="Đóng mẹo" onclick="closeParentTip()">×</button>
+    <div class="pp-help-kicker">💡 MẸO THEO CHỨC NĂNG</div>
+    <h2 id="parent-tip-title" class="pp-help-title">Mẹo nhanh</h2>
+    <p id="parent-tip-text" class="pp-help-text"></p>
+    <button type="button" class="sb-btn sb-btn--primary" onclick="closeParentTip()">Đã rõ</button>
+  </section>
+</div>
+
+<div id="parent-guide-overlay" class="parent-help-overlay" role="presentation" aria-hidden="true" onclick="if(event.target===this)closeParentGuide()" style="display:none;">
+  <section class="parent-help-card" role="dialog" aria-modal="true" aria-labelledby="parent-guide-title">
+    <button type="button" class="pp-help-close" aria-label="Đóng hướng dẫn" onclick="closeParentGuide()">×</button>
+    <div class="pp-help-kicker">📘 SMARTBUDDY · HƯỚNG DẪN PHỤ HUYNH</div>
+    <h2 id="parent-guide-title" class="pp-help-title">Cùng con học thật vui</h2>
+    <p class="pp-help-text">Cổng này giúp xem tiến độ học tập, đọc nhận xét và tham khảo gợi ý từ AI Cố vấn. Hãy dùng các báo cáo để trò chuyện tích cực với con.</p>
+    <div class="pp-guide-box">
+      <b>📚 Gói và hạn mức tài khoản</b>
+      <div id="parent-guide-plan" style="margin-top:5px;"></div>
+      <div id="parent-guide-trial" style="margin-top:4px;"></div>
+      <div id="parent-guide-quota" style="margin-top:4px;"></div>
+      <div id="parent-guide-error" style="margin-top:4px;color:#A05A00;font-size:12px;"></div>
+    </div>
+    <ul>
+      <li>Liên kết học sinh bằng email; nếu dùng chung một email, nhập lại email tài khoản hiện tại.</li>
+      <li>Chọn học sinh để xem báo cáo 7 hoặc 30 ngày; mở tab AI Cố vấn để đặt câu hỏi dựa trên tiến độ.</li>
+      <li id="parent-guide-email-cadence">Đang tải quyền lợi email theo gói…</li>
+      <li>Học sinh Free có thời gian dùng thử và giới hạn câu hỏi mỗi ngày; khuyến khích nghỉ ngắn sau mỗi chặng học.</li>
+    </ul>
+    <button type="button" class="sb-btn sb-btn--primary" onclick="closeParentGuide()">Đã hiểu</button>
+  </section>
+</div>
+

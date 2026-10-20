@@ -34,3 +34,7 @@ Thumbs.db
 
 # Claude Code local config (đường dẫn máy cá nhân)
 .claude/
+
+# Ảnh chụp kiểm thử giao diện + bộ ảnh thiết kế gốc (nặng, không cần cho deploy)
+shots/
+buddymath/design/
