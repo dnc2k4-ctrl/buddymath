@@ -130,6 +130,9 @@ body{
 .switch-line{text-align:center;font-size:14px;color:var(--text2);font-weight:600;margin-top:16px;}
 .switch-line a{color:var(--teal-d);font-weight:900;text-decoration:none;cursor:pointer;}
 .switch-line a:hover{text-decoration:underline;}
+.portal-choice{display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:wrap;margin:16px 0 2px;font-size:15px;font-weight:900;}
+.portal-choice a{color:var(--teal-dd);text-decoration:none;white-space:nowrap;}
+.portal-choice a:hover{text-decoration:underline;}
 .site-nav{display:flex;justify-content:center;gap:10px 18px;flex-wrap:wrap;padding:4px 12px 14px;font-size:13px;font-weight:800;}
 .site-nav a{color:var(--teal-dd);text-decoration:none;}
 .site-nav a:hover{text-decoration:underline;}
@@ -213,6 +216,10 @@ body{
       <div id="login-view">
         <div class="card-title">Chào mừng trở lại! 👋</div>
         <div class="card-sub">Đăng nhập để tiếp tục hành trình học tập cùng Buddy nhé!</div>
+        <nav class="portal-choice" aria-label="Chọn cổng đăng nhập">
+          <a href="/?portal=student">🎒 Khu vực học sinh</a>
+          <a href="/?portal=parent">👨‍👩‍👧 Khu vực phụ huynh</a>
+        </nav>
 
         <div class="error-msg" id="login-err"></div>
         <div class="success-msg" id="login-ok"></div>
@@ -365,8 +372,6 @@ body{
     <div class="feat"><div class="fic" style="background:#FFF6E0;">⭐</div><div><div class="ft">Tiến bộ mỗi ngày</div><div class="fs">Theo dõi và phát triển kỹ năng toàn diện</div></div></div>
   </div>
   <nav class="site-nav" aria-label="Các khu vực SmartBuddy">
-    <a href="/app">🎒 Khu vực học sinh</a>
-    <a href="/parent-portal">👨‍👩‍👧 Khu vực phụ huynh</a>
     <a href="/terms">Điều khoản</a>
     <a href="/privacy">Bảo mật</a>
   </nav>
