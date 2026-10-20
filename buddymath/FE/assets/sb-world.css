@@ -125,3 +125,12 @@ h1,h2,h3,.sb-home__greet,.sb-sidecard__title{color:var(--ink) !important}
 #panel-buddy .sb-chat__hero .sb-chat__chip{background:#fff !important;color:var(--ink-2) !important;border:1px solid #DFEFFB !important}
 #panel-buddy .sb-chat__hero .sb-chat__chip--mint{background:linear-gradient(135deg,#C8E7FF,#8FC9F4) !important;color:#1E4E77 !important}
 #panel-buddy .sb-chat__hero{background:linear-gradient(115deg,#FFFFFF 0%,#EAF6FF 55%,#DDEFFF 100%) !important}
+.isle__art{background:transparent !important;box-shadow:none !important;width:clamp(96px,15vh,160px) !important;height:auto !important;border-radius:0 !important;align-self:flex-end;margin-bottom:-4px}
+.isle__scene{width:100%;height:auto;display:block}
+.isle{align-items:center}
+.isle__desc{max-width:26ch}
+.sb-side-logo{text-align:center}
+.sb-side-logo .sb-logo-txt{display:block;font-family:'Baloo 2',cursive;font-weight:800;color:var(--ink);font-size:clamp(15px,2vh,21px);line-height:1.1;margin-top:2px}
+.sb-side-logo .sb-logo-txt b{color:var(--brand-strong)}
+.sb-side-logo .sb-logo-sub{display:block;font-size:9px;letter-spacing:.1em;color:var(--muted);font-weight:800;text-transform:uppercase;margin-top:2px}
+.sb-side-logo svg{width:clamp(44px,7.4vh,72px);height:auto;margin:0 auto}

@@ -1,4 +1,4 @@
-/* world-home.js — Trang chủ dạng BẢN ĐỒ KHÁM PHÁ (Blue Pastel Learning World).
+﻿/* world-home.js — Trang chủ dạng BẢN ĐỒ KHÁM PHÁ (Blue Pastel Learning World).
    Ghi đè showHomeScreen sau app-v2.js; giữ nguyên mọi handler hiện có. */
 (function () {
   'use strict';
@@ -22,6 +22,17 @@
     }
   ];
 
+  function isleScene(tone, tint) {
+    return '<svg class="isle__scene" viewBox="0 0 120 80" aria-hidden="true">' +
+      '<ellipse cx="60" cy="66" rx="46" ry="9" fill="' + tone + '" opacity=".18"/>' +
+      '<path d="M12 62c8-14 20-22 34-22 12 0 22 6 30 18 6 2 14 3 22 2l2 6H12Z" fill="' + tint + '"/>' +
+      '<path d="M20 62c6-9 14-14 24-14 10 0 18 5 24 14Z" fill="#FFFFFF" opacity=".85"/>' +
+      '<rect x="54" y="30" width="6" height="26" rx="3" fill="' + tone + '"/>' +
+      '<path d="M60 31l20 5-20 6Z" fill="' + tone + '"/>' +
+      '<circle cx="34" cy="46" r="9" fill="' + tone + '" opacity=".55"/>' +
+      '<circle cx="86" cy="50" r="7" fill="' + tone + '" opacity=".4"/>' +
+      '</svg>';
+  }
   function n(x, d) { return typeof x === 'number' ? x : (Number(x) || d || 0); }
 
   window.sbWorldHome = function () {
@@ -59,7 +70,7 @@
       '<div class="world__isles">' +
       ISLES.map(function (s, i) {
         return '<button class="isle" style="--tone:' + s.tone + ';--tint:' + s.tint + '" onclick="' + s.act + '">' +
-          '<span class="isle__art"><span data-i="' + s.icon + '"></span></span>' +
+          '<span class="isle__art">' + isleScene(s.tone, s.tint) + '</span>' +
           '<span class="isle__body"><span class="isle__name">' + s.name + '</span>' +
           '<span class="isle__desc">' + s.desc + '</span></span>' +
           '<span class="isle__go"><span data-i="arrow"></span></span></button>';
@@ -100,6 +111,16 @@
   };
 
   window.showHomeScreen = window.sbWorldHome;
+  function upgradeLogo() {
+    var logo = document.querySelector('.sb-side-logo');
+    if (!logo || logo.getAttribute('data-v2')) return;
+    logo.setAttribute('data-v2', '1');
+    logo.innerHTML = sbMascot('welcome', '') +
+      '<span class="sb-logo-txt">Smart<b>Buddy</b></span>' +
+      '<span class="sb-logo-sub">Học thông minh · Tiến vững vàng</span>';
+  }
+  setTimeout(upgradeLogo, 60);
+  setTimeout(upgradeLogo, 600);
   try { window.fitHomeContent = function () { }; } catch (e) { }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { window.showHomeScreen(); });
   else setTimeout(function () { window.showHomeScreen(); }, 0);
